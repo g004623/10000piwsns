@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Auto Grease Monitor</title>
+ 
+    	<style>
+	
+		#warpper{
+			width: 100%;
+			margin:0 auto;
+		}	
+
+		header{
+			width: 65%
+			height: 70px;
+		}
+
+		header h1{
+			text-align: center;
+		}
+
+		header h2{
+			text-align: center;
+		}
+
+		aside{
+			font-size: 14px;
+			display: block;
+			width: 175px;
+			height: 250px;
+			float:left;
+			margin-top: 5px;
+		}
+
+		aside table, th{
+		    border-collapse: collapse;
+		    border: 1px solid black;
+		    padding: 6px;
+		    text-align: center;
+		}
+
+		article{
+		}
+
+		table, th, td {
+		    border-collapse: collapse;
+		}
+	
+
+		#div1{
+			position: absolute;
+			top    :  150px;
+			left   : 183px;
+		}
+	
+
+		.sensornumber div{
+			float:left;
+			border-collapse: collapse;
+			font-size: 1em;
+			font-weight: bold;
+			color: white;
+
+			text-align: center;
+
+			margin: 2px ; 
+
+			width : 25px; 
+			height: 25px;
+			border-radius : 3px;
+			background-color: gray;
+		}
+		section{
+			margin-top: 15px;
+			margin-left: 15px;
+		}
+
+		footer{
+			font-size: 14px;
+			display: inline-block;
+		}
+
+		address{
+
+		}
+
+		.line {overflow: hidden;}
+	
+		.seat{
+			margin: 2px ; float: left;
+			width : 25px; height: 25px;
+			border-radius : 3px;
+		}
+
+		.enable{ background: gray; }
+		.enable:hover { background: black; }
+		.nosignal{ background: magenta; }
+		.faulty{background: red;}
+		.activated{background: blue;}
+
+	
+	</style>
+
+
+	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+
+	<script>
+		$(document).ready(function() {
+			// define variable
+			var onClickSeat = function () {
+				var x = $(this).attr('data-x');
+				var y = $(this).attr('data-y');
+
+				if(confirm('Confirm seat Reservation ?')){
+					$(this).off('click');
+					socket.emit('reserve',{
+						x: x,
+						y: y
+					});
+				} else {
+					alert('Cancel seat Reservation');
+				}
+			};
+			
+			// Execute AJAX
+			//$.getJSON('/seats', { dummy: new Date().getTime() }, function(data){
+			$.getJSON('/seats', { dummy: new Date().getTime() }, function(data){
+			// Creat Seat
+				$.each(data, function (indexY, line ) {
+					// Create Document object
+					var $line = $('<div></div>').addClass('line');
+					$.each(line,function(indexX,seat){
+
+						// Create Document Object and ADD to var $line
+						var $output = $('<div></div>',{
+							'class':'seat',
+							'data-x': indexX,
+							'data-y': indexY
+						}).appendTo($line);
+
+						$output.on('click',onClickSeat);
+						
+						if(seat == 1){
+							$output.addClass('enable'); 
+						}else if( seat == 2 ) {
+							$output.addClass('nosignal'); 
+						}else if( seat == 3 ) {
+							$output.addClass('faulty'); 
+						}else if( seat == 4 ) {
+							$output.addClass('activated'); 
+						} 
+					});
+
+					// Add Document Object
+					$line.appendTo('section');
+				});
+			});
+		});
+	</script>
+	<script>
+		function startTime() {
+		    var today = new Date();
+		    var h = today.getHours();
+		    var m = today.getMinutes();
+		    var s = today.getSeconds();
+		    m = checkTime(m);
+		    s = checkTime(s);
+		    document.getElementById('txt').innerHTML =
+		    h + ":" + m + ":" + s;
+		    var t = setTimeout(startTime, 500);
+		}
+		function checkTime(i) {
+		    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+		    return i;
+		}
+	</script>
+
+
+<body onload="startTime()">
+
+
+	<div class="wrapper">
+	<header>
+		<h1>LUBRICATION RECORD</h1>
+		<h2> HHI HD-10000 Auto Grease Monitoring System </h2>
+	</header>
+
+   	<div id="sub1">
+	    	<div class = "content2">
+	    		<div>
+	    			<div> [ Ship's name : HD10000    ] &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp [ Lubrication part : Crane ]   [Inspection date : 2016.07.01]</div>  
+				<div id="txt"></div>
+	    		</div>
+	    	</div>
+    	</div> 
+
+
+   	<aside> 
+   		<table id="tbthsensor">
+   			<tr>	<th>LOC. PART</th><th> PMP/S NO </th> </tr>	
+	    		<tr> <th rowspan="3">JIB PORT</th><th>NO.1</th> </tr>
+	 		<tr> <th>NO.2</th> </tr>
+	 		<tr> <th>NO.3</th> </tr>
+			
+	    		<tr> <th rowspan="3">JIB STBD</th><th>NO.1</th> </tr>
+	 		<tr>	<th>NO.2</th>	</tr>
+	 		<tr>	<th>NO.3</th>	</tr>
+	 		<tr>	<th>A-PORT</th><th>NO.1</th> </tr>
+	 		<tr>	<th>A-STBD</th><th>NO.1</th> </tr>
+	    	</table>
+	</aside>
+
+
+	<div id="div1">
+		<div class= "sensornumber">
+			<div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div><div>25</div><div>26</div><div>27</div><div>28</div><div>29</div><div>30</div><div>31</div><div>32</div><div>33</div><div>34</div><div>35</div><div>36</div>
+		</div>
+	</div>
+	<br>	
+
+ 	<section>
+	</section>
+
+
+	<footer>
+		
+		<address>
+			<p> eunwho@naver.com </p>
+		</address>
+		<p> tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2016 Eunwho Power Electonics </p>
+	</footer>
+
+</wrapper>
+</body>
+
+</html>
