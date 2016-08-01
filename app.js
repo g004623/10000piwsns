@@ -50,38 +50,44 @@ var seats = [
 	[ 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
+var socketio = require('socket.io');
 var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-
-//var routes = require('./routes/index');
-//var users = require('./routes/users');
+var http = require('http');
+var fs = require('fs');
 
 var app = express();
+
+app.get('/',function ( request, response,next) {
+	fs.readFile('monitor.html',function(error,data){
+		response.send(data.toString());
+	});
+}); 
+
+app.get('/seats',function ( request, response, next) {
+	//response.send(seats);
+	var i ;
+	for ( i in check_now.G0) { seats[0][i] = 1;}
+	for ( i in check_now.G1) { seats[1][i] = 1;}
+	for ( i in check_now.G2) { seats[2][i] = 1;}
+	for ( i in check_now.G3) { seats[3][i] = 1;}
+	for ( i in check_now.G4) { seats[4][i] = 1;}
+	for ( i in check_now.G5) { seats[5][i] = 1;}
+	for ( i in check_now.G6) { seats[6][i] = 1;}
+	for ( i in check_now.G7) { seats[7][i] = 1;}
+	response.send(seats);
+}); 
+
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-
-// uncomment after placing your favicon in /public
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-
-app.use(function(req,res, next){
-	res.io = io;
-	next();
+server.listen(7532,function(){
+	console.log('Server Running apt http://192.168.0.119:7532');
 });
-
-
-//--- socket for rxd xbee codinator 
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+
+//---  
+
 
 io.on('connection',function(socket){
 	console.log('Cooool now connected socket.io');
@@ -89,121 +95,15 @@ io.on('connection',function(socket){
 	socket.on('CH0',function(from,msg){
 		console.log(msg);
 	});
+
+	socket.on('reserve',function(data){
+		seat[data.y][data.y] =2;
+		io.socket.emit('reserve',data);
+	});	
 });
 
 http.listen(8080,function(){
 	console.log('socket listening on : 8080');
 });
+
 //--- end of codinater data
-
-
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-
-//app.use(express.static(path.join(__dirname, 'public')));
-
-// not use 4.x
-//app.use('/', routes);
-
-//app.use('/users', users);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
-
-
-// creat Web servers
-
-//app.get('/',function ( req, res) {
-//	res.set('content-type','text/html');
-//	res.send(fs.readFileSync("monitor.html",'utf8'));
-//	res.end();
-//}); 
-
-app.get('/seats',function ( request, response, next) {
-	//response.send(seats);
-
-	for ( i = 0, item ; item = check_now.G0[i] ; i++){
-		seats[0][i] = item;
-	}
-	for ( i = 0, item ; item = check_now.G1[i] ; i++){
-		seats[0][i] = item;
-	}
-	for ( i = 0, item ; item = check_now.G2[i] ; i++){
-		seats[0][i] = item;
-	}
-	for ( i = 0, item ; item = check_now.G3[i] ; i++){
-		seats[0][i] = item;
-	}
-	for ( i = 0, item ; item = check_now.G4[i] ; i++){
-		seats[0][i] = item;
-	}
-	for ( i = 0, item ; item = check_now.G5[i] ; i++){
-		seats[0][i] = item;
-	}
-	for ( i = 0, item ; item = check_now.G6[i] ; i++){
-		seats[0][i] = item;
-	}
-	for ( i = 0, item ; item = check_now.G7[i] ; i++){
-		seats[0][i] = item;
-	}
-	response.send(seats);
-}); 
-
-
-// execute web server
-//var server = http.createServer(app);
-
-app.get('/',function(req,res){
-	res.send('Hello world');
-});
-
-app.listen(3000,function(){
-	console.log('Server Running at http://127.0.0.1:3000');
-});
-
-server.listen(7532,function(){
-	console.log('Server Running at http://127.0.0.1:7532');
-});
-
-// socket server 
-//var io = socketio.listen(server);
-
-io.sockets.on('connection',function(socket) {
-	socket.on('reserve',function(data){
-		seats[data.y][data.y] ++;
-		io.sockets.emit('reserve',data);
-	});
-});
-
-
-module.exports = {app: app,server:server};
