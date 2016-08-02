@@ -109,10 +109,27 @@
 	</style>
 
 
-	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 
 	<script>
+
+		var socket = io.connect('http://192.168.0.119:7532');
+		
+		socket.on('reserve',function( data ) {
+				var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+				$target.removeClass('enable');
+				$target.addClass('disable');
+			console.log("reserve return");
+		});
+		socket.on('activ',function( data ) {
+				var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+				$target.addClass('activated');
+			console.log("reserve return");
+		});
+	</script>
+
+	<script>		
 		$(document).ready(function() {
 			// define variable
 			var onClickSeat = function () {
@@ -130,9 +147,8 @@
 				}
 			};
 			
-			// Execute AJAX
-			//$.getJSON('/seats', { dummy: new Date().getTime() }, function(data){
 			$.getJSON('/seats', { dummy: new Date().getTime() }, function(data){
+			
 			// Creat Seat
 				$.each(data, function (indexY, line ) {
 					// Create Document object

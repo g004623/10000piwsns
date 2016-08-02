@@ -50,18 +50,16 @@ var seats = [
 	[ 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
-var socketio = require('socket.io');
-var express = require('express');
-var http = require('http');
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 var fs = require('fs');
 
-var app = express();
+server.listen(7532);
 
-app.get('/',function ( request, response,next) {
-	fs.readFile('monitor.html',function(error,data){
-		response.send(data.toString());
-	});
-}); 
+app.get('/',function ( req,res){
+	res.sendfile(__dirname +'/monitor.html');
+});
 
 app.get('/seats',function ( request, response, next) {
 	//response.send(seats);
@@ -77,33 +75,22 @@ app.get('/seats',function ( request, response, next) {
 	response.send(seats);
 }); 
 
-var server = require('http').Server(app);
-
-server.listen(7532,function(){
-	console.log('Server Running apt http://192.168.0.119:7532');
-});
-
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-
-//---  
-
-
 io.on('connection',function(socket){
+
 	console.log('Cooool now connected socket.io');
+	
+	// socket.emit('news',{hello:'world'});
 	
 	socket.on('CH0',function(from,msg){
 		console.log(msg);
 	});
 
 	socket.on('reserve',function(data){
-		seat[data.y][data.y] =2;
-		io.socket.emit('reserve',data);
+		seats[data.y][data.y] =3;
+		socket.emit('activ',data);
 	});	
+	
 });
 
-http.listen(8080,function(){
-	console.log('socket listening on : 8080');
-});
 
 //--- end of codinater data
