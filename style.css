@@ -1,0 +1,82 @@
+#wrapper{
+	width: 1600px;
+	margin:0 auot;
+}
+
+header{
+	width: 1000px;
+	height: 100px;
+	text-align:center;
+}
+header h1{
+}
+header h2{
+}
+aside {
+	font-size: 14px;
+	display  : block;
+	width    : 175px;
+	height   : 250px;
+	float    : left;
+	margin-top: 5px;
+}
+aside table, th{
+	border-collapse: collapse;
+	border: 1px solid black;
+	padding: 6px;
+	text-align: center;
+}
+
+arcticle{
+}
+
+table, th, td{
+	border-collapse : collapse;
+}
+
+#div1{
+	posption : absolute;
+	top		 : 150px;
+	left     : 183px;
+}
+
+.sensornumber div{
+	float: left;
+	border-collapse : collapse;
+	font-size : 1em;
+	font-weight: bold;
+	color: white;
+	text-align : center;
+	margin: 2px;
+	width : 25px;
+	height:25px;
+	border-radius : 3px;
+	background-color: gray;
+}
+
+section{
+	margin-top : 15px;
+	margin-left: 15px;
+}
+footer{
+	font-size : 14px;
+	display	: inline-block;
+}
+address{
+}
+.line{overlow:hidden}
+.seat{
+	margin: 2px;
+	float : left;
+	width: 25px;
+	height: 25px;
+	border-radius : 3px;
+}
+.eanble{background:gray:}
+.enable:hover {background: black;}
+.nosignal{background: magenta;}
+.activated{bacground:blue}
+
+	
+
+
