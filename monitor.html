@@ -1,16 +1,134 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+	<script type="text/javascript">
+		var dps1= [
+					{ x: new Date(2010, 0, 3), y: 740 },
+					{ x: new Date(2010, 0, 5), y: 600 },
+					{ x: new Date(2010, 0, 7), y: 710 },
+					{ x: new Date(2010, 0, 9), y: 658 },
+					{ x: new Date(2010, 0, 11), y: 734 },
+					{ x: new Date(2010, 0, 13), y: 963 },
+					{ x: new Date(2010, 0, 15), y: 747 },
+					{ x: new Date(2010, 0, 17), y: 853 },
+					{ x: new Date(2010, 0, 19), y: 869 },
+					{ x: new Date(2010, 0, 21), y: 943 },
+					{ x: new Date(2010, 0, 23), y: 970 }
+					];
+		var dps2= [
+					{ x: new Date(2010, 0, 3), y: 640 },
+					{ x: new Date(2010, 0, 5), y: 500 },
+					{ x: new Date(2010, 0, 7), y: 610 },
+					{ x: new Date(2010, 0, 9), y: 558 },
+					{ x: new Date(2010, 0, 11), y: 634 },
+					{ x: new Date(2010, 0, 13), y: 863 },
+					{ x: new Date(2010, 0, 15), y: 647 },
+					{ x: new Date(2010, 0, 17), y: 753 },
+					{ x: new Date(2010, 0, 19), y: 769 },
+					{ x: new Date(2010, 0, 21), y: 843 },
+					{ x: new Date(2010, 0, 23), y: 870 }
+					];
+		var dps3= [
+					{ x: new Date(2010, 0, 3), y: 540 },
+					{ x: new Date(2010, 0, 5), y: 400 },
+					{ x: new Date(2010, 0, 7), y: 510 },
+					{ x: new Date(2010, 0, 9), y: 458 },
+					{ x: new Date(2010, 0, 11), y: 534 },
+					{ x: new Date(2010, 0, 13), y: 763 },
+					{ x: new Date(2010, 0, 15), y: 547 },
+					{ x: new Date(2010, 0, 17), y: 653 },
+					{ x: new Date(2010, 0, 19), y: 669 },
+					{ x: new Date(2010, 0, 21), y: 743 },
+					{ x: new Date(2010, 0, 23), y: 770 }
+					];
+		var dps4= [
+					{ x: new Date(2010, 0, 3), y: 590 },
+					{ x: new Date(2010, 0, 5), y: 450 },
+					{ x: new Date(2010, 0, 7), y: 560 },
+					{ x: new Date(2010, 0, 9), y: 858 },
+					{ x: new Date(2010, 0, 11), y: 584 },
+					{ x: new Date(2010, 0, 13), y: 813 },
+					{ x: new Date(2010, 0, 15), y: 597 },
+					{ x: new Date(2010, 0, 17), y: 703 },
+					{ x: new Date(2010, 0, 19), y: 719 },
+					{ x: new Date(2010, 0, 21), y: 793 },
+					{ x: new Date(2010, 0, 23), y: 570 }
+					];
+
+		window.onload = function () {
+			var chart = new CanvasJS.Chart("chartContainer", {
+				title: { text: "Site Traffic", fontSize: 30	},
+				animationEnabled: true,
+				axisX: { gridColor: "Silver",
+					tickColor: "silver",
+					valueFormatString: "DD/MMM"},
+				toolTip: { shared: true	},
+				theme: "theme2",
+				axisY: { gridColor: "Silver", tickColor: "silver"},
+				legend: { verticalAlign: "center", horizontalAlign: "right"	},
+				data: [	{
+					type: "line",
+					showInLegend: true,
+					lineThickness: 2,
+					name: "Sensor1",
+					markerType: "triangle",
+					color: "#9400D3",
+					dataPoints: dps1 
+				},
+				{
+					type: "line",
+					showInLegend: true,
+					lineThickness: 2,
+					name: "Sensor2",
+					markerType: "square",
+					color: "#FFC800",
+					dataPoints: dps2
+				},
+				{
+					type: "line",
+					showInLegend: true,
+					lineThickness: 2,
+					name: "Sensor3",
+					markerType: "circle",
+					color: "#F08080",
+					dataPoints: dps3
+				},
+				{
+					type: "line",
+					showInLegend: true,
+					name: "Sensor4",
+					markerType: "cross",
+					color: "#20B2AA",
+					lineThickness: 2,
+					dataPoints: dps4
+				}
+				],
+				legend: {
+					cursor: "pointer",
+					itemclick: function (e) {
+						if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+							e.dataSeries.visible = false;
+						}
+						else {
+							e.dataSeries.visible = true;
+						}
+						chart.render();
+					}
+				}
+			});
+			chart.render();
+		}
+	</script>
+
+
 	<meta charset="utf-8">
 	<title>Auto Grease Monitor</title>
- 
     	<style>
-	
 		#warpper{
 			width: 1200px;
 			height:1000px;
 		}	
-
 		header{
 			width: 65%
 			height: 70px;
@@ -25,10 +143,11 @@
 		}
 
 		#tablecontain{
-			// position: absolute;
-			width: 900px
-			height: 800px;
+		    position: absolute;
+			width: 1250px;
+			height: 275px;
 			border : 1px solid black;
+			
 		}	
 		
 		aside{
@@ -74,7 +193,7 @@
 			width : 25px; 
 			height: 25px;
 			border-radius : 3px;
-			background-color: gray;
+			background-color: red;
 		}
 		section{
 			margin-top  : 30px;
@@ -99,33 +218,40 @@
 			border-radius : 3px;
 		}
 
+		.disable{ background: yellow; }
 		.enable{ background: gray; }
 		.enable:hover { background: black; }
 		.nosignal{ background: magenta; }
 		.faulty{background: red;}
 		.activated{background: blue;}
-
-	
 	</style>
-
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 
 	<script>
-
-		var socket = io.connect('http://192.168.0.119:7532');
+		var socket = io.connect('http://192.168.0.20:7532');
 		
 		socket.on('reserve',function( data ) {
 				var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 				$target.removeClass('enable');
-				$target.addClass('disable');
+				$target.addClass('nosignal');
 			console.log("reserve return");
 		});
 		socket.on('activ',function( data ) {
 				var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-				$target.addClass('activated');
-			console.log("reserve return");
+				$target.removeClass('enable');
+				$target.addClass('faulty');
+				console.log("reserve return");
+		});
+		
+		socket.on('debug1',function( data ) {
+			console.log("debug1 return");
+			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+			$target.removeClass('enable');
+			$target.removeClass('nosigal');
+			$target.removeClass('faulty');
+			$target.addClass('activated');
 		});
 	</script>
 
@@ -137,7 +263,7 @@
 				var y = $(this).attr('data-y');
 
 				if(confirm('Confirm seat Reservation ?')){
-					$(this).off('click');
+					//$(this).off('click');
 					socket.emit('reserve',{
 						x: x,
 						y: y
@@ -181,6 +307,7 @@
 			});
 		});
 	</script>
+
 	<script>
 		function startTime() {
 		    var today = new Date();
@@ -193,12 +320,12 @@
 		    h + ":" + m + ":" + s;
 		    var t = setTimeout(startTime, 500);
 		}
+		
 		function checkTime(i) {
 		    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
 		    return i;
 		}
 	</script>
-
 
 <body onload="startTime()">
 
@@ -208,6 +335,7 @@
 		<h1>LUBRICATION RECORD</h1>
 		<h2> HHI HD-10000 Auto Grease Monitoring System </h2>
 	</header>
+
 
    	<div id="sub1">
 	    	<div class = "content2">
@@ -245,16 +373,19 @@
 	</section>
 	
 	</div>
+	
 
-	<footer>
-		
+	<div id="chartContainer" style="height: 400px; width: 100%;"></div>
+
+	<footer>		
 		<address>
 			<p> eunwho@naver.com </p>
 		</address>
 		<p> tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2016 Eunwho Power Electonics </p>
 	</footer>
-
+	<p id="demo">Test socket.io.</p>
 </wrapper>
+
 </body>
 
 </html>

@@ -1,5 +1,175 @@
-
 //--- mongoose setting
+
+
+var arryEndDevice = [2,24,36,2,25,36,18,18];
+
+var arryG0NumSens = [4,4];
+var arryG1NumSens = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
+var arryG2NumSens = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
+
+var arryG3NumSens = [4,4];
+var arryG4NumSens = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
+var arryG5NumSens = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
+var arryG6NumSens = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
+var arryG7NumSens = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
+
+
+var sensObj = {	enabled: true, sensId: 0, oldSensValue: 0, sensValue: 0, 
+				moving: true,rxData			: '0000'
+		};
+
+var mastCtrl = { numSens : 0, rxTime : 0, oldRxTime : 0, isGood : 0, rxData : '00000'};
+
+//--- group 0 
+var G0 = [];
+var count = arryEndDevice[0]; 
+for ( var i = 0 ; i < count ; i ++){
+	G0.push({
+		endDevice : mastCtrl,
+		sens1 : sensObj,
+		sens2 : sensObj,
+		sens3 : sensObj,
+		sens4 : sensObj
+	});
+}
+
+for ( var i = 0 ; i < count ; i ++){
+	G0[i].endDevice.numSens = arryG0NumSens[i];
+}
+
+//--- group 1 
+
+var G1 = [];
+count = arryEndDevice[1]; 
+for ( var i = 0 ; i < count ; i ++){
+	G1.push({
+		endDevice : mastCtrl,
+		sens1 : sensObj,
+		sens2 : sensObj,
+		sens3 : sensObj,
+		sens4 : sensObj
+	});
+}
+
+for ( var i = 0 ; i < count ; i ++){
+	G1[i].endDevice.numSens = arryG1NumSens[i];
+}
+
+//--- group 2
+var G2 = [];
+count = arryEndDevice[2]; 
+for ( var i = 0 ; i < count ; i ++){
+	G2.push({
+		endDevice : mastCtrl,
+		sens1 : sensObj,
+		sens2 : sensObj,
+		sens3 : sensObj,
+		sens4 : sensObj
+	});
+}
+
+for ( var i = 0 ; i < count ; i ++){
+	G2[i].endDevice.numSens = arryG2NumSens[i];
+}
+
+//--- group 2
+count = arryEndDevice[2]; 
+for ( var i = 0 ; i < count ; i ++){
+	G2.push({
+		endDevice : mastCtrl,
+		sens1 : sensObj,
+		sens2 : sensObj,
+		sens3 : sensObj,
+		sens4 : sensObj
+	});
+}
+
+for ( var i = 0 ; i < count ; i ++){
+	G2[i].endDevice.numSens = arryG2NumSens[i];
+}
+
+//--- group 3
+var G3 = [];
+count = arryEndDevice[3]; 
+for ( var i = 0 ; i < count ; i ++){
+	G3.push({
+		endDevice : mastCtrl,
+		sens1 : sensObj,
+		sens2 : sensObj,
+		sens3 : sensObj,
+		sens4 : sensObj
+	});
+}
+for ( var i = 0 ; i < count ; i ++){
+	G3[i].endDevice.numSens = arryG3NumSens[i];
+}
+
+//--- group 4
+var G4 = [];
+count = arryEndDevice[4]; 
+for ( var i = 0 ; i < count ; i ++){
+	G4.push({
+		endDevice : mastCtrl,
+		sens1 : sensObj,
+		sens2 : sensObj,
+		sens3 : sensObj,
+		sens4 : sensObj
+	});
+}
+for ( var i = 0 ; i < count ; i ++){
+	G4[i].endDevice.numSens = arryG4NumSens[i];
+}
+
+//--- group 5
+var G5 = [];
+count = arryEndDevice[5]; 
+for ( var i = 0 ; i < count ; i ++){
+	G5.push({
+		endDevice : mastCtrl,
+		sens1 : sensObj,
+		sens2 : sensObj,
+		sens3 : sensObj,
+		sens4 : sensObj
+	});
+}
+for ( var i = 0 ; i < count ; i ++){
+	G5[i].endDevice.numSens = arryG5NumSens[i];
+}
+
+//--- group 6
+var G6 = [];
+count = arryEndDevice[6]; 
+for ( var i = 0 ; i < count ; i ++){
+	G6.push({
+		endDevice : mastCtrl,
+		sens1 : sensObj,
+		sens2 : sensObj,
+		sens3 : sensObj,
+		sens4 : sensObj
+	});
+}
+for ( var i = 0 ; i < count ; i ++){
+	G6[i].endDevice.numSens = arryG6NumSens[i];
+}
+
+//--- group 7
+var G7 = [];
+count = arryEndDevice[7]; 
+for ( var i = 0 ; i < count ; i ++){
+	G7.push({
+		endDevice : mastCtrl,
+		sens1 : sensObj,
+		sens2 : sensObj,
+		sens3 : sensObj,
+		sens4 : sensObj
+	});
+}
+for ( var i = 0 ; i < count ; i ++){
+	G7[i].endDevice.numSens = arryG7NumSens[i];
+}
+
+//--- end of sensor table
+
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test');
@@ -58,7 +228,7 @@ var fs = require('fs');
 server.listen(7532);
 
 app.get('/',function ( req,res){
-	res.sendfile(__dirname +'/monitor.html');
+	res.sendFile(__dirname +'/monitor.html');
 });
 
 app.get('/seats',function ( request, response, next) {
@@ -77,20 +247,49 @@ app.get('/seats',function ( request, response, next) {
 
 io.on('connection',function(socket){
 
+	socket.join('sensornet');
+
 	console.log('Cooool now connected socket.io');
 	
 	// socket.emit('news',{hello:'world'});
 	
 	socket.on('CH0',function(from,msg){
 		console.log(msg);
+		
+		var test1 = msg.split(",");
+		var test2 = test1[12];
+		console.log(test2);
+
+		var data ={ x: 0,y:0};
+		if( test2[0] === 'C'){
+			var test3 = Number(test2.slice(2));
+			console.log(test3);
+
+			//var x = test3;
+			//var y = 2;
+
+			//socket.emit('reserve',{
+			//	x: 10,
+			//	y: 1
+			//});
+			//socket.broadcast.to(id).emit('reserve',{
+			io.to('sensornet').emit('reserve',{
+				x: test3,
+				y: 2
+			});
+			
+		} else {
+			console.log("Invalid Sensor Number");
+		}		
 	});
 
 	socket.on('reserve',function(data){
-		seats[data.y][data.y] =3;
-		socket.emit('activ',data);
+		console.log("Receive from html",data);
+		//socket.emit('activ',data);
+		socket.emit('reserve',{
+			x : 10,
+			y : 2
+		});
 	});	
-	
 });
-
-
 //--- end of codinater data
