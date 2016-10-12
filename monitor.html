@@ -3,6 +3,7 @@
 <head>
 	<script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
 	<script type="text/javascript">
+
 		var dps1= [
 					{ x: new Date(2010, 0, 3), y: 740 },
 					{ x: new Date(2010, 0, 5), y: 600 },
@@ -16,45 +17,10 @@
 					{ x: new Date(2010, 0, 21), y: 943 },
 					{ x: new Date(2010, 0, 23), y: 970 }
 					];
-		var dps2= [
-					{ x: new Date(2010, 0, 3), y: 640 },
-					{ x: new Date(2010, 0, 5), y: 500 },
-					{ x: new Date(2010, 0, 7), y: 610 },
-					{ x: new Date(2010, 0, 9), y: 558 },
-					{ x: new Date(2010, 0, 11), y: 634 },
-					{ x: new Date(2010, 0, 13), y: 863 },
-					{ x: new Date(2010, 0, 15), y: 647 },
-					{ x: new Date(2010, 0, 17), y: 753 },
-					{ x: new Date(2010, 0, 19), y: 769 },
-					{ x: new Date(2010, 0, 21), y: 843 },
-					{ x: new Date(2010, 0, 23), y: 870 }
-					];
-		var dps3= [
-					{ x: new Date(2010, 0, 3), y: 540 },
-					{ x: new Date(2010, 0, 5), y: 400 },
-					{ x: new Date(2010, 0, 7), y: 510 },
-					{ x: new Date(2010, 0, 9), y: 458 },
-					{ x: new Date(2010, 0, 11), y: 534 },
-					{ x: new Date(2010, 0, 13), y: 763 },
-					{ x: new Date(2010, 0, 15), y: 547 },
-					{ x: new Date(2010, 0, 17), y: 653 },
-					{ x: new Date(2010, 0, 19), y: 669 },
-					{ x: new Date(2010, 0, 21), y: 743 },
-					{ x: new Date(2010, 0, 23), y: 770 }
-					];
-		var dps4= [
-					{ x: new Date(2010, 0, 3), y: 590 },
-					{ x: new Date(2010, 0, 5), y: 450 },
-					{ x: new Date(2010, 0, 7), y: 560 },
-					{ x: new Date(2010, 0, 9), y: 858 },
-					{ x: new Date(2010, 0, 11), y: 584 },
-					{ x: new Date(2010, 0, 13), y: 813 },
-					{ x: new Date(2010, 0, 15), y: 597 },
-					{ x: new Date(2010, 0, 17), y: 703 },
-					{ x: new Date(2010, 0, 19), y: 719 },
-					{ x: new Date(2010, 0, 21), y: 793 },
-					{ x: new Date(2010, 0, 23), y: 570 }
-					];
+
+		var dps2= dsp1;
+		var dps3= dsp1;
+		var dps4= dsp1;
 
 		window.onload = function () {
 			var chart = new CanvasJS.Chart("chartContainer", {
@@ -76,8 +42,7 @@
 					color: "#9400D3",
 					dataPoints: dps1 
 				},
-				{
-					type: "line",
+				{	type: "line",
 					showInLegend: true,
 					lineThickness: 2,
 					name: "Sensor2",
@@ -85,8 +50,7 @@
 					color: "#FFC800",
 					dataPoints: dps2
 				},
-				{
-					type: "line",
+				{	type: "line",
 					showInLegend: true,
 					lineThickness: 2,
 					name: "Sensor3",
@@ -94,8 +58,7 @@
 					color: "#F08080",
 					dataPoints: dps3
 				},
-				{
-					type: "line",
+				{	type: "line",
 					showInLegend: true,
 					name: "Sensor4",
 					markerType: "cross",
@@ -109,8 +72,7 @@
 					itemclick: function (e) {
 						if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
 							e.dataSeries.visible = false;
-						}
-						else {
+						} else {
 							e.dataSeries.visible = true;
 						}
 						chart.render();
@@ -125,105 +87,44 @@
 	<meta charset="utf-8">
 	<title>Auto Grease Monitor</title>
     	<style>
-		#warpper{
-			width: 1200px;
-			height:1000px;
-		}	
-		header{
-			width: 65%
-			height: 70px;
-		}
+		#warpper{ width: 1200px; height:1000px;}	
+		header{	width: 65%;	height: 70px;}
+		header h1{ text-align: center; 	}
+		header h2{ text-align: center;	}
 
-		header h1{
-			text-align: center;
-		}
-
-		header h2{
-			text-align: center;
-		}
-
-		#tablecontain{
-		    position: absolute;
+		#tablecontain{ position: absolute;
 			width: 1250px;
-			height: 275px;
-			border : 1px solid black;
-			
-		}	
+			height: 275px; border : 1px solid black;}	
 		
-		aside{
-			font-size	: 14px;
-			display		: block;
-			width		: 175px;
-			height		: 250px;
-			float       : left;
-			margin-top  : 5px;
-			margin-left : 5px;
-		}
+		aside{ font-size	: 14px; display	: block; width: 175px; height: 250px; float: left; margin-top: 5px;
+			margin-left : 5px;}
 
-		aside table, th{
-		    border-collapse: collapse;
-		    border: 1px solid black;
-		    padding: 5px;
-		    text-align: center;
-		}
+		aside table, th{ border-collapse: collapse; border: 1px solid black;
+		    padding: 5px; text-align: center;}
 
-		article{
-		}
+		article{}
 
-		table, th, td {
-		    border-collapse: collapse;
-		}
+		table, th, td { border-collapse: collapse;}
 
-		#div1{
-			position: absolute;
-			top    : 185px;
-			left   : 190px;
-		}
-		.sensornumber div{
-			float:left;
-			border-collapse: collapse;
-			font-size: 1em;
-			font-weight: bold;
-			color: white;
+		#div1{position: absolute; top : 185px; left: 190px; }
+		.sensornumber div{ float:left; border-collapse: collapse;
+			font-size: 1em; font-weight: bold; color: white; text-align: center; margin: 2px ; 
+			width : 25px; height: 25px; border-radius : 3px; background-color: red;	}
 
-			text-align: center;
+		section{ margin-top  : 30px; margin-left : 10px; padding: 6px; }
 
-			margin: 2px ; 
+		footer{	font-size: 14px; display: inline-block; }
 
-			width : 25px; 
-			height: 25px;
-			border-radius : 3px;
-			background-color: red;
-		}
-		section{
-			margin-top  : 30px;
-			margin-left : 10px;
-		    padding: 6px;
-		}
-
-		footer{
-			font-size: 14px;
-			display: inline-block;
-		}
-
-		address{
-
-		}
+		address{		}
 
 		.line {overflow: hidden;}
 	
-		.seat{
-			margin: 2px ; float: left;
-			width : 25px; height: 25px;
-			border-radius : 3px;
-		}
+		.seat{	margin: 2px ; float: left; width : 25px; height: 25px; border-radius : 3px;	}
 
-		.disable{ background: yellow; }
-		.enable{ background: gray; }
-		.enable:hover { background: black; }
-		.nosignal{ background: magenta; }
-		.faulty{background: red;}
-		.activated{background: blue;}
+		.init{ background: gray; }
+		.moved{background: green;}
+		.stalled{background: red;}
+
 	</style>
 
 	<script src="/socket.io/socket.io.js"></script>
@@ -273,31 +174,26 @@
 				}
 			};
 			
-			$.getJSON('/seats', { dummy: new Date().getTime() }, function(data){
+			$.getJSON('/wsnObj', { dummy: new Date().getTime() }, function(wsnObj){
 			
 			// Creat Seat
-				$.each(data, function (indexY, line ) {
+				$.each(wnsObj, function (groupId, endDeviceGroup ) {
 					// Create Document object
 					var $line = $('<div></div>').addClass('line');
-					$.each(line,function(indexX,seat){
-
+					$.each(endDeviceGroup, function( deviceId, sensCtrl ){
 						// Create Document Object and ADD to var $line
-						var $output = $('<div></div>',{
-							'class':'seat',
-							'data-x': indexX,
-							'data-y': indexY
-						}).appendTo($line);
-
+						var $output = $('<div></div>',{	'class':'seat',	'data-x': deviceId,'data-y': groupId }).appendTo($line);
 						$output.on('click',onClickSeat);
 						
-						if(seat == 1){
-							$output.addClass('enable'); 
-						}else if( seat == 2 ) {
-							$output.addClass('nosignal'); 
-						}else if( seat == 3 ) {
-							$output.addClass('faulty'); 
-						}else if( seat == 4 ) {
-							$output.addClass('activated'); 
+						var status = sensCtrl.endDevice.status;
+
+						if( status == 0 ){			
+							$output.removeClass("moved stalled").addClass('init'); 
+						}else if( status == 1 ) {	
+							$output.removeClass("init stalled").addClass('moved'); 
+							$output.addClass('moved'); 
+						}else if( status == 2 ) {
+							$output.removeClass("init moved").addClass('stalled'); 
 						} 
 					});
 

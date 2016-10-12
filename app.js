@@ -1,6 +1,5 @@
 //--- mongoose setting
 
-
 var arryEndDevice = [2,24,36,2,25,36,18,18];
 
 var agn0 = [4,4];
@@ -19,11 +18,13 @@ var sensObj = {	enabled: true, sensId: 0, elapsed: new Date(), oldStatus: [1,1,1
 				moving: true, rxData: '0000'
 		};
 
-var mastCtrl = { numSens : 0, rxTime : 0, oldRxTime : 0, isGood : 0, rxData : '00000'};
+var mastCtrl = { numSens : 0, rxTime : 0, oldRxTime : 0, status : 0, rxData : '00000'};
 
 var G0 = [], G1 = [], G2 = [], G3 = [], G4 = [], G5 = [], G6 = [], G7 = [];
 
 var WSNT = [G0,G1,G2,G3,G4,G5,G6,G7];
+var seats = WSNT;
+
 var sensor = [sensObj,sensObj,sensObj,sensObj];
 
 for ( i = 0 ; i < 8 ; i ++ ){
@@ -34,8 +35,8 @@ for ( i = 0 ; i < 8 ; i ++ ){
 			endDevice : mastCtrl,
 			sens : sensor
 		});
+		seats[i].push(0);
 	}
-	
 	//--- init number of sensor in endDevice.
 	for ( var j = 0 ; j < count ; j ++){
 		 WSNT[i][j].endDevice.numSensor = arry[i][j];
@@ -52,14 +53,7 @@ var db = mongoose.connection;
 });
 
 var schema = mongoose.Schema({
-	G0: [Number],
-	G1: [Number],
-	G2: [Number],
-	G3: [Number],
-	G4: [Number],
-	G5: [Number],
-	G6: [Number],
-	G7: [Number],	
+	stae : WSNT
 	date:{type:Date,default:Date.now}
 });
 
@@ -67,29 +61,6 @@ var distribute = mongoose.model('distribute',schema);
 
 var check_now = new distribute;
 
-check_now.G0.unshift(1,1);
-check_now.G1.unshift(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
-check_now.G2.unshift(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
-check_now.G3.unshift(1,1);
-check_now.G4.unshift(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
-check_now.G5.unshift(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
-
-check_now.G6.unshift(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
-check_now.G7.unshift(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
-
-console.log(check_now);
-
-var seats = [
-   //[ 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36],
-	[ 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	[ 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	[ 3, 3, 3, 3, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	[ 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	[ 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	[ 3, 3, 3, 3, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	[ 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	[ 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
 
 var app = require('express')();
 var server = require('http').Server(app);
@@ -102,18 +73,8 @@ app.get('/',function ( req,res){
 	res.sendFile(__dirname +'/monitor.html');
 });
 
-app.get('/seats',function ( request, response, next) {
-	//response.send(seats);
-	var i ;
-	for ( i in check_now.G0) { seats[0][i] = 1;}
-	for ( i in check_now.G1) { seats[1][i] = 1;}
-	for ( i in check_now.G2) { seats[2][i] = 1;}
-	for ( i in check_now.G3) { seats[3][i] = 1;}
-	for ( i in check_now.G4) { seats[4][i] = 1;}
-	for ( i in check_now.G5) { seats[5][i] = 1;}
-	for ( i in check_now.G6) { seats[6][i] = 1;}
-	for ( i in check_now.G7) { seats[7][i] = 1;}
-	response.send(seats);
+app.get('/wsnObj',function ( request, response, next) {
+	response.send(WSNT);
 }); 
 
 io.on('connection',function(socket){
@@ -126,10 +87,7 @@ io.on('connection',function(socket){
 	
 	socket.on('CH0',function(from,msg){
 		var tmp1 = msg.split(",");
-
-
 		try{
-			
 			if(( tmp1[0] === M )&&(tmp1[16][0]==='G')){
 /*
 M, version, group#, sensor#, MY, MP, SH, SL, DH, DL, %V, solar Volt, battery Volt, coreTemp, chip volt, 
@@ -197,7 +155,7 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 							
 							if( j >= rxSensNum ){
 //--- send nomal operation signal
-								WSNT[groupNo][distId].endDevice.isGood = true;
+								WSNT[groupNo][distId].endDevice.status = true;
 								io.to('sensornet').emit('moving',{x: rxSensId, y:rxGroupId});
 							}
 							break;
@@ -211,7 +169,7 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 							if(elapsed > 48 ){ 
 //--- sens stalled for 2 days 
 								WSNT[groupNo][distId].sens.sensor[i].moving == false);
-								WSNT[groupNo][distId].endDevice.isGood == false);
+								WSNT[groupNo][distId].endDevice.status == false);
 								io.to('sensornet').emit('stalled',{x: rxSensId, y:rxGroupId});
 							}
 						}	
@@ -234,7 +192,8 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 				}
 			}
 		}
-		cach
+		cach{
+		}
 	});		
 
 	socket.on('reserve',function(data){
