@@ -3,173 +3,44 @@
 
 var arryEndDevice = [2,24,36,2,25,36,18,18];
 
-var arryG0NumSens = [4,4];
-var arryG1NumSens = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
-var arryG2NumSens = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
+var agn0 = [4,4];
+var agn1 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
+var agn2 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
 
-var arryG3NumSens = [4,4];
-var arryG4NumSens = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
-var arryG5NumSens = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
-var arryG6NumSens = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
-var arryG7NumSens = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
+var agn3 = [4,4];
+var agn4 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
+var agn5 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
+var agn6 = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
+var agn7 = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
 
+var arrySensNo = [agn0,agn1,agn2,agn3,agn4,agn5,ang6, agn7]; 
 
-var sensObj = {	enabled: true, sensId: 0, oldSensValue: 0, sensValue: 0, 
-				moving: true,rxData			: '0000'
+var sensObj = {	enabled: true, sensId: 0, elapsed: new Date(), oldStatus: [1,1,1,1,1], status: [1,1,1,1,1], 
+				moving: true, rxData: '0000'
 		};
 
 var mastCtrl = { numSens : 0, rxTime : 0, oldRxTime : 0, isGood : 0, rxData : '00000'};
 
-//--- group 0 
-var G0 = [];
-var count = arryEndDevice[0]; 
-for ( var i = 0 ; i < count ; i ++){
-	G0.push({
-		endDevice : mastCtrl,
-		sens1 : sensObj,
-		sens2 : sensObj,
-		sens3 : sensObj,
-		sens4 : sensObj
-	});
-}
+var G0 = [], G1 = [], G2 = [], G3 = [], G4 = [], G5 = [], G6 = [], G7 = [];
 
-for ( var i = 0 ; i < count ; i ++){
-	G0[i].endDevice.numSens = arryG0NumSens[i];
-}
+var WSNT = [G0,G1,G2,G3,G4,G5,G6,G7];
+var sensor = [sensObj,sensObj,sensObj,sensObj];
 
-//--- group 1 
+for ( i = 0 ; i < 8 ; i ++ ){
+	var count = arryEndDevice[i]; 
 
-var G1 = [];
-count = arryEndDevice[1]; 
-for ( var i = 0 ; i < count ; i ++){
-	G1.push({
-		endDevice : mastCtrl,
-		sens1 : sensObj,
-		sens2 : sensObj,
-		sens3 : sensObj,
-		sens4 : sensObj
-	});
+	for ( var j = 0 ; j < count ; j ++){
+		WSNT[i].push({
+			endDevice : mastCtrl,
+			sens : sensor
+		});
+	}
+	
+	//--- init number of sensor in endDevice.
+	for ( var j = 0 ; j < count ; j ++){
+		 WSNT[i][j].endDevice.numSensor = arry[i][j];
+	}	
 }
-
-for ( var i = 0 ; i < count ; i ++){
-	G1[i].endDevice.numSens = arryG1NumSens[i];
-}
-
-//--- group 2
-var G2 = [];
-count = arryEndDevice[2]; 
-for ( var i = 0 ; i < count ; i ++){
-	G2.push({
-		endDevice : mastCtrl,
-		sens1 : sensObj,
-		sens2 : sensObj,
-		sens3 : sensObj,
-		sens4 : sensObj
-	});
-}
-
-for ( var i = 0 ; i < count ; i ++){
-	G2[i].endDevice.numSens = arryG2NumSens[i];
-}
-
-//--- group 2
-count = arryEndDevice[2]; 
-for ( var i = 0 ; i < count ; i ++){
-	G2.push({
-		endDevice : mastCtrl,
-		sens1 : sensObj,
-		sens2 : sensObj,
-		sens3 : sensObj,
-		sens4 : sensObj
-	});
-}
-
-for ( var i = 0 ; i < count ; i ++){
-	G2[i].endDevice.numSens = arryG2NumSens[i];
-}
-
-//--- group 3
-var G3 = [];
-count = arryEndDevice[3]; 
-for ( var i = 0 ; i < count ; i ++){
-	G3.push({
-		endDevice : mastCtrl,
-		sens1 : sensObj,
-		sens2 : sensObj,
-		sens3 : sensObj,
-		sens4 : sensObj
-	});
-}
-for ( var i = 0 ; i < count ; i ++){
-	G3[i].endDevice.numSens = arryG3NumSens[i];
-}
-
-//--- group 4
-var G4 = [];
-count = arryEndDevice[4]; 
-for ( var i = 0 ; i < count ; i ++){
-	G4.push({
-		endDevice : mastCtrl,
-		sens1 : sensObj,
-		sens2 : sensObj,
-		sens3 : sensObj,
-		sens4 : sensObj
-	});
-}
-for ( var i = 0 ; i < count ; i ++){
-	G4[i].endDevice.numSens = arryG4NumSens[i];
-}
-
-//--- group 5
-var G5 = [];
-count = arryEndDevice[5]; 
-for ( var i = 0 ; i < count ; i ++){
-	G5.push({
-		endDevice : mastCtrl,
-		sens1 : sensObj,
-		sens2 : sensObj,
-		sens3 : sensObj,
-		sens4 : sensObj
-	});
-}
-for ( var i = 0 ; i < count ; i ++){
-	G5[i].endDevice.numSens = arryG5NumSens[i];
-}
-
-//--- group 6
-var G6 = [];
-count = arryEndDevice[6]; 
-for ( var i = 0 ; i < count ; i ++){
-	G6.push({
-		endDevice : mastCtrl,
-		sens1 : sensObj,
-		sens2 : sensObj,
-		sens3 : sensObj,
-		sens4 : sensObj
-	});
-}
-for ( var i = 0 ; i < count ; i ++){
-	G6[i].endDevice.numSens = arryG6NumSens[i];
-}
-
-//--- group 7
-var G7 = [];
-count = arryEndDevice[7]; 
-for ( var i = 0 ; i < count ; i ++){
-	G7.push({
-		endDevice : mastCtrl,
-		sens1 : sensObj,
-		sens2 : sensObj,
-		sens3 : sensObj,
-		sens4 : sensObj
-	});
-}
-for ( var i = 0 ; i < count ; i ++){
-	G7[i].endDevice.numSens = arryG7NumSens[i];
-}
-
-//--- end of sensor table
-
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test');
@@ -254,522 +125,128 @@ io.on('connection',function(socket){
 	// socket.emit('news',{hello:'world'});
 	
 	socket.on('CH0',function(from,msg){
-		//console.log(msg);
-		
+		var tmp1 = msg.split(",");
+
+
 		try{
-
-			test1 = msg.split(",");
-			if(test1[0]  == 'M'){
-				test2 = test1[16]
-				console.log(test2);
-				var groupNo = Number(test2[1]);
-				var deviceNo = Number(test2.slice(2));
- 				
-				switch(groupNo){
-				case 0:
-					G0[deviceNo].endDevice.rxData = msg;
-					G0[deviceNo].endDevice.oldRxTime = G0[deviceNo].endDevice.oldRxTime;
-					G0[deviceNo].endDevice.rxTime = new Date();
-					break;
-					// G0[deviceNo].endDevice.isGood = ture;
-					// G0[deviceNo].endDevice.rxData = msg;
-				case 1:
-					G1[deviceNo].endDevice.rxData = msg;
-					G1[deviceNo].endDevice.oldRxTime = G0[deviceNo].endDevice.oldRxTime;
-					G1[deviceNo].endDevice.rxTime = new Date();
-					break;
-				case 2:
-					G2[deviceNo].endDevice.rxData = msg;
-					G2[deviceNo].endDevice.oldRxTime = G0[deviceNo].endDevice.oldRxTime;
-					G2[deviceNo].endDevice.rxTime = new Date();
-					break;
-				case 3:
-					G3[deviceNo].endDevice.rxData = msg;
-					G3[deviceNo].endDevice.oldRxTime = G0[deviceNo].endDevice.oldRxTime;
-					G3[deviceNo].endDevice.rxTime = new Date();
-					break;
-				case 4:
-					G4[deviceNo].endDevice.rxData = msg;
-					G4[deviceNo].endDevice.oldRxTime = G0[deviceNo].endDevice.oldRxTime;
-					G4[deviceNo].endDevice.rxTime = new Date();
-					break;
-				case 5:
-					G5[deviceNo].endDevice.rxData = msg;
-					G5[deviceNo].endDevice.oldRxTime = G0[deviceNo].endDevice.oldRxTime;
-					G5[deviceNo].endDevice.rxTime = new Date();
-					break;
-				case 6:
-					G6[deviceNo].endDevice.rxData = msg;
-					G6[deviceNo].endDevice.oldRxTime = G0[deviceNo].endDevice.oldRxTime;
-					G6[deviceNo].endDevice.rxTime = new Date();
-					break;
-				case 7:
-					G7[deviceNo].endDevice.rxData = msg;
-					G7[deviceNo].endDevice.oldRxTime = G0[deviceNo].endDevice.oldRxTime;
-					G7[deviceNo].endDevice.rxTime = new Date();
-					break;
-				}				
-			} else if(test1[0] == ['L']){
-				test2 = test1[12]
-				console.log(test2);
-				var groupNo = Number(test2[1]);
-				var deviceNo = Number(test2.slice(2));
-
-				var sensId = test1[1] * 100 + test1[2];
-
-				var numSensor = Number(test1[14]);
-
-				var temp0, temp1, temp2,temp3,temp4
-				temp0 =0;
-				temp1 =0;
-				temp2 =0;
-				temp3 =0;
-				temp4 =0;
-
-				if( test1[4] > 100 ) temp0 = 1;
-				if( test1[5] > 100 ) temp1 = 1;
-				if( test1[6] > 100 ) temp2 = 1;
-				if( test1[7] > 100 ) temp3 = 1;
-				if( test1[8] > 100 ) temp4 = 1;
-
-				var sensValue  = temp + temp1*2 + temp2 * 4 + temp3 * 8 + temp4 * 16; 
-
-				switch( groupNo){
-
-				case 0 : 				
-					G0[deviceNo].sens1.rxData = msg;
-					G0[deviceNo].endDevice.numSens = numSensor;
-					tempSensId1 =  G0[deviceNo].sens1.sensId;
-					tempSensId2 =  G0[deviceNo].sens2.sensId;
-					tempSensId3 =  G0[deviceNo].sens3.sensId;
-					tempSensId4 =  G0[deviceNo].sens4.sensId;
-
-					if( sensId == tempSensId1){
-						temp0 = G0[deviceNo].sens1.oldSensValue;
-						temp1 = G0[deviceNo].sens1.sensValue = sensValue;
-						G0[deviceNo].sens1.oldSensValue = temp1;
-						G0[deviceNo].sens1.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G0[deviceNo].sens1.moving = true;
-						}
-					} else if( sensId == tempSensId2){
-						temp0 = G0[deviceNo].sens2.oldSensValue;
-						temp1 = G0[deviceNo].sens2.sensValue = sensValue;
-						G0[deviceNo].sens2.oldSensValue = temp1;
-						G0[deviceNo].sens2.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G0[deviceNo].sens2.moving = true;
-						}
-					} else if( sensId == tempSensId3){
-						temp0 = G0[deviceNo].sens3.oldSensValue;
-						temp1 = G0[deviceNo].sens3.sensValue = sensValue;
-						G0[deviceNo].sens3.oldSensValue = temp1;
-						G0[deviceNo].sens3.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G0[deviceNo].sens3.moving = true;
-						}
-					} else if( sensId == tempSensId4){
-						temp0 = G0[deviceNo].sens4.oldSensValue;
-						temp1 = G0[deviceNo].sens4.sensValue = sensValue;
-						G0[deviceNo].sens4.oldSensValue = temp1;
-						G0[deviceNo].sens4.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G0[deviceNo].sens4.moving = true;
-						}
-					} else {
-						G0[deviceNo].sens1.sensId = sensId;
-						G0[deviceNo].sens1.oldSensValue = sensValue;
-						G0[deviceNo].sens1.sensValue    = sensValue;
-					}
-				
-					break;
-
-				case 1 : 				
-					G1[deviceNo].sens1.rxData = msg;
-					G1[deviceNo].endDevice.numSens = numSensor;
-					tempSensId1 =  G1[deviceNo].sens1.sensId;
-					tempSensId2 =  G1[deviceNo].sens2.sensId;
-					tempSensId3 =  G1[deviceNo].sens3.sensId;
-					tempSensId4 =  G1[deviceNo].sens4.sensId;
-
-					if( sensId == tempSensId1){
-						temp0 = G1[deviceNo].sens1.oldSensValue;
-						temp1 = G1[deviceNo].sens1.sensValue = sensValue;
-						G1[deviceNo].sens1.oldSensValue = temp1;
-						G1[deviceNo].sens1.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G1[deviceNo].sens1.moving = true;
-						}
-					} else if( sensId == tempSensId2){
-						temp0 = G1[deviceNo].sens2.oldSensValue;
-						temp1 = G1[deviceNo].sens2.sensValue = sensValue;
-						G1[deviceNo].sens2.oldSensValue = temp1;
-						G1[deviceNo].sens2.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G1[deviceNo].sens2.moving = true;
-						}
-					} else if( sensId == tempSensId3){
-						temp0 = G1[deviceNo].sens3.oldSensValue;
-						temp1 = G1[deviceNo].sens3.sensValue = sensValue;
-						G1[deviceNo].sens3.oldSensValue = temp1;
-						G1[deviceNo].sens3.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G1[deviceNo].sens3.moving = true;
-						}
-					} else if( sensId == tempSensId4){
-						temp0 = G0[deviceNo].sens4.oldSensValue;
-						temp1 = G0[deviceNo].sens4.sensValue = sensValue;
-						G1[deviceNo].sens4.oldSensValue = temp1;
-						G1[deviceNo].sens4.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G1[deviceNo].sens4.moving = true;
-						}
-					} else {
-						G1[deviceNo].sens1.sensId = sensId;
-						G1[deviceNo].sens1.oldSensValue = sensValue;
-						G1[deviceNo].sens1.sensValue    = sensValue;
-					}
-				
-					break;
-
-				case 2 : 				
-					G2[deviceNo].sens1.rxData = msg;
-					G2[deviceNo].endDevice.numSens = numSensor;
-					tempSensId1 =  G2[deviceNo].sens1.sensId;
-					tempSensId2 =  G2[deviceNo].sens2.sensId;
-					tempSensId3 =  G2[deviceNo].sens3.sensId;
-					tempSensId4 =  G2[deviceNo].sens4.sensId;
-
-					if( sensId == tempSensId1){
-						temp0 = G2[deviceNo].sens1.oldSensValue;
-						temp1 = G2[deviceNo].sens1.sensValue = sensValue;
-						G2[deviceNo].sens1.oldSensValue = temp1;
-						G2[deviceNo].sens1.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G2[deviceNo].sens1.moving = true;
-						}
-					} else if( sensId == tempSensId2){
-						temp0 = G2[deviceNo].sens2.oldSensValue;
-						temp1 = G2[deviceNo].sens2.sensValue = sensValue;
-						G2[deviceNo].sens2.oldSensValue = temp1;
-						G2[deviceNo].sens2.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G2[deviceNo].sens2.moving = true;
-						}
-					} else if( sensId == tempSensId3){
-						temp0 = G2[deviceNo].sens3.oldSensValue;
-						temp1 = G2[deviceNo].sens3.sensValue = sensValue;
-						G2[deviceNo].sens3.oldSensValue = temp1;
-						G2[deviceNo].sens3.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G2[deviceNo].sens3.moving = true;
-						}
-					} else if( sensId == tempSensId4){
-						temp0 = G2[deviceNo].sens4.oldSensValue;
-						temp1 = G2[deviceNo].sens4.sensValue = sensValue;
-						G2[deviceNo].sens4.oldSensValue = temp1;
-						G2[deviceNo].sens4.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G2[deviceNo].sens4.moving = true;
-						}
-					} else {
-						G2[deviceNo].sens1.sensId = sensId;
-						G2[deviceNo].sens1.oldSensValue = sensValue;
-						G2[deviceNo].sens1.sensValue    = sensValue;
-					}
-				
-					break;
-				case 3 : 				
-					G3[deviceNo].sens1.rxData = msg;
-					G3[deviceNo].endDevice.numSens = numSensor;
-					tempSensId1 =  G3[deviceNo].sens1.sensId;
-					tempSensId2 =  G3[deviceNo].sens2.sensId;
-					tempSensId3 =  G3[deviceNo].sens3.sensId;
-					tempSensId4 =  G3[deviceNo].sens4.sensId;
-
-					if( sensId == tempSensId1){
-						temp0 = G3[deviceNo].sens1.oldSensValue;
-						temp1 = G3[deviceNo].sens1.sensValue = sensValue;
-						G3[deviceNo].sens1.oldSensValue = temp1;
-						G3[deviceNo].sens1.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G3[deviceNo].sens1.moving = true;
-						}
-					} else if( sensId == tempSensId2){
-						temp0 = G3[deviceNo].sens2.oldSensValue;
-						temp1 = G3[deviceNo].sens2.sensValue = sensValue;
-						G3[deviceNo].sens2.oldSensValue = temp1;
-						G3[deviceNo].sens2.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G3[deviceNo].sens2.moving = true;
-						}
-					} else if( sensId == tempSensId3){
-						temp0 = G3[deviceNo].sens3.oldSensValue;
-						temp1 = G3[deviceNo].sens3.sensValue = sensValue;
-						G3[deviceNo].sens3.oldSensValue = temp1;
-						G3[deviceNo].sens3.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G3[deviceNo].sens3.moving = true;
-						}
-					} else if( sensId == tempSensId4){
-						temp0 = G3[deviceNo].sens4.oldSensValue;
-						temp1 = G3[deviceNo].sens4.sensValue = sensValue;
-						G3[deviceNo].sens4.oldSensValue = temp1;
-						G3[deviceNo].sens4.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G3[deviceNo].sens4.moving = true;
-						}
-					} else {
-						G3[deviceNo].sens1.sensId = sensId;
-						G3[deviceNo].sens1.oldSensValue = sensValue;
-						G3[deviceNo].sens1.sensValue    = sensValue;
-					}
-				
-					break;
-				case 4 : 				
-					G4[deviceNo].sens1.rxData = msg;
-					G4[deviceNo].endDevice.numSens = numSensor;
-					tempSensId1 =  G4[deviceNo].sens1.sensId;
-					tempSensId2 =  G4[deviceNo].sens2.sensId;
-					tempSensId3 =  G4[deviceNo].sens3.sensId;
-					tempSensId4 =  G4[deviceNo].sens4.sensId;
-
-					if( sensId == tempSensId1){
-						temp0 = G4[deviceNo].sens1.oldSensValue;
-						temp1 = G4[deviceNo].sens1.sensValue = sensValue;
-						G4[deviceNo].sens1.oldSensValue = temp1;
-						G4[deviceNo].sens1.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G4[deviceNo].sens1.moving = true;
-						}
-					} else if( sensId == tempSensId2){
-						temp0 = G4[deviceNo].sens2.oldSensValue;
-						temp1 = G4[deviceNo].sens2.sensValue = sensValue;
-						G4[deviceNo].sens2.oldSensValue = temp1;
-						G4[deviceNo].sens2.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G4[deviceNo].sens2.moving = true;
-						}
-					} else if( sensId == tempSensId3){
-						temp0 = G4[deviceNo].sens3.oldSensValue;
-						temp1 = G4[deviceNo].sens3.sensValue = sensValue;
-						G4[deviceNo].sens3.oldSensValue = temp1;
-						G4[deviceNo].sens3.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G4[deviceNo].sens3.moving = true;
-						}
-					} else if( sensId == tempSensId4){
-						temp0 = G4[deviceNo].sens4.oldSensValue;
-						temp1 = G4[deviceNo].sens4.sensValue = sensValue;
-						G4[deviceNo].sens4.oldSensValue = temp1;
-						G4[deviceNo].sens4.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G4[deviceNo].sens4.moving = true;
-						}
-					} else {
-						G4[deviceNo].sens1.sensId = sensId;
-						G4[deviceNo].sens1.oldSensValue = sensValue;
-						G4[deviceNo].sens1.sensValue    = sensValue;
-					}
-				
-					break;
-				case 5 : 				
-					G5[deviceNo].sens1.rxData = msg;
-					G5[deviceNo].endDevice.numSens = numSensor;
-					tempSensId1 =  G5[deviceNo].sens1.sensId;
-					tempSensId2 =  G5[deviceNo].sens2.sensId;
-					tempSensId3 =  G5[deviceNo].sens3.sensId;
-					tempSensId4 =  G5[deviceNo].sens4.sensId;
-
-					if( sensId == tempSensId1){
-						temp0 = G5[deviceNo].sens1.oldSensValue;
-						temp1 = G5[deviceNo].sens1.sensValue = sensValue;
-						G5[deviceNo].sens1.oldSensValue = temp1;
-						G5[deviceNo].sens1.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G5[deviceNo].sens1.moving = true;
-						}
-					} else if( sensId == tempSensId2){
-						temp0 = G5[deviceNo].sens2.oldSensValue;
-						temp1 = G5[deviceNo].sens2.sensValue = sensValue;
-						G5[deviceNo].sens2.oldSensValue = temp1;
-						G5[deviceNo].sens2.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G5[deviceNo].sens2.moving = true;
-						}
-					} else if( sensId == tempSensId3){
-						temp0 = G5[deviceNo].sens3.oldSensValue;
-						temp1 = G5[deviceNo].sens3.sensValue = sensValue;
-						G5[deviceNo].sens3.oldSensValue = temp1;
-						G5[deviceNo].sens3.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G5[deviceNo].sens3.moving = true;
-						}
-					} else if( sensId == tempSensId4){
-						temp0 = G5[deviceNo].sens4.oldSensValue;
-						temp1 = G5[deviceNo].sens4.sensValue = sensValue;
-						G5[deviceNo].sens4.oldSensValue = temp1;
-						G5[deviceNo].sens4.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G5[deviceNo].sens4.moving = true;
-						}
-					} else {
-						G5[deviceNo].sens1.sensId = sensId;
-						G5[deviceNo].sens1.oldSensValue = sensValue;
-						G5[deviceNo].sens1.sensValue    = sensValue;
-					}
-				
-					break;
-				case 6 : 				
-					G6[deviceNo].sens1.rxData = msg;
-					G6[deviceNo].endDevice.numSens = numSensor;
-					tempSensId1 =  G6[deviceNo].sens1.sensId;
-					tempSensId2 =  G6[deviceNo].sens2.sensId;
-					tempSensId3 =  G6[deviceNo].sens3.sensId;
-					tempSensId4 =  G6[deviceNo].sens4.sensId;
-
-					if( sensId == tempSensId1){
-						temp0 = G6[deviceNo].sens1.oldSensValue;
-						temp1 = G6[deviceNo].sens1.sensValue = sensValue;
-						G6[deviceNo].sens1.oldSensValue = temp1;
-						G6[deviceNo].sens1.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G6[deviceNo].sens1.moving = true;
-						}
-					} else if( sensId == tempSensId2){
-						temp0 = G6[deviceNo].sens2.oldSensValue;
-						temp1 = G6[deviceNo].sens2.sensValue = sensValue;
-						G6[deviceNo].sens2.oldSensValue = temp1;
-						G6[deviceNo].sens2.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G6[deviceNo].sens2.moving = true;
-						}
-					} else if( sensId == tempSensId3){
-						temp0 = G6[deviceNo].sens3.oldSensValue;
-						temp1 = G6[deviceNo].sens3.sensValue = sensValue;
-						G6[deviceNo].sens3.oldSensValue = temp1;
-						G6[deviceNo].sens3.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G6[deviceNo].sens3.moving = true;
-						}
-					} else if( sensId == tempSensId4){
-						temp0 = G6[deviceNo].sens4.oldSensValue;
-						temp1 = G6[deviceNo].sens4.sensValue = sensValue;
-						G6[deviceNo].sens4.oldSensValue = temp1;
-						G6[deviceNo].sens4.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G6[deviceNo].sens4.moving = true;
-						}
-					} else {
-						G6[deviceNo].sens1.sensId = sensId;
-						G6[deviceNo].sens1.oldSensValue = sensValue;
-						G6[deviceNo].sens1.sensValue    = sensValue;
-					}
-				
-					break;
-				case 7 : 				
-					G7[deviceNo].sens1.rxData = msg;
-					G7[deviceNo].endDevice.numSens = numSensor;
-					tempSensId1 =  G7[deviceNo].sens1.sensId;
-					tempSensId2 =  G7[deviceNo].sens2.sensId;
-					tempSensId3 =  G7[deviceNo].sens3.sensId;
-					tempSensId4 =  G7[deviceNo].sens4.sensId;
-
-					if( sensId == tempSensId1){
-						temp0 = G7[deviceNo].sens1.oldSensValue;
-						temp1 = G7[deviceNo].sens1.sensValue = sensValue;
-						G7[deviceNo].sens1.oldSensValue = temp1;
-						G7[deviceNo].sens1.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G7[deviceNo].sens1.moving = true;
-						}
-					} else if( sensId == tempSensId2){
-						temp0 = G7[deviceNo].sens2.oldSensValue;
-						temp1 = G7[deviceNo].sens2.sensValue = sensValue;
-						G7[deviceNo].sens2.oldSensValue = temp1;
-						G7[deviceNo].sens2.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G7[deviceNo].sens2.moving = true;
-						}
-					} else if( sensId == tempSensId3){
-						temp0 = G7[deviceNo].sens3.oldSensValue;
-						temp1 = G7[deviceNo].sens3.sensValue = sensValue;
-						G7[deviceNo].sens3.oldSensValue = temp1;
-						G7[deviceNo].sens3.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G7[deviceNo].sens3.moving = true;
-						}
-					} else if( sensId == tempSensId4){
-						temp0 = G7[deviceNo].sens4.oldSensValue;
-						temp1 = G7[deviceNo].sens4.sensValue = sensValue;
-						G7[deviceNo].sens4.oldSensValue = temp1;
-						G7[deviceNo].sens4.sensValue = sensValue;
-						if( temp0 != temp1 ){
-							G7[deviceNo].sens4.moving = true;
-						}
-					} else {
-						G7[deviceNo].sens1.sensId = sensId;
-						G7[deviceNo].sens1.oldSensValue = sensValue;
-						G7[deviceNo].sens1.sensValue    = sensValue;
-					}
-				
-					break;
-				}
-					
-				if( 
-
-				var data ={ x: 0,y:0};
- 				var test2 = test1[12];
-				console.log(test2);
-
-				} else if 
-
-
-
-				G2[test3].mastCtrl.rxData = msg;
-				console.log(G2[test3].mastCtrl.rxData);
-				var test3 = Number(test2.slice(2));
-				
-
-/*			
-
-			if( test2[0] === 'G'){
-				var test3 = Number(test2.slice(2));
-				var test4 = Number(test2[1]); // group number
-				if((test4 < 0) AND ( test4 > 9){
-					// not number 
-				} else{
-					GroupId = test4;
-					
-*/				
-}
-
-				
-
-			} else if( test2[0] === 'C'){
-				var test3 = Number(test2.slice(2));
-				//console.log(test3);
-				G2[test3].mastCtrl.rxData = msg;
-				console.log(G2[test3].mastCtrl.rxData);
-
-				io.to('sensornet').emit('reserve',{
-					x: test3,
-					y: 2
-				});
 			
-			} else {
-				console.log("Invalid Sensor Number");
+			if(( tmp1[0] === M )&&(tmp1[16][0]==='G')){
+/*
+M, version, group#, sensor#, MY, MP, SH, SL, DH, DL, %V, solar Volt, battery Volt, coreTemp, chip volt, 
+	DB,NI, packet ID, number of sensors
+Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,2\r\n   
+*/
+				var groupNo = Number(tmp1[16][1]);
+				var distId = tmp1[16][2] * 10 + tmp1[16][3]*1;
+
+				var timeNow = new Date();
+				var timeSaved = WSNT[groupNo][distId].rxTime;  
+				if( timeSaved == 0){ 
+					WSNT[groupNo][distId].endDevice.rxPeriod =0;
+				} else {
+					var a_min = (timeNow.getTime() - timeSaved.getTime())/1000/60;						
+					WSNT[groupNo][distId].endDevice.rxPeriod = a_min;	// saved minute
+				}	
+				WSNT[groupNo][distId].endDevice.oldRxTime = timeSaved; 
+				WSNT[groupNo][distId].endDevice.rxTime	  = timeNow;  
+				
+				WSNT[groupNo][distId].endDevice.rxData = msg;  
+				WSNT[groupNo][distId].endDevice.numSens = tmp1[19];  
+
+			} else if( (tmp1[0] === 'L')&&(temp[12][0]==='G')){
+				// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
+
+				var rxGroupId = Number(tmp1[12][1]);
+				var rxDistId = tmp1[12][2] * 10 + tmp1[12][3]*1;
+				var rxSensId = tmp1[1]*100 + temp1[2]*1;
+				var rxSensNum = tmp1[14] *1;
+
+				var rxStatus = [1,1,1,1,1];
+				for( var i = 0 ; i < 5 ; i++){
+					if( tmp1[4+i] < 100) rxStatus[i] = 0;
+				}
+
+				var notExistId = true;
+
+				for ( var i = 0 ; i < rxSensNum ; i ++ ){  // must be added coding case not equal table of sensor number
+
+					var sensIdSaved = WSNT[rxGroupId][distId].sens.sensor[i].sensId;  
+
+					if( sensIdSaved === rxSensId){
+
+						notExistId = false;						
+						statusSaved = WSNT[rxGroupId][distId].sens.sensor[i].status;
+						savedDate   = WSNT[rxGroupId][distId].sens.sensor[i].elapsed;
+						nowDate     = new Date();
+
+						WSNT[groupNo][distId].sens.sensor[i].rxData = msg;
+						WSNT[groupNo][distId].sens.sensor[i].oldStatus = statusSaved;
+						WSNT[groupNo][distId].sens.sensor[i].status = rxStatus;						
+
+						//     find algorithm
+						if( rxStatus !=  statusSaved ){
+//--- sens moving 						
+							WSNT[groupNo][distId].sens.sensor[i].elapsed = nowDate();
+							WSNT[groupNo][distId].sens.sensor[i].moving = true;
+
+							var j = 0;
+							do{
+								if ( WSNT[groupNo][distId].sens.sensor[j].moving == false) break;
+								j ++;
+							} while ( j < rxSensNum );
+							
+							if( j >= rxSensNum ){
+//--- send nomal operation signal
+								WSNT[groupNo][distId].endDevice.isGood = true;
+								io.to('sensornet').emit('moving',{x: rxSensId, y:rxGroupId});
+							}
+							break;
+						} else {
+
+							time = dateNow.getTime();
+							savedTime = saveDate.getTime();
+
+							elapsed = (time - savedTime())/1000/60/60;  // change to hour
+ 							
+							if(elapsed > 48 ){ 
+//--- sens stalled for 2 days 
+								WSNT[groupNo][distId].sens.sensor[i].moving == false);
+								WSNT[groupNo][distId].endDevice.isGood == false);
+								io.to('sensornet').emit('stalled',{x: rxSensId, y:rxGroupId});
+							}
+						}	
+					}
+				}  
+				
+				// first rx sensor data
+				if( notExistId == true){
+					for ( var i = 0 ; i < rxSensNum ; i ++ ){  
+						// must be added coding case not equal 0 for all sensor id.
+						var sensIdSaved = WSNT[rxGroupId][distId].sens.sensor[i].sensId;  
+						if( sensIdSaved == 0){
+							WSNT[groupNo][distId].sens.sensor[i].sensId = rxSensId;
+							WSNT[groupNo][distId].sens.sensor[i].rxData = msg;
+							WSNT[groupNo][distId].sens.sensor[i].status = rxStatus;
+						}
+					}						
+					WSNT[groupNo][distId].endDevice.isGood = true;
+					io.to('sensornet').emit('rxSensMsg',{x: rxSensId, y:rxGroupId});
+				}
 			}
-		}		
-	});
+		}
+		cach
+	});		
 
 	socket.on('reserve',function(data){
 		console.log("Receive from html",data);
 		//socket.emit('activ',data);
+/*
 		socket.emit('reserve',{
 			x : 10,
 			y : 2
 		});
+*/
 	});	
+
 });
 //--- end of codinater data
