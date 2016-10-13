@@ -87,6 +87,7 @@ io.on('connection',function(socket){
 	
 	socket.on('CH0',function(from,msg){
 		var tmp1 = msg.split(",");
+
 		try{
 			if(( tmp1[0] === 'M' )&&(tmp1[16][0]==='G')){
 /*
@@ -95,7 +96,7 @@ M, version, group#, sensor#, MY, MP, SH, SL, DH, DL, %V, solar Volt, battery Vol
 Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,2\r\n   
 */
 				var rxGroupId = Number(tmp1[16][1]);
-				var rxDistId = tmp1[16][2] * 10 + tmp1[16][3]*1;
+				var rxDistId = tmp1[16][2] * 10 + tmp1[16][3]*1 - 1;
 
 				var timeNow = new Date();
 				var timeSaved = WSNT[rxGroupId][rxDistId].endDevice.rxTime;  
@@ -110,11 +111,15 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 				WSNT[rxGroupId][rxDistId].endDevice.rxData = msg;  
 				WSNT[rxGroupId][rxDistId].endDevice.numSens = tmp1[19];  
 
-			} else if( (tmp1[0] === 'L')&&(tmp1[12][0]==='G')){
+				io.to('sensornet').emit('received',{x: rxDistId, y:rxGroupId});
+
+				console.log( ' emit 1 ');
+
+			}else if(( tmp1[0] === 'L') && (tmp1[12][0] === 'G')){
 				// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
 
 				var rxGroupId = Number(tmp1[12][1]);
-				var rxDistId = tmp1[12][2] * 10 + tmp1[12][3]*1;
+				var rxDistId = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
 				var rxSensId = tmp1[1]*100 + tmp1[2]*1;
 				var rxSensNum = tmp1[14] *1;
 
@@ -122,6 +127,9 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 				for( var i = 0 ; i < 5 ; i++){
 					if( tmp1[4+i] < 100) rxStatus[i] = 0;
 				}
+
+				io.to('sensornet').emit('received',{x: rxDistId, y:rxGroupId});
+				console.log( ' emit 2 ');
 
 				var notExistId = true;
 
@@ -157,7 +165,7 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 							if( j >= rxSensNum ){
 //--- send nomal operation signal
 								WSNT[rxGroupId][rxDistId].endDevice.status = 1;
-								io.to('sensornet').emit('moving',{x: rxDistId, y:rxGroupId});
+								io.to('sensornet').emit('moved',{x: rxDistId, y:rxGroupId});
 								break;
 							}
 						} else {
@@ -189,7 +197,7 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 						}
 					}						
 					WSNT[rxGroupId][rxDistId].endDevice.status = 0;
-					io.to('sensornet').emit('rxSensMsg',{x: rxDistId, y:rxGroupId});
+					io.to('sensornet').emit('received',{x: rxDistId, y:rxGroupId});
 				}
 			}
 		}

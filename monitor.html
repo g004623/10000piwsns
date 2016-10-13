@@ -18,9 +18,9 @@
 					{ x: new Date(2010, 0, 23), y: 970 }
 					];
 
-		var dps2= dsp1;
-		var dps3= dsp1;
-		var dps4= dsp1;
+		var dps2= dps1;
+		var dps3= dps1;
+		var dps4= dps1;
 
 		window.onload = function () {
 			var chart = new CanvasJS.Chart("chartContainer", {
@@ -33,47 +33,18 @@
 				theme: "theme2",
 				axisY: { gridColor: "Silver", tickColor: "silver"},
 				legend: { verticalAlign: "center", horizontalAlign: "right"	},
-				data: [	{
-					type: "line",
-					showInLegend: true,
-					lineThickness: 2,
-					name: "Sensor1",
-					markerType: "triangle",
-					color: "#9400D3",
-					dataPoints: dps1 
-				},
-				{	type: "line",
-					showInLegend: true,
-					lineThickness: 2,
-					name: "Sensor2",
-					markerType: "square",
-					color: "#FFC800",
-					dataPoints: dps2
-				},
-				{	type: "line",
-					showInLegend: true,
-					lineThickness: 2,
-					name: "Sensor3",
-					markerType: "circle",
-					color: "#F08080",
-					dataPoints: dps3
-				},
-				{	type: "line",
-					showInLegend: true,
-					name: "Sensor4",
-					markerType: "cross",
-					color: "#20B2AA",
-					lineThickness: 2,
-					dataPoints: dps4
-				}
-				],
-				legend: {
-					cursor: "pointer",
-					itemclick: function (e) {
+				data: [	{type: "line", showInLegend: true, lineThickness: 2, name: "Sensor1",
+					markerType: "triangle",	color: "#9400D3", dataPoints: dps1 },
+				{	type: "line", showInLegend: true, lineThickness: 2, name: "Sensor2",
+					markerType: "square", color: "#FFC800", dataPoints: dps2 },
+				{	type: "line", showInLegend: true, lineThickness: 2, name: "Sensor3",
+					markerType: "circle", color: "#F08080", dataPoints: dps3 },
+				{	type: "line", showInLegend: true, name: "Sensor4", markerType: "cross",
+					color: "#20B2AA", lineThickness: 2, dataPoints: dps4 }],
+				legend: { cursor: "pointer", itemclick: function (e) {
 						if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
 							e.dataSeries.visible = false;
-						} else {
-							e.dataSeries.visible = true;
+						} else { e.dataSeries.visible = true;
 						}
 						chart.render();
 					}
@@ -92,10 +63,12 @@
 		header h1{ text-align: center; 	}
 		header h2{ text-align: center;	}
 
-		#tablecontain{ position: absolute;
+		#tablecontainer{ position: absolute;
 			width: 1250px;
 			height: 275px; border : 1px solid black;}	
-		
+	
+		#subTitle{ position : relative; top: 0px; left:0px;}
+
 		aside{ font-size	: 14px; display	: block; width: 175px; height: 250px; float: left; margin-top: 5px;
 			margin-left : 5px;}
 
@@ -106,14 +79,14 @@
 
 		table, th, td { border-collapse: collapse;}
 
-		#div1{position: absolute; top : 185px; left: 190px; }
+		#div1{position: absolute; top : 5px; left: 180px; }
 		.sensornumber div{ float:left; border-collapse: collapse;
 			font-size: 1em; font-weight: bold; color: white; text-align: center; margin: 2px ; 
-			width : 25px; height: 25px; border-radius : 3px; background-color: red;	}
+			width : 25px; height: 25px; border-radius : 3px; background-color: darkgray;	}
 
 		section{ margin-top  : 30px; margin-left : 10px; padding: 6px; }
 
-		footer{	font-size: 14px; display: inline-block; }
+		footer{	positon: relative; font-size: 14px; display: inline-block; }
 
 		address{		}
 
@@ -124,6 +97,8 @@
 		.init{ background: gray; }
 		.moved{background: green;}
 		.stalled{background: red;}
+		.signalOn1{background: blue;}
+		.signalOn2{background: lightblue;}
 
 	</style>
 
@@ -132,28 +107,28 @@
 
 	<script>
 		var socket = io.connect('http://192.168.0.20:7532');
-		
-		socket.on('reserve',function( data ) {
-				var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-				$target.removeClass('enable');
-				$target.addClass('nosignal');
+		var signalToggle = true;
+		socket.on('stalled',function( data ) {
+			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+			$target.removeClass('init moving').addClass('stalled');
 			console.log("reserve return");
 		});
-		socket.on('activ',function( data ) {
-				var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-				$target.removeClass('enable');
-				$target.addClass('faulty');
-				console.log("reserve return");
+		socket.on('moved',function( data ) {
+			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+			$target.removeClass('init stalled').addClass('moved');
+		});
+		socket.on('received',function( data ) {
+			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+			if( signalToggle == true){
+				signalToggle = false;
+				$target.removeClass('init stalled moved signalOn1').addClass('signalOn2');
+			} else{
+				signalToggle = true;
+				$target.removeClass('init stalled moved signalOn2').addClass('signalOn1');
+			}
+			console.log("received On");
 		});
 		
-		socket.on('debug1',function( data ) {
-			console.log("debug1 return");
-			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-			$target.removeClass('enable');
-			$target.removeClass('nosigal');
-			$target.removeClass('faulty');
-			$target.addClass('activated');
-		});
 	</script>
 
 	<script>		
@@ -177,7 +152,7 @@
 			$.getJSON('/wsnObj', { dummy: new Date().getTime() }, function(wsnObj){
 			
 			// Creat Seat
-				$.each(wnsObj, function (groupId, endDeviceGroup ) {
+				$.each(wsnObj, function (groupId, endDeviceGroup ) {
 					// Create Document object
 					var $line = $('<div></div>').addClass('line');
 					$.each(endDeviceGroup, function( deviceId, sensCtrl ){
@@ -233,16 +208,16 @@
 	</header>
 
 
-   	<div id="sub1">
-	    	<div class = "content2">
-	    		<div>
-	    			<div> [ Ship's name : HD10000    ] &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp [ Lubrication part : Crane ]   [Inspection date : 2016.07.01]</div>  
+   	<div id="subTitle">
+	    <div class = "content2">
+	    	<div>
+	    		<div> [ Ship's name : HD10000    ] &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp [ Lubrication part : Crane ]   [Inspection date : 2016.07.01]</div>  
 				<div id="txt"></div>
-	    		</div>
 	    	</div>
-    	</div> 
+	    </div> 
+	</div>
 
-	<div id="tablecontain">
+	<div id="tablecontainer">
    	<aside> 
    		<table id="tbthsensor">
    			<tr>	<th>LOC. PART</th><th> PMP/S NO </th> </tr>	
@@ -255,7 +230,7 @@
 	 		<tr>	<th>NO.3</th>	</tr>
 	 		<tr>	<th>A-PORT</th><th>NO.1</th> </tr>
 	 		<tr>	<th>A-STBD</th><th>NO.1</th> </tr>
-	    	</table>
+	    </table>
 	</aside>
 
 
@@ -271,7 +246,6 @@
 	</div>
 	
 
-	<div id="chartContainer" style="height: 400px; width: 100%;"></div>
 
 	<footer>		
 		<address>
@@ -281,7 +255,7 @@
 	</footer>
 	<p id="demo">Test socket.io.</p>
 </wrapper>
-
+	<div id="chartContainer" style="position :relative;top:300px;left:0; height: 200px; width: 90%;"></div>
 </body>
 
 </html>
