@@ -37,10 +37,6 @@ for ( i = 0 ; i < 8 ; i ++ ){
 			sens : sensor
 		});
 	}
-	//--- init number of sensor in endDevice.
-//	for ( var j = 0 ; j < count ; j ++){
-//		 WSNT[i][j].endDevice.numSens = arrySensNo[i][j];
-//	}	
 }
 
 var mongoose = require('mongoose');
@@ -85,7 +81,7 @@ io.on('connection',function(socket){
 	
 	// socket.emit('news',{hello:'world'});
 	
-	socket.on('CH0',function(from,msg){
+	socket.on('CH0',function(from,msg){  // from backstay
 		var tmp1 = msg.split(",");
 
 		try{

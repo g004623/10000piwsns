@@ -1,60 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
-	<script type="text/javascript">
-
-		var dps1= [
-					{ x: new Date(2010, 0, 3), y: 740 },
-					{ x: new Date(2010, 0, 5), y: 600 },
-					{ x: new Date(2010, 0, 7), y: 710 },
-					{ x: new Date(2010, 0, 9), y: 658 },
-					{ x: new Date(2010, 0, 11), y: 734 },
-					{ x: new Date(2010, 0, 13), y: 963 },
-					{ x: new Date(2010, 0, 15), y: 747 },
-					{ x: new Date(2010, 0, 17), y: 853 },
-					{ x: new Date(2010, 0, 19), y: 869 },
-					{ x: new Date(2010, 0, 21), y: 943 },
-					{ x: new Date(2010, 0, 23), y: 970 }
-					];
-
-		var dps2= dps1;
-		var dps3= dps1;
-		var dps4= dps1;
-
-		window.onload = function () {
-			var chart = new CanvasJS.Chart("chartContainer", {
-				title: { text: "Site Traffic", fontSize: 30	},
-				animationEnabled: true,
-				axisX: { gridColor: "Silver",
-					tickColor: "silver",
-					valueFormatString: "DD/MMM"},
-				toolTip: { shared: true	},
-				theme: "theme2",
-				axisY: { gridColor: "Silver", tickColor: "silver"},
-				legend: { verticalAlign: "center", horizontalAlign: "right"	},
-				data: [	{type: "line", showInLegend: true, lineThickness: 2, name: "Sensor1",
-					markerType: "triangle",	color: "#9400D3", dataPoints: dps1 },
-				{	type: "line", showInLegend: true, lineThickness: 2, name: "Sensor2",
-					markerType: "square", color: "#FFC800", dataPoints: dps2 },
-				{	type: "line", showInLegend: true, lineThickness: 2, name: "Sensor3",
-					markerType: "circle", color: "#F08080", dataPoints: dps3 },
-				{	type: "line", showInLegend: true, name: "Sensor4", markerType: "cross",
-					color: "#20B2AA", lineThickness: 2, dataPoints: dps4 }],
-				legend: { cursor: "pointer", itemclick: function (e) {
-						if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-							e.dataSeries.visible = false;
-						} else { e.dataSeries.visible = true;
-						}
-						chart.render();
-					}
-				}
-			});
-			chart.render();
-		}
-	</script>
-
-
 	<meta charset="utf-8">
 	<title>Auto Grease Monitor</title>
     	<style>
@@ -63,12 +9,55 @@
 		header h1{ text-align: center; 	}
 		header h2{ text-align: center;	}
 
-		#tablecontainer{ position: absolute;
+		#tablecontainer{
+		    position: relative;
+			top: 35px;
 			width: 1250px;
-			height: 275px; border : 1px solid black;}	
+			height: 275px;
+			border : 1px solid black;}	
 	
-		#subTitle{ position : relative; top: 0px; left:0px;}
+		#subTitle{ position : relative; top:35px; left:0px; }
+		#txt {
+				position: relative;
+				top: 0px;
+				left: 1190px
+			}
+		#wrap1{
+				 position : relative;
+				 top: 40px;
+				 left: 0px;
+				 border: 1px solid black; }
 
+	    #right_div1{
+				 position : relative; 
+			 	 top: 10px;
+				 left: 908px;
+				 border: 1px solid black;
+				 padding: 15px;
+			 }
+		#left_div1{
+				 position : relative;
+				 top: -202px;
+				 left :10px;
+				 border: 1px solid  black;
+				 padding: 15px;		 
+			 }
+	    #right_div2{
+				 position : relative; 
+			 	 top: -192px;
+				 left: 908px;
+				 border: 1px solid black;
+				 padding: 15px;
+			 }
+
+	
+		#left_div2{
+				 position : relative;
+				 top: -404px;
+				 left :10px;
+				 border: 1px solid  black;
+				 padding: 15px;		 
+			 }
 		aside{ font-size	: 14px; display	: block; width: 175px; height: 250px; float: left; margin-top: 5px;
 			margin-left : 5px;}
 
@@ -86,7 +75,7 @@
 
 		section{ margin-top  : 30px; margin-left : 10px; padding: 6px; }
 
-		footer{	positon: relative; font-size: 14px; display: inline-block; }
+
 
 		address{		}
 
@@ -100,7 +89,77 @@
 		.signalOn1{background: blue;}
 		.signalOn2{background: lightblue;}
 
+		#test1{ position: relative; top: 40px;  font-size: 14px; display:  text-align: center;  }
+
 	</style>
+<!-- start of goole gauge --> 
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+	google.charts.load('current', {'packages':['bar']});
+	google.charts.setOnLoadCallback(drawStuff);
+	
+	function drawStuff() {
+		var data = new google.visualization.arrayToDataTable([
+			['Move', 'percentage'],
+			["Lube1",100],
+			["Lube2", 80],
+			["Lube3",  0],
+			["Lube4", 80],
+		]);
+
+		var option = {
+			totle: 'chess opening moves',
+			width: 300,
+			legend: { position: 'none' },
+			axes: {
+			x : {
+				0: { side: 'top', label: ''}
+			    	}
+				},
+				bar : { groupWidth: "20%" }
+			};
+
+			var chart = new google.charts.Bar(document.getElementById('right_div1'));
+
+			chart.draw(data, google.charts.Bar.convertOptions(option));
+			};
+</script>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+	google.charts.load('current', {'packages':['bar']});
+	google.charts.setOnLoadCallback(drawStuff);
+	
+	function drawStuff() {
+		var data = new google.visualization.arrayToDataTable([
+			['Move', 'percentage'],
+			["eunwho", 30],
+			["eunwho", 46],
+			["eunwho",100],
+			["eunwho", 20],
+		]);
+
+		var option = {
+			totle: 'chess opening moves',
+			width: 300,
+			legend: { position: 'none' },
+			axes: {
+			x : {
+				0: { side: 'top', label: ''}
+			    	}
+				},
+				bar : { groupWidth: "20%" }
+			};
+
+			var chart = new google.charts.Bar(document.getElementById('right_div2'));
+
+			chart.draw(data, google.charts.Bar.convertOptions(option));
+			};
+</script>
+<!-- end of goole gauge --> 
+
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
@@ -196,6 +255,8 @@
 		    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
 		    return i;
 		}
+
+
 	</script>
 
 <body onload="startTime()">
@@ -237,25 +298,133 @@
 	<div id="div1">
 		<div class= "sensornumber">
 			<div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div><div>25</div><div>26</div><div>27</div><div>28</div><div>29</div><div>30</div><div>31</div><div>32</div><div>33</div><div>34</div><div>35</div><div>36</div>
-		</div>
-	</div>	
+			</div>
+		</div>	
 
- 	<section>
-	</section>
-	
+ 		<section>
+		</section>
 	</div>
 	
-
-
-	<footer>		
-		<address>
-			<p> eunwho@naver.com </p>
-		</address>
-		<p> tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2016 Eunwho Power Electonics </p>
-	</footer>
-	<p id="demo">Test socket.io.</p>
 </wrapper>
-	<div id="chartContainer" style="position :relative;top:300px;left:0; height: 200px; width: 90%;"></div>
+
+	<div id="wrap1" style="width: 1250px; height: 455px;">	
+			<div id="right_div1" style="width: 300px; height: 180px;"></div>
+			<div id="left_div1" style="width: 855px; height: 180px;">
+				 	<table border="1" width="850" height="180">
+						<tr align="center">
+							<td width="85">version</td>
+							<td width="85">&nbsp;</td>
+							<td width="85">group#</td>
+							<td width="85">&nbsp;</td>
+							<td width="85">sensor#</td>
+							<td width="85">&nbsp;</td>
+							<td width="85">MY</td>
+							<td width="85">&nbsp;</td>
+							<td width="85">MP</td>
+							<td width="85">&nbsp;</td>
+						</tr>
+						<tr align="center">
+							<td>SH</td>
+							<td>&nbsp;</td>
+							<td>SL</td>
+							<td>&nbsp;</td>
+							<td>DH</td>
+							<td>&nbsp;</td>
+							<td>DL</td>
+							<td>&nbsp;</td>
+							<td>%V</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr align="center">
+							<td>solar Volt</td>
+							<td>&nbsp;</td>
+							<td>bettery Volt</td>
+							<td>&nbsp;</td>
+							<td>coreTemp</td>
+							<td>&nbsp;</td>
+							<td>chip Volt</td>
+							<td>&nbsp;</td>
+							<td>DB</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr align="center">
+							<td>NI</td>
+							<td>&nbsp;</td>
+							<td>Packet ID</td>
+							<td>&nbsp;</td>
+							<td>number of sensors</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+						</tr>
+					</table>
+				 </div>
+			<div id="right_div2" style="width: 300px; height: 180px;"></div>
+			<div id="left_div2" style="width: 855px; height: 180px;">
+					<table border="1" width="850" height="180" >
+						<tr align="center">
+							<td width="85">version</td>
+							<td width="85">&nbsp;</td>
+							<td width="85">group#</td>
+							<td width="85">&nbsp;</td>
+							<td width="85">sensor#</td>
+							<td width="85">&nbsp;</td>
+							<td width="85">MY</td>
+							<td width="85">&nbsp;</td>
+							<td width="85">MP</td>
+							<td width="85">&nbsp;</td>
+						</tr>
+						<tr align="center">
+							<td>SH</td>
+							<td>&nbsp;</td>
+							<td>SL</td>
+							<td>&nbsp;</td>
+							<td>DH</td>
+							<td>&nbsp;</td>
+							<td>DL</td>
+							<td>&nbsp;</td>
+							<td>%V</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr align="center">
+							<td>solar Volt</td>
+							<td>&nbsp;</td>
+							<td>bettery Volt</td>
+							<td>&nbsp;</td>
+							<td>coreTemp</td>
+							<td>&nbsp;</td>
+							<td>chip Volt</td>
+							<td>&nbsp;</td>
+							<td>DB</td>
+							<td>&nbsp;</td>
+						</tr>
+						<tr align="center">
+							<td>NI</td>
+							<td>&nbsp;</td>
+							<td>Packet ID</td>
+							<td>&nbsp;</td>
+							<td>number of sensors</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+							<td>&nbsp;</td>
+						</tr>
+					</table>										
+			</div>
+ 	 	 </div>	
+	<div id="test1">		
+	
+		<p> eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2016 Eunwho Power Electonics </p>
+	
+	</div>
+
 </body>
 
 </html>
+
+
+	
+
