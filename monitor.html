@@ -2,109 +2,23 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="/app.css" media="all">
 	<title>Auto Grease Monitor</title>
-    	<style>
-		#warpper{ width: 1200px; height:1000px;}	
-		header{	width: 65%;	height: 70px;}
-		header h1{ text-align: center; 	}
-		header h2{ text-align: center;	}
 
-		#tablecontainer{
-		    position: relative;
-			top: 35px;
-			width: 1250px;
-			height: 275px;
-			border : 1px solid black;}	
-	
-		#subTitle{ position : relative; top:35px; left:0px; }
-		#txt {
-				position: relative;
-				top: 0px;
-				left: 1190px
-			}
-		#wrap1{
-				 position : relative;
-				 top: 40px;
-				 left: 0px;
-				 border: 1px solid black; }
-
-	    #right_div1{
-				 position : relative; 
-			 	 top: 10px;
-				 left: 908px;
-				 border: 1px solid black;
-				 padding: 15px;
-			 }
-		#left_div1{
-				 position : relative;
-				 top: -202px;
-				 left :10px;
-				 border: 1px solid  black;
-				 padding: 15px;		 
-			 }
-	    #right_div2{
-				 position : relative; 
-			 	 top: -192px;
-				 left: 908px;
-				 border: 1px solid black;
-				 padding: 15px;
-			 }
-
-	
-		#left_div2{
-				 position : relative;
-				 top: -404px;
-				 left :10px;
-				 border: 1px solid  black;
-				 padding: 15px;		 
-			 }
-		aside{ font-size	: 14px; display	: block; width: 175px; height: 250px; float: left; margin-top: 5px;
-			margin-left : 5px;}
-
-		aside table, th{ border-collapse: collapse; border: 1px solid black;
-		    padding: 5px; text-align: center;}
-
-		article{}
-
-		table, th, td { border-collapse: collapse;}
-
-		#div1{position: absolute; top : 5px; left: 180px; }
-		.sensornumber div{ float:left; border-collapse: collapse;
-			font-size: 1em; font-weight: bold; color: white; text-align: center; margin: 2px ; 
-			width : 25px; height: 25px; border-radius : 3px; background-color: darkgray;	}
-
-		section{ margin-top  : 30px; margin-left : 10px; padding: 6px; }
-
-
-
-		address{		}
-
-		.line {overflow: hidden;}
-	
-		.seat{	margin: 2px ; float: left; width : 25px; height: 25px; border-radius : 3px;	}
-
-		.init{ background: gray; }
-		.moved{background: green;}
-		.stalled{background: red;}
-		.signalOn1{background: blue;}
-		.signalOn2{background: lightblue;}
-
-		#test1{ position: relative; top: 40px;  font-size: 14px; display:  text-align: center;  }
-
-	</style>
 <!-- start of goole gauge --> 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script type="text/javascript">
 	google.charts.load('current', {'packages':['bar']});
 	google.charts.setOnLoadCallback(drawStuff);
+	google.charts.setOnLoadCallback(drawStuff2);
 	
 	function drawStuff() {
 		var data = new google.visualization.arrayToDataTable([
 			['Move', 'percentage'],
 			["Lube1",100],
 			["Lube2", 80],
-			["Lube3",  0],
+			["Lube3", 10],
 			["Lube4", 80],
 		]);
 
@@ -123,22 +37,16 @@
 			var chart = new google.charts.Bar(document.getElementById('right_div1'));
 
 			chart.draw(data, google.charts.Bar.convertOptions(option));
-			};
-</script>
+	};
 
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-<script type="text/javascript">
-	google.charts.load('current', {'packages':['bar']});
-	google.charts.setOnLoadCallback(drawStuff);
 	
-	function drawStuff() {
+	function drawStuff2() {
 		var data = new google.visualization.arrayToDataTable([
 			['Move', 'percentage'],
-			["eunwho", 30],
-			["eunwho", 46],
-			["eunwho",100],
-			["eunwho", 20],
+			["Lube1", 60],
+			["Lube2", 60],
+			["Lube3", 80],
+			["Lube4", 600],
 		]);
 
 		var option = {
@@ -160,11 +68,91 @@
 </script>
 <!-- end of goole gauge --> 
 
+<script>
+	function tableCreate( ){
+
+		var title = ['M','version','group','sensor#','MY', 'MP','SH','SL','DH','DL',
+						'%V','Sola V','Batt V','Core T', 'Chip V', 
+    					'DB','Devi Id','NI','No Sens'
+					];
+
+		var x = document.createElement('TABLE');
+		x.setAttribute("id","tblData2");
+
+		var tbl = document.getElementById('table2').appendChild(x);
+
+		var tr = tbl.insertRow();
+
+		for( var i = 0; i < 15 ; i ++){
+			var td = tr.insertCell();
+			td.appendChild(document.createTextNode(title[i+4]));
+			td.style.border = '1px solid black';
+		}
+
+		for(var j = 0 ; j < 7 ; j++){
+
+			var tr = tbl.insertRow();	
+			for( var i = 0; i < 15 ; i ++){
+				var td = tr.insertCell();
+				td.appendChild(document.createTextNode(['000']));
+				td.style.border = '1px solid black';
+			}
+		}
+
+		var x = document.createElement('TABLE');
+		x.setAttribute("id","tblData3");
+
+		var tbl = document.getElementById('table3').appendChild(x);
+
+		var tr = tbl.insertRow();
+
+		for( var i = 0; i < 15 ; i ++){
+			var td = tr.insertCell();
+			td.appendChild(document.createTextNode(title[i+4]));
+			td.style.border = '1px solid black';
+		}
+
+		for(var j = 0 ; j < 7 ; j++){
+
+			var tr = tbl.insertRow();	
+			for( var i = 0; i < 15 ; i ++){
+				var td = tr.insertCell();
+				td.appendChild(document.createTextNode(['000']));
+				td.style.border = '1px solid black';
+			}
+		}
+	}
+
+	function changeContent(id, row, cell, content) {
+    	var x = document.getElementById(id).rows[row].cells;
+    	x[cell].innerHTML = content;
+	}		
+
+
+	function writeTable(msg, test, no){
+		
+       	var tmp = msg.split(",");
+		console.log("msg :", tmp);
+		for(var i = 4 ; i < 19 ; i++){
+			if( no === 2 ){
+				changeContent('tblData2',test,i-4,tmp[i]);
+			} else{
+				changeContent('tblData3',test,i-4,tmp[i]);
+			}
+		}
+	}
+
+
+</script>
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 
 	<script>
+
+		var count1 = 0;
+		var count2 = 0;
+
 		var socket = io.connect('http://192.168.0.20:7532');
 		var signalToggle = true;
 		socket.on('stalled',function( data ) {
@@ -172,10 +160,31 @@
 			$target.removeClass('init moving').addClass('stalled');
 			console.log("reserve return");
 		});
+
 		socket.on('moved',function( data ) {
 			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 			$target.removeClass('init stalled').addClass('moved');
 		});
+
+
+		socket.on('endDevice',function( data ) {
+			console.log(data.endDevice.rxData);
+
+			if( count1 < 7) { count1 = count1 +1;
+			} else { count1 = 1;}
+
+			writeTable(data.endDevice.rxData,count1,2);
+		});
+
+		socket.on('endDevice1',function( data ) {
+			console.log(data.endDevice.rxData);
+
+			if( count2 < 7) { count2 = count2 +1;
+			} else { count2 = 1;}
+
+			writeTable(data.endDevice.rxData,count2,3);
+		});
+
 		socket.on('received',function( data ) {
 			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 			if( signalToggle == true){
@@ -197,15 +206,10 @@
 				var x = $(this).attr('data-x');
 				var y = $(this).attr('data-y');
 
-				if(confirm('Confirm seat Reservation ?')){
-					//$(this).off('click');
-					socket.emit('reserve',{
-						x: x,
-						y: y
-					});
-				} else {
-					alert('Cancel seat Reservation');
-				}
+				socket.emit('clickDevice',{
+					x: x,
+					y: y
+				});
 			};
 			
 			$.getJSON('/wsnObj', { dummy: new Date().getTime() }, function(wsnObj){
@@ -230,25 +234,27 @@
 							$output.removeClass("init moved").addClass('stalled'); 
 						} 
 					});
-
 					// Add Document Object
 					$line.appendTo('section');
 				});
 			});
+			
+			tableCreate();
 		});
 	</script>
 
 	<script>
 		function startTime() {
 		    var today = new Date();
+
 		    var h = today.getHours();
 		    var m = today.getMinutes();
 		    var s = today.getSeconds();
 		    m = checkTime(m);
 		    s = checkTime(s);
-		    document.getElementById('txt').innerHTML =
+		    document.getElementById('dispTime').innerHTML = Date();
 		    h + ":" + m + ":" + s;
-		    var t = setTimeout(startTime, 500);
+		    var t = setTimeout(startTime, 2000);
 		}
 		
 		function checkTime(i) {
@@ -272,8 +278,7 @@
    	<div id="subTitle">
 	    <div class = "content2">
 	    	<div>
-	    		<div> [ Ship's name : HD10000    ] &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp [ Lubrication part : Crane ]   [Inspection date : 2016.07.01]</div>  
-				<div id="txt"></div>
+	    		<div id= "subtile"> [ Ship's name : HD10000    ] &nbsp &nbsp &nbsp &nbsp &nbsp [ Lubrication part : Crane &nbsp] &nbsp &nbsp <a id="dispTime"></a></div>  
 	    	</div>
 	    </div> 
 	</div>
@@ -307,117 +312,20 @@
 	
 </wrapper>
 
-	<div id="wrap1" style="width: 1250px; height: 455px;">	
-			<div id="right_div1" style="width: 300px; height: 180px;"></div>
+	<div id="wrap1" style="width: 1250px; height: 455px;">
+			<div id="right_div1" style="width: 300px; height: 180px;">
+			</div>	
 			<div id="left_div1" style="width: 855px; height: 180px;">
-				 	<table border="1" width="850" height="180">
-						<tr align="center">
-							<td width="85">version</td>
-							<td width="85">&nbsp;</td>
-							<td width="85">group#</td>
-							<td width="85">&nbsp;</td>
-							<td width="85">sensor#</td>
-							<td width="85">&nbsp;</td>
-							<td width="85">MY</td>
-							<td width="85">&nbsp;</td>
-							<td width="85">MP</td>
-							<td width="85">&nbsp;</td>
-						</tr>
-						<tr align="center">
-							<td>SH</td>
-							<td>&nbsp;</td>
-							<td>SL</td>
-							<td>&nbsp;</td>
-							<td>DH</td>
-							<td>&nbsp;</td>
-							<td>DL</td>
-							<td>&nbsp;</td>
-							<td>%V</td>
-							<td>&nbsp;</td>
-						</tr>
-						<tr align="center">
-							<td>solar Volt</td>
-							<td>&nbsp;</td>
-							<td>bettery Volt</td>
-							<td>&nbsp;</td>
-							<td>coreTemp</td>
-							<td>&nbsp;</td>
-							<td>chip Volt</td>
-							<td>&nbsp;</td>
-							<td>DB</td>
-							<td>&nbsp;</td>
-						</tr>
-						<tr align="center">
-							<td>NI</td>
-							<td>&nbsp;</td>
-							<td>Packet ID</td>
-							<td>&nbsp;</td>
-							<td>number of sensors</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-						</tr>
-					</table>
-				 </div>
+				<table id='table2' width = '800'></table>
+			</div>
 			<div id="right_div2" style="width: 300px; height: 180px;"></div>
 			<div id="left_div2" style="width: 855px; height: 180px;">
-					<table border="1" width="850" height="180" >
-						<tr align="center">
-							<td width="85">version</td>
-							<td width="85">&nbsp;</td>
-							<td width="85">group#</td>
-							<td width="85">&nbsp;</td>
-							<td width="85">sensor#</td>
-							<td width="85">&nbsp;</td>
-							<td width="85">MY</td>
-							<td width="85">&nbsp;</td>
-							<td width="85">MP</td>
-							<td width="85">&nbsp;</td>
-						</tr>
-						<tr align="center">
-							<td>SH</td>
-							<td>&nbsp;</td>
-							<td>SL</td>
-							<td>&nbsp;</td>
-							<td>DH</td>
-							<td>&nbsp;</td>
-							<td>DL</td>
-							<td>&nbsp;</td>
-							<td>%V</td>
-							<td>&nbsp;</td>
-						</tr>
-						<tr align="center">
-							<td>solar Volt</td>
-							<td>&nbsp;</td>
-							<td>bettery Volt</td>
-							<td>&nbsp;</td>
-							<td>coreTemp</td>
-							<td>&nbsp;</td>
-							<td>chip Volt</td>
-							<td>&nbsp;</td>
-							<td>DB</td>
-							<td>&nbsp;</td>
-						</tr>
-						<tr align="center">
-							<td>NI</td>
-							<td>&nbsp;</td>
-							<td>Packet ID</td>
-							<td>&nbsp;</td>
-							<td>number of sensors</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-							<td>&nbsp;</td>
-						</tr>
-					</table>										
+				<table id='table3' width = '800'></table>
 			</div>
- 	 	 </div>	
+	</div>	
 	<div id="test1">		
 	
-		<p> eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2016 Eunwho Power Electonics </p>
+		<p> Eunwho Power Electronics:  eunwho.com eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2016 </p>
 	
 	</div>
 

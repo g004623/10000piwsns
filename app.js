@@ -69,6 +69,10 @@ app.get('/',function ( req,res){
 	res.sendFile(__dirname +'/monitor.html');
 });
 
+app.get('/app.css', function (req, res) {
+  res.sendfile(__dirname + '/app.css');  
+});
+
 app.get('/wsnObj',function ( request, response, next) {
 	response.send(WSNT);
 }); 
@@ -82,6 +86,7 @@ io.on('connection',function(socket){
 	// socket.emit('news',{hello:'world'});
 	
 	socket.on('CH0',function(from,msg){  // from backstay
+
 		var tmp1 = msg.split(",");
 
 		try{
@@ -107,9 +112,8 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 				WSNT[rxGroupId][rxDistId].endDevice.rxData = msg;  
 				WSNT[rxGroupId][rxDistId].endDevice.numSens = tmp1[19];  
 
-				io.to('sensornet').emit('received',{x: rxDistId, y:rxGroupId});
-
 				console.log( ' emit 1 ');
+				io.to('sensornet').emit('endDevice',WSNT[rxGroupId][rxDistrmId]);
 
 			}else if(( tmp1[0] === 'L') && (tmp1[12][0] === 'G')){
 				// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
@@ -123,9 +127,6 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 				for( var i = 0 ; i < 5 ; i++){
 					if( tmp1[4+i] < 100) rxStatus[i] = 0;
 				}
-
-				io.to('sensornet').emit('received',{x: rxDistId, y:rxGroupId});
-				console.log( ' emit 2 ');
 
 				var notExistId = true;
 
@@ -161,7 +162,6 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 							if( j >= rxSensNum ){
 //--- send nomal operation signal
 								WSNT[rxGroupId][rxDistId].endDevice.status = 1;
-								io.to('sensornet').emit('moved',{x: rxDistId, y:rxGroupId});
 								break;
 							}
 						} else {
@@ -200,17 +200,15 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 		catch(error){
 			console.log('try cach error', error.message);
 		}
+
+
 	});		
 
-	socket.on('reserve',function(data){
-		console.log("Receive from html",data);
-		//socket.emit('activ',data);
-/*
-		socket.emit('reserve',{
-			x : 10,
-			y : 2
-		});
-*/
+	socket.on('clickDevice',function(data){
+		
+		console.log("click device",data);
+		console.log("click device",WSNT[data.y][data.x]);
+		socket.emit('endDevice1',WSNT[data.y][data.x]);
 	});	
 
 });
