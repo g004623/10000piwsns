@@ -1,7 +1,6 @@
 //--- mongoose setting
 
 var arryEndDevice = [2,24,36,2,25,36,18,18];
-
 var agn0 = [4,4];
 var agn1 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
 var agn2 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
@@ -17,11 +16,11 @@ var now = new Date();
 var arrySensNo = [agn0,agn1,agn2,agn3,agn4,agn5,agn6, agn7]; 
 
 var sensObj = {	enabled: true, sensId: 0, elapsed: now, oldStatus: [1,1,1,1,1], status: [1,1,1,1,1], 
-				moving: true, rxData: '0000'};
+				moving: true, rxData:'0000'};
 
 var sensor = [sensObj,sensObj,sensObj,sensObj];
 
-var mastCtrl = { numSens : 0, rxTime : now, oldRxTime : now, status : 0, rxData : '00000'};
+var mastCtrl = { numSens : 0, rxTime : now, oldRxTime : now, status : 0, rxData :'0000'};
 
 var G0 = [], G1 = [], G2 = [], G3 = [], G4 = [], G5 = [], G6 = [], G7 = [];
 
@@ -30,7 +29,6 @@ var WSNT = [G0,G1,G2,G3,G4,G5,G6,G7];
 for ( i = 0 ; i < 8 ; i ++ ){
 
 	var count = arryEndDevice[i]; 
-
 	for ( var j = 0 ; j < count ; j ++){
 		WSNT[i].push({
 			endDevice : mastCtrl,
@@ -39,6 +37,27 @@ for ( i = 0 ; i < 8 ; i ++ ){
 	}
 }
 
+var fs = require('fs');
+
+
+var now = new Date();
+var logfile_name = now.getFullYear() +'_'+ now.getMonth() + "_" + now.getDay() +'.json'
+
+// Check that the file exists locally
+if(!fs.existsSync(logfile_name)) {
+
+  	console.log("File not found");
+
+	var test = JSON.stringify(WSNT);
+	fs.writeFileSync(logfile_name,test, 'utf8');
+
+} else {
+  // Read the file and do anything you want
+	var content = fs.readFileSync(logfile_name, 'utf8');
+	WSNT = JSON.parse(content);
+}
+
+/*
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test');
 
@@ -47,21 +66,72 @@ var db = mongoose.connection;
 	db.once('open',function(){
 	// we're connected
 });
+*/
+
 
 /*
 var schema = mongoose.Schema({
-	state 	: WSNT,
-	date	:{type:Date,default: new Date()}
+	data: wsnData
+});
+var sensTableDB1 = mongoose.model('sensTableDB1',schema);
+
+var mongoData  = new sensTableDB1({data: wsnData});
+
+mongoData.save(function ( err,WSNT){
+	if(err) return console.error(err);
+	console.log('SAVED WSNT');
+});
+*/
+
+
+// Pre-exit scripts
+
+var preExit = [];
+
+// Catch exit
+process.stdin.resume();
+
+process.on('exit',function(code) {
+	var i;
+	console.long('Process exit');
+
+	for( i = 0; i < preExit.length; i++){
+		preExit[i](code);
+	}
+	process.exit(code);
+});
+
+// Catch CTRL+C
+process.on ('SIGINT', function () {
+	
+	console.log ('\nCTRL+C...');
+
+	var test = JSON.stringify(WSNT);
+	fs.writeFileSync(logfile_name,test, 'utf8');
+
+	process.exit (0);
+});
+
+// Catch uncaught exception
+process.on ('uncaughtException', function (err) {
+  console.dir (err, { depth: null });
+  process.exit (1);
 });
 
 
-var distribute = mongoose.model('distribute',schema);
-*/
+// INSERT CODE
+console.log ('App ready - hit CTRL+C ;)');
 
+// Add pre-exit script
+preExit.push (function (code) {
+  console.log ('Whoa! Exit code %d, cleaning up...', code);
+  // i.e. close database
+});
+
+// serve
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var fs = require('fs');
 
 server.listen(7532);
 
@@ -88,6 +158,7 @@ io.on('connection',function(socket){
 	socket.on('CH0',function(from,msg){  // from backstay
 
 		var tmp1 = msg.split(",");
+		var timeNow = new Date();
 
 		try{
 			if(( tmp1[0] === 'M' )&&(tmp1[16][0]==='G')){
@@ -98,22 +169,21 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 */
 				var rxGroupId = Number(tmp1[16][1]);
 				var rxDistId = tmp1[16][2] * 10 + tmp1[16][3]*1 - 1;
+				var timeSaved =new Date( WSNT[rxGroupId][rxDistId].endDevice.rxTime);  
+				var a_min = (timeNow.getTime() - timeSaved.getTime()) /1000/60;
 
-				var timeNow = new Date();
-				var timeSaved = WSNT[rxGroupId][rxDistId].endDevice.rxTime;  
-				
-				var a_min = (timeNow.getTime() - timeSaved.getTime()) /1000/60;						
+				console.log( 'elapsed time1 :',a_min); 						
 
 				WSNT[rxGroupId][rxDistId].endDevice.rxPeriod = a_min;	// saved minute
-					
 				WSNT[rxGroupId][rxDistId].endDevice.oldRxTime = timeSaved; 
 				WSNT[rxGroupId][rxDistId].endDevice.rxTime	  = timeNow;  
-				
 				WSNT[rxGroupId][rxDistId].endDevice.rxData = msg;  
 				WSNT[rxGroupId][rxDistId].endDevice.numSens = tmp1[19];  
 
-				console.log( ' emit 1 ');
-				io.to('sensornet').emit('endDevice',WSNT[rxGroupId][rxDistrmId]);
+				console.log( 'emit 1');
+				console.log(WSNT[rxGroupId][rxDistId].endDevice.rxData);  
+
+				io.to('sensornet').emit('endDevice',WSNT[rxGroupId][rxDistId]);
 
 			}else if(( tmp1[0] === 'L') && (tmp1[12][0] === 'G')){
 				// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
@@ -137,9 +207,9 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 					if( sensIdSaved === rxSensId){
 
 						var notExistId = false;						
+
 						var statusSaved = WSNT[rxGroupId][rxDistId].sens[i].status;
-						var savedDate   = WSNT[rxGroupId][rxDistId].sens[i].elapsed;
-						var nowDate     = new Date();
+						var savedDate   = new Date(WSNT[rxGroupId][rxDistId].sens[i].elapsed);
 
 						WSNT[rxGroupId][rxDistId].sens[i].rxData = msg;
 						WSNT[rxGroupId][rxDistId].sens[i].oldStatus = statusSaved;
@@ -148,15 +218,13 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 						//     find algorithm
 						if( rxStatus !=  statusSaved ){
 //--- sens moving 						
-							WSNT[rxGroupId][rxDistId].sens[i].elapsed = nowDate;
+							WSNT[rxGroupId][rxDistId].sens[i].elapsed = timeNow;
 							WSNT[rxGroupId][rxDistId].sens[i].moving = true;
 
 							var j = 0;
 							do{
-								if ( WSNT[rxGroupId][rxDistId].sens[j].moving == false) break;
-				
+								if ( WSNT[rxGroupId][rxDistId].sens[j].moving == false) break;				
 								j ++;
-				
 							} while ( j < rxSensNum );
 								
 							if( j >= rxSensNum ){
@@ -165,7 +233,7 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 								break;
 							}
 						} else {
-							time = dateNow.getTime();
+							time = timeNow.getTime();
 							savedTime = saveDate.getTime();
 
 							elapsed = (time - savedTime())/1000/60/60;  // change to hour
@@ -200,14 +268,12 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 		catch(error){
 			console.log('try cach error', error.message);
 		}
-
-
 	});		
 
 	socket.on('clickDevice',function(data){
-		
-		console.log("click device",data);
-		console.log("click device",WSNT[data.y][data.x]);
+		console.log("click endeDice.rxData: ",WSNT[data.y][data.x].endDevice.rxData);
+		console.log("data.x",data.x);
+		console.log("data.y",data.y);
 		socket.emit('endDevice1',WSNT[data.y][data.x]);
 	});	
 

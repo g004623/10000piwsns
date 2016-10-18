@@ -10,18 +10,11 @@
 
 <script type="text/javascript">
 	google.charts.load('current', {'packages':['bar']});
-	google.charts.setOnLoadCallback(drawStuff);
-	google.charts.setOnLoadCallback(drawStuff2);
-	
-	function drawStuff() {
-		var data = new google.visualization.arrayToDataTable([
-			['Move', 'percentage'],
-			["Lube1",100],
-			["Lube2", 80],
-			["Lube3", 10],
-			["Lube4", 80],
-		]);
 
+	var pinData = [['Move','percentage'],['Lube1',98],['Lube2',80],['Lube3',80],['Lube4',10]];
+
+	function drawPin( pinData,id){
+		var data = new google.visualization.arrayToDataTable(pinData);
 		var option = {
 			totle: 'chess opening moves',
 			width: 300,
@@ -29,42 +22,15 @@
 			axes: {
 			x : {
 				0: { side: 'top', label: ''}
-			    	}
+		    	}
 				},
-				bar : { groupWidth: "20%" }
+			bar : { groupWidth: "20%" }
 			};
+			
+		var chart = new google.charts.Bar(document.getElementById(id));
+		chart.draw(data, google.charts.Bar.convertOptions(option));
+	}
 
-			var chart = new google.charts.Bar(document.getElementById('right_div1'));
-
-			chart.draw(data, google.charts.Bar.convertOptions(option));
-	};
-
-	
-	function drawStuff2() {
-		var data = new google.visualization.arrayToDataTable([
-			['Move', 'percentage'],
-			["Lube1", 60],
-			["Lube2", 60],
-			["Lube3", 80],
-			["Lube4", 600],
-		]);
-
-		var option = {
-			totle: 'chess opening moves',
-			width: 300,
-			legend: { position: 'none' },
-			axes: {
-			x : {
-				0: { side: 'top', label: ''}
-			    	}
-				},
-				bar : { groupWidth: "20%" }
-			};
-
-			var chart = new google.charts.Bar(document.getElementById('right_div2'));
-
-			chart.draw(data, google.charts.Bar.convertOptions(option));
-			};
 </script>
 <!-- end of goole gauge --> 
 
@@ -153,7 +119,7 @@
 		var count1 = 0;
 		var count2 = 0;
 
-		var socket = io.connect('http://192.168.0.20:7532');
+		var socket = io.connect('http://192.168.110.10:7532');
 		var signalToggle = true;
 		socket.on('stalled',function( data ) {
 			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
@@ -174,6 +140,15 @@
 			} else { count1 = 1;}
 
 			writeTable(data.endDevice.rxData,count1,2);
+
+			for(var i = 0 ; i < 4 ; i++){
+				var a = data.sens[i].status;
+				var sum = a[0]*1 + a[1]*2 + a[2] * 4 + a[3] *8 + a[4]*16;
+				sum = sum * 100 / 32 + 5;	  
+				pinData[i+1][1] = sum;
+			}
+
+			drawPin( pinData,"right_div1");
 		});
 
 		socket.on('endDevice1',function( data ) {
@@ -183,6 +158,16 @@
 			} else { count2 = 1;}
 
 			writeTable(data.endDevice.rxData,count2,3);
+
+			for(var i = 0 ; i < 4 ; i++){
+				var a = data.sens[i].status;
+				var sum = a[0]*1 + a[1]*2 + a[2] * 4 + a[3] *8 + a[4]*16;
+				sum = sum * 100 / 32 + 5;	  
+				pinData[i+1][1] = sum;
+			}
+
+			drawPin( pinData,"right_div2");
+
 		});
 
 		socket.on('received',function( data ) {
@@ -205,16 +190,16 @@
 			var onClickSeat = function () {
 				var x = $(this).attr('data-x');
 				var y = $(this).attr('data-y');
-
 				socket.emit('clickDevice',{
 					x: x,
 					y: y
 				});
 			};
-			
+
 			$.getJSON('/wsnObj', { dummy: new Date().getTime() }, function(wsnObj){
-			
-			// Creat Seat
+	
+				// console.log('wnsObj',wsnObj);
+				// Creat endDevice Sheet
 				$.each(wsnObj, function (groupId, endDeviceGroup ) {
 					// Create Document object
 					var $line = $('<div></div>').addClass('line');
