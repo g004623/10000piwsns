@@ -38,10 +38,11 @@
 	function tableCreate( ){
 
 		var title = ['M','version','group','sensor#','MY', 'MP','SH','SL','DH','DL',
-						'%V','Sola V','Batt V','Core T', 'Chip V', 
-    					'DB','Devi Id','NI','No Sens'
+						'%V','S.V','B.V','C.T', 'C.V', 
+    					'DB','D.Id','NI','No.S'
 					];
 
+		var tableWidth = ['60','60','60','60','60','60','30','60','40','40','30','60','60','60','60'];
 		var x = document.createElement('TABLE');
 		x.setAttribute("id","tblData2");
 
@@ -53,6 +54,8 @@
 			var td = tr.insertCell();
 			td.appendChild(document.createTextNode(title[i+4]));
 			td.style.border = '1px solid black';
+			td.setAttribute('width',tableWidth[i]);
+			td.setAttribute('align','center');
 		}
 
 		for(var j = 0 ; j < 7 ; j++){
@@ -76,6 +79,8 @@
 			var td = tr.insertCell();
 			td.appendChild(document.createTextNode(title[i+4]));
 			td.style.border = '1px solid black';
+			td.setAttribute('width',tableWidth[i]);
+			td.setAttribute('align','center');
 		}
 
 		for(var j = 0 ; j < 7 ; j++){
@@ -90,20 +95,37 @@
 	}
 
 	function changeContent(id, row, cell, content) {
+
+		var test = row;
+		
+		if( test === 1 ){ test = 7;
+		} else { test = row -1;}
+		
+    	var a = document.getElementById(id).rows[test].cells;
+    	a[cell].setAttribute('bgColor','white');
+    	
     	var x = document.getElementById(id).rows[row].cells;
     	x[cell].innerHTML = content;
+    	x[cell].setAttribute('bgColor','yellow');
 	}		
 
 
 	function writeTable(msg, test, no){
-		
+
+		var val ='---';
        	var tmp = msg.split(",");
+
 		console.log("msg :", tmp);
+
+
 		for(var i = 4 ; i < 19 ; i++){
+
+			if( tmp[0] === 'M'){ val = tmp[i];}
+		
 			if( no === 2 ){
-				changeContent('tblData2',test,i-4,tmp[i]);
+				changeContent('tblData2',test,i-4,val);
 			} else{
-				changeContent('tblData3',test,i-4,tmp[i]);
+				changeContent('tblData3',test,i-4,val);
 			}
 		}
 	}
