@@ -12,10 +12,11 @@
 	google.charts.load('current', {'packages':['corechart']});
 
 	var pinData = [['Element','Density',{role:'style'}],
-					['LUBE1',8.94, 'blue'],
-					['LUBE2',10.49, 'yellow'],
-					['LUBE3',18.94, 'gray'],
-					['LUBE4',28.94, 'red']];
+					['LUBE1',100, 'blue'],
+					['LUBE2',100, 'darkgray'],
+					['LUBE3',100, 'darkgray'],
+					['LUBE4',100, 'darkgray']
+					];
 					
 	function drawPin( pinData,id){
 		var data = new google.visualization.arrayToDataTable(pinData);
@@ -29,11 +30,12 @@
 						 2]);
 						
 		var options = {
-			title: 'Lubrication Pin state',
+			// title: 'Lubrication Pin state',
 			width: 300,
 			bar  : {groupWidth:'30%'},
 			legend: { position: 'none' },
-			};
+			vAxis:{title:'Pin State',minValue: 0, maxValue: 100}
+			};	
 			
 		var chart = new google.visualization.ColumnChart(document.getElementById(id));
 		chart.draw(view, options);
@@ -137,8 +139,6 @@
 			}
 		}
 	}
-
-
 </script>
 
 	<script src="/socket.io/socket.io.js"></script>
@@ -164,38 +164,71 @@
 
 
 		socket.on('endDevice',function( data ) {
-			console.log(data.endDevice.rxData);
+			// console.log(data.endDevice.rxData);
 
 			if( count1 < 7) { count1 = count1 +1;
 			} else { count1 = 1;}
 
 			writeTable(data.endDevice.rxData,count1,2);
+			
+			var count = data.endDevice.numSens;
+			console.log("data.endDevice.numSense:" + count );
 
 			for(var i = 0 ; i < 4 ; i++){
-				var a = data.sens[i].status;
-				var sum = a[0]*1 + a[1]*2 + a[2] * 4 + a[3] *8 + a[4]*16;
-				sum = sum * 100 / 32 + 5;	  
-				pinData[i+1][1] = sum;
-			}
 
+				if( i < count ){
+					var a = data.sens[i].status;
+					var sum = 0;
+
+					if( a[5] == 1 )			{ sum = 100;
+					} else if ( a[4] == 1) 	{ sum = 83;
+					} else if ( a[3] == 1) 	{ sum = 66;
+					} else if ( a[2] == 1) 	{ sum = 50;
+					} else if ( a[1] == 1) 	{ sum = 33;
+					} else if ( a[0] == 1) 	{ sum = 16;
+					} else	{ sum = 0;}
+
+					pinData[i+1][1] = sum;
+					pinData[i+1][2] = 'blue';
+				}else{
+					pinData[i+1][1] = 100;
+					pinData[i+1][2] = 'gray';
+				}
+			}
 			drawPin( pinData,"right_div1");
 		});
 
 		socket.on('endDevice1',function( data ) {
-			console.log(data.endDevice.rxData);
 
 			if( count2 < 7) { count2 = count2 +1;
 			} else { count2 = 1;}
 
 			writeTable(data.endDevice.rxData,count2,3);
 
-			for(var i = 0 ; i < 4 ; i++){
-				var a = data.sens[i].status;
-				var sum = a[0]*1 + a[1]*2 + a[2] * 4 + a[3] *8 + a[4]*16;
-				sum = sum * 100 / 32 + 5;	  
-				pinData[i+1][1] = sum;
-			}
+			var count = data.endDevice.numSens;
+			console.log("data.endDevice.numSense:" + count );
 
+			for(var i = 0 ; i < 4 ; i++){
+
+				if( i < count ){
+					var a = data.sens[i].status;				
+					var sum = 0;
+
+					if( a[5] == 1 )			{ sum = 120;
+					} else if ( a[4] == 1) 	{ sum = 100;
+					} else if ( a[3] == 1) 	{ sum = 80;
+					} else if ( a[2] == 1) 	{ sum = 60;
+					} else if ( a[1] == 1) 	{ sum = 40;
+					} else if ( a[0] == 1) 	{ sum = 20;
+					} else	{ sum = 0;}
+
+					pinData[i+1][1] = sum;
+					pinData[i+1][2] = 'blue';
+				}else{
+					pinData[i+1][1] = 100;
+					pinData[i+1][2] = 'gray';
+				}
+			}
 			drawPin( pinData,"right_div2");
 
 		});
@@ -269,7 +302,7 @@
 		    s = checkTime(s);
 		    document.getElementById('dispTime').innerHTML = Date();
 		    h + ":" + m + ":" + s;
-		    var t = setTimeout(startTime, 2000);
+		    var t = setTimeout(startTime, 30000	);
 		}
 		
 		function checkTime(i) {

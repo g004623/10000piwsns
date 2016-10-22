@@ -15,7 +15,7 @@ var now = new Date();
 
 var arrySensNo = [agn0,agn1,agn2,agn3,agn4,agn5,agn6, agn7]; 
 
-var sensObj = {	enabled: true, sensId: 0, elapsed: now, oldStatus: [1,1,1,1,1], status: [1,1,1,1,1], 
+var sensObj = {	enabled: true, sensId: 0, elapsed: now, oldStatus: [0,0,0,0,0,0], status: [0,0,0,0,0,0], 
 				moving: true, rxData:'0000'};
 
 var sensor = [sensObj,sensObj,sensObj,sensObj];
@@ -178,7 +178,7 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 				WSNT[rxGroupId][rxDistId].endDevice.oldRxTime = timeSaved; 
 				WSNT[rxGroupId][rxDistId].endDevice.rxTime	  = timeNow;  
 				WSNT[rxGroupId][rxDistId].endDevice.rxData = msg;  
-				WSNT[rxGroupId][rxDistId].endDevice.numSens = tmp1[19];  
+				WSNT[rxGroupId][rxDistId].endDevice.numSens = tmp1[18];  
 
 				console.log( 'emit 1');
 				console.log(WSNT[rxGroupId][rxDistId].endDevice.rxData);  
@@ -187,15 +187,15 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 
 			}else if(( tmp1[0] === 'L') && (tmp1[12][0] === 'G')){
 				// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
-
 				var rxGroupId = Number(tmp1[12][1]);
 				var rxDistId = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
 				var rxSensId = tmp1[1]*100 + tmp1[2]*1;
+				var rxCount = tmp1[13] *1;
 				var rxSensNum = tmp1[14] *1;
 
-				var rxStatus = [1,1,1,1,1];
-				for( var i = 0 ; i < 5 ; i++){
-					if( tmp1[4+i] < 100) rxStatus[i] = 0;
+				var rxStatus = [0,0,0,0,0,0];
+				for( var i = 0 ; i < 6 ; i++){
+					if( tmp1[4+i] < 100) rxStatus[i] = 1;
 				}
 
 				var notExistId = true;
@@ -204,12 +204,21 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 
 					var sensIdSaved = WSNT[rxGroupId][rxDistId].sens[i].sensId;  
 
+
+					console.log("var i      : ",i);
+					console.log("rxSensId   : ",rxSensId);
+					console.log("sensIdSaved: ",sensIdSaved);
 					if( sensIdSaved === rxSensId){
 
 						var notExistId = false;						
 
 						var statusSaved = WSNT[rxGroupId][rxDistId].sens[i].status;
 						var savedDate   = new Date(WSNT[rxGroupId][rxDistId].sens[i].elapsed);
+
+			
+						console.log("var i        : ",i);
+						console.log("statusSaved  : ",statusSaved);
+						console.log("rxStatus     : ",rxStatus);
 
 						WSNT[rxGroupId][rxDistId].sens[i].rxData = msg;
 						WSNT[rxGroupId][rxDistId].sens[i].oldStatus = statusSaved;
@@ -250,17 +259,11 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 				
 				// first rx sensor data
 				if( notExistId == true){
-					for ( var i = 0 ; i < rxSensNum ; i ++ ){  
-						// must be added coding case not equal 0 for all sensor id.
-						var sensIdSaved = WSNT[rxGroupId][rxDistId].sens[i].sensId;
-  
-						if( sensIdSaved == 0){
-							WSNT[rxGroupId][rxDistId].sens[i].sensId = rxSensId;
-							WSNT[rxGroupId][rxDistId].sens[i].rxData = msg;
-							WSNT[rxGroupId][rxDistId].sens[i].status = rxStatus;
-						}
-					}						
-					WSNT[rxGroupId][rxDistId].endDevice.status = 0;
+					var temp = rxCount % rxSensNum;
+
+					WSNT[rxGroupId][rxDistId].sens[temp].sensId = rxSensId;
+					WSNT[rxGroupId][rxDistId].sens[temp].rxData = msg;
+					WSNT[rxGroupId][rxDistId].sens[temp].status = rxStatus;
 					io.to('sensornet').emit('received',{x: rxDistId, y:rxGroupId});
 				}
 			}
@@ -271,9 +274,10 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 	});		
 
 	socket.on('clickDevice',function(data){
-		console.log("click endeDice.rxData: ",WSNT[data.y][data.x].endDevice.rxData);
-		console.log("data.x",data.x);
-		console.log("data.y",data.y);
+		console.log("sens1 Data: ",WSNT[data.y][data.x]);
+		//console.log("sens2 Data: ",WSNT[data.y][data.x].sens[1].status);
+		//console.log("sens3 Data: ",WSNT[data.y][data.x].sens[2].status);
+		//console.log("sens4 Data: ",WSNT[data.y][data.x].snes[3].status);
 		socket.emit('endDevice1',WSNT[data.y][data.x]);
 	});	
 
