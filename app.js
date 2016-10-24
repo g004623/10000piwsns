@@ -147,6 +147,123 @@ app.get('/wsnObj',function ( request, response, next) {
 	response.send(WSNT);
 }); 
 
+function socketProc(from,msg){
+
+	var tmp1 = msg.split(",");
+	var timeNow = new Date();
+
+	try{
+		if(( tmp1[0] === 'M' )&&(tmp1[16][0]==='G')){
+/*
+M, version, group#, sensor#, MY, MP, SH, SL, DH, DL, %V, solar Volt, battery Volt, coreTemp, chip volt, 
+	DB,NI, packet ID, number of sensors
+Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,2\r\n   
+*/
+			var rxGroupId = Number(tmp1[16][1]);
+			var rxDistId = tmp1[16][2] * 10 + tmp1[16][3]*1 - 1;
+			var timeSaved =new Date( WSNT[rxGroupId][rxDistId].endDevice.rxTime);  
+			var a_min = (timeNow.getTime() - timeSaved.getTime()) /1000/60;
+
+			console.log( 'elapsed time1 :',a_min); 						
+			WSNT[rxGroupId][rxDistId].endDevice.rxPeriod = a_min;	// saved minute
+			WSNT[rxGroupId][rxDistId].endDevice.oldRxTime = timeSaved; 
+			WSNT[rxGroupId][rxDistId].endDevice.rxTime	  = timeNow;  
+			WSNT[rxGroupId][rxDistId].endDevice.rxData = msg;  
+			WSNT[rxGroupId][rxDistId].endDevice.numSens = tmp1[18];  
+
+			console.log( 'emit 1');
+			console.log(WSNT[rxGroupId][rxDistId].endDevice.rxData);  
+
+			io.to('sensornet').emit('endDevice',WSNT[rxGroupId][rxDistId]);
+
+		}else if(( tmp1[0] === 'L') && (tmp1[12][0] === 'G')){
+		// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
+			var rxGroupId = Number(tmp1[12][1]);
+			var rxDistId = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
+			var rxSensId = tmp1[1]*100 + tmp1[2]*1;
+			var rxCount = tmp1[13] *1;
+			var rxSensNum = tmp1[14] *1;
+
+			var rxStatus = [0,0,0,0,0,0];
+			for( var i = 0 ; i < 6 ; i++){
+				if( tmp1[4+i] < 100) rxStatus[i] = 1;
+			}
+
+			var notExistId = true;
+
+			for ( var i = 0 ; i < rxSensNum ; i ++ ){  // must be added coding case not equal table of sensor number
+
+				var sensIdSaved = WSNT[rxGroupId][rxDistId].sens[i].sensId;  
+
+
+				console.log("var i      : ",i);
+				console.log("rxSensId   : ",rxSensId);
+				console.log("sensIdSaved: ",sensIdSaved);
+				if( sensIdSaved === rxSensId){
+
+					var notExistId = false;						
+
+					var statusSaved = WSNT[rxGroupId][rxDistId].sens[i].status;
+					var savedDate   = new Date(WSNT[rxGroupId][rxDistId].sens[i].elapsed);
+
+			
+					console.log("var i        : ",i);
+					console.log("statusSaved  : ",statusSaved);
+					console.log("rxStatus     : ",rxStatus);
+
+					WSNT[rxGroupId][rxDistId].sens[i].rxData = msg;
+					WSNT[rxGroupId][rxDistId].sens[i].oldStatus = statusSaved;
+					WSNT[rxGroupId][rxDistId].sens[i].status = rxStatus;						
+
+			//     find algorithm
+					if( rxStatus !=  statusSaved ){
+//--- sens moving 						
+						WSNT[rxGroupId][rxDistId].sens[i].elapsed = timeNow;
+						WSNT[rxGroupId][rxDistId].sens[i].moving = true;
+
+						var j = 0;
+						do{
+							if ( WSNT[rxGroupId][rxDistId].sens[j].moving == false) break;				
+							j ++;
+						} while ( j < rxSensNum );
+								
+						if( j >= rxSensNum ){
+//--- send nomal operation signal
+							WSNT[rxGroupId][rxDistId].endDevice.status = 1;
+							break;
+						}
+					} else {
+						time = timeNow.getTime();
+						savedTime = saveDate.getTime();
+						elapsed = (time - savedTime())/1000/60/60;  // change to hour
+ 							
+						if(elapsed > 48 ){ 
+//--- sens stalled for 2 days 
+							WSNT[rxGroupId][rxDistId].sens[i].moving == false;
+							WSNT[rxGroupId][rxDistId].endDevice.status == 2;
+							io.to('sensornet').emit('stalled',{x: rxDistId, y:rxGroupId});
+						}
+					}	
+				}
+			}  
+				
+			// first rx sensor data
+			if( notExistId == true){
+				var temp = rxCount % rxSensNum;
+
+				WSNT[rxGroupId][rxDistId].sens[temp].sensId = rxSensId;
+				WSNT[rxGroupId][rxDistId].sens[temp].rxData = msg;
+				WSNT[rxGroupId][rxDistId].sens[temp].status = rxStatus;
+				io.to('sensornet').emit('received',{x: rxDistId, y:rxGroupId});
+			}
+		}
+	}
+	catch(error){
+		console.log('try cach error', error.message);
+	}
+} 
+
+
 io.on('connection',function(socket){
 
 	socket.join('sensornet');
@@ -156,121 +273,11 @@ io.on('connection',function(socket){
 	// socket.emit('news',{hello:'world'});
 	
 	socket.on('CH0',function(from,msg){  // from backstay
+		socketProc(from,msg);
+	});		
 
-		var tmp1 = msg.split(",");
-		var timeNow = new Date();
-
-		try{
-			if(( tmp1[0] === 'M' )&&(tmp1[16][0]==='G')){
-/*
-M, version, group#, sensor#, MY, MP, SH, SL, DH, DL, %V, solar Volt, battery Volt, coreTemp, chip volt, 
-	DB,NI, packet ID, number of sensors
-Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,2\r\n   
-*/
-				var rxGroupId = Number(tmp1[16][1]);
-				var rxDistId = tmp1[16][2] * 10 + tmp1[16][3]*1 - 1;
-				var timeSaved =new Date( WSNT[rxGroupId][rxDistId].endDevice.rxTime);  
-				var a_min = (timeNow.getTime() - timeSaved.getTime()) /1000/60;
-
-				console.log( 'elapsed time1 :',a_min); 						
-
-				WSNT[rxGroupId][rxDistId].endDevice.rxPeriod = a_min;	// saved minute
-				WSNT[rxGroupId][rxDistId].endDevice.oldRxTime = timeSaved; 
-				WSNT[rxGroupId][rxDistId].endDevice.rxTime	  = timeNow;  
-				WSNT[rxGroupId][rxDistId].endDevice.rxData = msg;  
-				WSNT[rxGroupId][rxDistId].endDevice.numSens = tmp1[18];  
-
-				console.log( 'emit 1');
-				console.log(WSNT[rxGroupId][rxDistId].endDevice.rxData);  
-
-				io.to('sensornet').emit('endDevice',WSNT[rxGroupId][rxDistId]);
-
-			}else if(( tmp1[0] === 'L') && (tmp1[12][0] === 'G')){
-				// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
-				var rxGroupId = Number(tmp1[12][1]);
-				var rxDistId = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
-				var rxSensId = tmp1[1]*100 + tmp1[2]*1;
-				var rxCount = tmp1[13] *1;
-				var rxSensNum = tmp1[14] *1;
-
-				var rxStatus = [0,0,0,0,0,0];
-				for( var i = 0 ; i < 6 ; i++){
-					if( tmp1[4+i] < 100) rxStatus[i] = 1;
-				}
-
-				var notExistId = true;
-
-				for ( var i = 0 ; i < rxSensNum ; i ++ ){  // must be added coding case not equal table of sensor number
-
-					var sensIdSaved = WSNT[rxGroupId][rxDistId].sens[i].sensId;  
-
-
-					console.log("var i      : ",i);
-					console.log("rxSensId   : ",rxSensId);
-					console.log("sensIdSaved: ",sensIdSaved);
-					if( sensIdSaved === rxSensId){
-
-						var notExistId = false;						
-
-						var statusSaved = WSNT[rxGroupId][rxDistId].sens[i].status;
-						var savedDate   = new Date(WSNT[rxGroupId][rxDistId].sens[i].elapsed);
-
-			
-						console.log("var i        : ",i);
-						console.log("statusSaved  : ",statusSaved);
-						console.log("rxStatus     : ",rxStatus);
-
-						WSNT[rxGroupId][rxDistId].sens[i].rxData = msg;
-						WSNT[rxGroupId][rxDistId].sens[i].oldStatus = statusSaved;
-						WSNT[rxGroupId][rxDistId].sens[i].status = rxStatus;						
-
-						//     find algorithm
-						if( rxStatus !=  statusSaved ){
-//--- sens moving 						
-							WSNT[rxGroupId][rxDistId].sens[i].elapsed = timeNow;
-							WSNT[rxGroupId][rxDistId].sens[i].moving = true;
-
-							var j = 0;
-							do{
-								if ( WSNT[rxGroupId][rxDistId].sens[j].moving == false) break;				
-								j ++;
-							} while ( j < rxSensNum );
-								
-							if( j >= rxSensNum ){
-//--- send nomal operation signal
-								WSNT[rxGroupId][rxDistId].endDevice.status = 1;
-								break;
-							}
-						} else {
-							time = timeNow.getTime();
-							savedTime = saveDate.getTime();
-
-							elapsed = (time - savedTime())/1000/60/60;  // change to hour
- 							
-							if(elapsed > 48 ){ 
-//--- sens stalled for 2 days 
-								WSNT[rxGroupId][rxDistId].sens[i].moving == false;
-								WSNT[rxGroupId][rxDistId].endDevice.status == 2;
-								io.to('sensornet').emit('stalled',{x: rxDistId, y:rxGroupId});
-							}
-						}	
-					}
-				}  
-				
-				// first rx sensor data
-				if( notExistId == true){
-					var temp = rxCount % rxSensNum;
-
-					WSNT[rxGroupId][rxDistId].sens[temp].sensId = rxSensId;
-					WSNT[rxGroupId][rxDistId].sens[temp].rxData = msg;
-					WSNT[rxGroupId][rxDistId].sens[temp].status = rxStatus;
-					io.to('sensornet').emit('received',{x: rxDistId, y:rxGroupId});
-				}
-			}
-		}
-		catch(error){
-			console.log('try cach error', error.message);
-		}
+	socket.on('CH1',function(from,msg){  // from backstay
+		socketProc(from,msg);
 	});		
 
 	socket.on('clickDevice',function(data){

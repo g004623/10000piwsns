@@ -149,7 +149,9 @@
 		var count1 = 0;
 		var count2 = 0;
 
-		var socket = io.connect('http://192.168.110.10:7532');
+		//var socket = io.connect('http://192.168.110.10:7532');
+		var socket = io.connect('http://192.168.0.10:7532');
+
 		var signalToggle = true;
 		socket.on('stalled',function( data ) {
 			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
