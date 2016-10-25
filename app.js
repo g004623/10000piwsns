@@ -12,9 +12,7 @@ var agn6 = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
 var agn7 = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
 
 var now = new Date(); 
-
 var arrySensNo = [agn0,agn1,agn2,agn3,agn4,agn5,agn6, agn7]; 
-
 var sensObj = {	enabled: true, sensId: 0, elapsed: now, oldStatus: [0,0,0,0,0,0], status: [0,0,0,0,0,0], 
 				moving: true, rxData:'0000'};
 
@@ -41,19 +39,20 @@ var fs = require('fs');
 
 
 var now = new Date();
-var logfile_name = now.getFullYear() +'_'+ now.getMonth() + "_" + now.getDay() +'.json'
-
+var logfile_name = now.getFullYear() +'_'+ now.getMonth() + "_" + now.getDay() +'.json';
+var logFile = 'eunwhoData.json';
 // Check that the file exists locally
-if(!fs.existsSync(logfile_name)) {
+if(!fs.existsSync(logFile)) {
 
   	console.log("File not found");
 
 	var test = JSON.stringify(WSNT);
+	fs.writeFileSync(logFile,test, 'utf8');
 	fs.writeFileSync(logfile_name,test, 'utf8');
 
 } else {
   // Read the file and do anything you want
-	var content = fs.readFileSync(logfile_name, 'utf8');
+	var content = fs.readFileSync(logFile, 'utf8');
 	WSNT = JSON.parse(content);
 }
 
@@ -67,8 +66,6 @@ var db = mongoose.connection;
 	// we're connected
 });
 */
-
-
 /*
 var schema = mongoose.Schema({
 	data: wsnData
@@ -82,15 +79,10 @@ mongoData.save(function ( err,WSNT){
 	console.log('SAVED WSNT');
 });
 */
-
-
 // Pre-exit scripts
-
 var preExit = [];
-
 // Catch exit
 process.stdin.resume();
-
 process.on('exit',function(code) {
 	var i;
 	console.long('Process exit');
@@ -108,6 +100,7 @@ process.on ('SIGINT', function () {
 
 	var test = JSON.stringify(WSNT);
 	fs.writeFileSync(logfile_name,test, 'utf8');
+	fs.writeFileSync(logFile,test, 'utf8');
 
 	process.exit (0);
 });
@@ -117,8 +110,6 @@ process.on ('uncaughtException', function (err) {
   console.dir (err, { depth: null });
   process.exit (1);
 });
-
-
 // INSERT CODE
 console.log ('App ready - hit CTRL+C ;)');
 
