@@ -56,29 +56,6 @@ if(!fs.existsSync(logFile)) {
 	WSNT = JSON.parse(content);
 }
 
-/*
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test');
-
-var db = mongoose.connection;
-	db.on('error', console.error.bind(console,'connection error:'));
-	db.once('open',function(){
-	// we're connected
-});
-*/
-/*
-var schema = mongoose.Schema({
-	data: wsnData
-});
-var sensTableDB1 = mongoose.model('sensTableDB1',schema);
-
-var mongoData  = new sensTableDB1({data: wsnData});
-
-mongoData.save(function ( err,WSNT){
-	if(err) return console.error(err);
-	console.log('SAVED WSNT');
-});
-*/
 // Pre-exit scripts
 var preExit = [];
 // Catch exit
@@ -138,6 +115,103 @@ app.get('/wsnObj',function ( request, response, next) {
 	response.send(WSNT);
 }); 
 
+
+function sensProc(msg,x,y){
+	var tmp1 = msg.split(",");
+	var timeNow = new Date();
+
+// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
+	var rxSensId = tmp1[1]*100 + tmp1[2]*1;
+	var rxCount = tmp1[13] *1;
+	var rxSensNum = tmp1[14] *1;
+	var rxStatus = [0,0,0,0,0,0];
+
+	var notExistId = true;
+
+	for ( var i = 0 ; i < rxSensNum ; i ++ ){  // must be added coding case not equal table of sensor number
+		var sensIdSaved = WSNT[x][y].sens[i].sensId;  
+		if( sensIdSaved === rxSensId){
+			var notExistId = false;						
+			var statusSaved = WSNT[x][y].sens[i].status;
+			var savedDate   = new Date(WSNT[x][y].sens[i].elapsed);
+			WSNT[x][y].sens[i].rxData = msg;
+			WSNT[x][y].sens[i].oldStatus = statusSaved;
+			WSNT[x][y].sens[i].status = rxStatus;						
+
+			var msgSensSaved = WSNT[x][y].sens[i].rxData;
+			var tmp2 = msgSensSaved.split(",");
+
+
+			for( var i = 0 ; i < 6 ; i++){
+				if( tmp1[4+i] < 100){ 
+					rxStatus[i] = 1;
+				} else if( tmp1[4+i] < (tmp2[4+i]-100)){ 
+					rxStatus[i] = 1;
+				}
+			}
+	//     find algorithm
+			if( rxStatus !=  statusSaved ){
+				console.log("state chaged");
+//--- sens moving 						
+				WSNT[x][y].sens[i].elapsed = timeNow;
+				WSNT[x][y].sens[i].moving = true;
+				var j = 0;
+				do{
+					if ( WSNT[x][y].sens[j].moving == false) break;				
+					j ++;
+				} while ( j < rxSensNum );
+				if( j >= rxSensNum ){
+//--- send nomal operation signal
+					WSNT[x][y].endDevice.status = 1;
+					break;
+				}
+			} else {
+				time = timeNow.getTime();
+				savedTime = saveDate.getTime();
+				elapsed = (time - savedTime())/1000/60/60;  // change to hour
+ 							
+				if(elapsed > 48 ){ 
+//--- sens stalled for 2 days 
+					WSNT[x][y].sens[i].moving == false;
+					WSNT[x][y].endDevice.status == 2;
+					io.to('sensornet').emit('stalled',{x: y, y:x});
+				}
+			}	
+		}
+	}  
+			// first rx sensor data
+	if( notExistId == true){
+		var temp = rxCount % rxSensNum;
+		WSNT[x][y].sens[temp].sensId = rxSensId;
+		WSNT[x][y].sens[temp].rxData = msg;
+		WSNT[x][y].sens[temp].status = rxStatus;
+		io.to('sensornet').emit('received',{x: y, y:x});
+	}
+}
+
+function endDeviceProc(msg,x,y){
+/*
+M, version, group#, sensor#, MY, MP, SH, SL, DH, DL, %V, solar Volt, battery Volt, coreTemp, chip volt, 
+	DB,NI, packet ID, number of sensors
+Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,2\r\n   
+*/
+			
+	var tmp1 = msg.split(",");
+	var timeNow = new Date();
+	var timeSaved =new Date( WSNT[x][x].endDevice.rxTime);  
+	var a_min = (timeNow.getTime() - timeSaved.getTime()) /1000/60;
+
+	console.log( 'elapsed time1 :',a_min); 						
+	WSNT[x][y].endDevice.rxPeriod = a_min;	// saved minute
+	WSNT[x][y].endDevice.oldRxTime = timeSaved; 
+	WSNT[x][y].endDevice.rxTime	  = timeNow;  
+	WSNT[x][y].endDevice.rxData = msg;  
+	WSNT[x][y].endDevice.numSens = tmp1[18];  
+
+	io.to('sensornet').emit('endDevice',WSNT[x][y]);
+}
+
+
 function socketProc(from,msg){
 
 	var tmp1 = msg.split(",");
@@ -145,112 +219,49 @@ function socketProc(from,msg){
 
 	try{
 		if(( tmp1[0] === 'M' )&&(tmp1[16][0]==='G')){
-/*
-M, version, group#, sensor#, MY, MP, SH, SL, DH, DL, %V, solar Volt, battery Volt, coreTemp, chip volt, 
-	DB,NI, packet ID, number of sensors
-Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,2\r\n   
-*/
-			var rxGroupId = Number(tmp1[16][1]);
-			var rxDistId = tmp1[16][2] * 10 + tmp1[16][3]*1 - 1;
-			var timeSaved =new Date( WSNT[rxGroupId][rxDistId].endDevice.rxTime);  
-			var a_min = (timeNow.getTime() - timeSaved.getTime()) /1000/60;
+			var x = Number(tmp1[16][1]);
+			var y = tmp1[16][2] * 10 + tmp1[16][3]*1 - 1;
 
-			console.log( 'elapsed time1 :',a_min); 						
-			WSNT[rxGroupId][rxDistId].endDevice.rxPeriod = a_min;	// saved minute
-			WSNT[rxGroupId][rxDistId].endDevice.oldRxTime = timeSaved; 
-			WSNT[rxGroupId][rxDistId].endDevice.rxTime	  = timeNow;  
-			WSNT[rxGroupId][rxDistId].endDevice.rxData = msg;  
-			WSNT[rxGroupId][rxDistId].endDevice.numSens = tmp1[18];  
+			endDeviceProc(msg,x,y);
 
-			console.log( 'emit 1');
-			console.log(WSNT[rxGroupId][rxDistId].endDevice.rxData);  
-
-			io.to('sensornet').emit('endDevice',WSNT[rxGroupId][rxDistId]);
-
-		}else if(( tmp1[0] === 'L') && (tmp1[12][0] === 'G')){
-		// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
-			var rxGroupId = Number(tmp1[12][1]);
-			var rxDistId = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
-			var rxSensId = tmp1[1]*100 + tmp1[2]*1;
-			var rxCount = tmp1[13] *1;
-			var rxSensNum = tmp1[14] *1;
-			var rxStatus = [0,0,0,0,0,0];
-
-			var notExistId = true;
-
-			for ( var i = 0 ; i < rxSensNum ; i ++ ){  // must be added coding case not equal table of sensor number
-
-				var sensIdSaved = WSNT[rxGroupId][rxDistId].sens[i].sensId;  
-
-				if( sensIdSaved === rxSensId){
-
-					var notExistId = false;						
-
-					var statusSaved = WSNT[rxGroupId][rxDistId].sens[i].status;
-					var savedDate   = new Date(WSNT[rxGroupId][rxDistId].sens[i].elapsed);
-
-					WSNT[rxGroupId][rxDistId].sens[i].rxData = msg;
-					WSNT[rxGroupId][rxDistId].sens[i].oldStatus = statusSaved;
-					WSNT[rxGroupId][rxDistId].sens[i].status = rxStatus;						
-
-					var msgSensSaved = WSNT[rxGroupId][rxDistId].sens[i].rxData;						
-
-			
-					console.log("var i        : ",i);
-					console.log("statusSaved  : ",statusSaved);
-					console.log("rxStatus     : ",rxStatus);
-
-
-					for( var i = 0 ; i < 6 ; i++){
-						if( tmp1[4+i] < 100) rxStatus[i] = 1;
-					}
-
-			//     find algorithm
-					if( rxStatus !=  statusSaved ){
-
-
-						console.log("state chaged");
-
-//--- sens moving 						
-						WSNT[rxGroupId][rxDistId].sens[i].elapsed = timeNow;
-						WSNT[rxGroupId][rxDistId].sens[i].moving = true;
-
-						var j = 0;
-						do{
-							if ( WSNT[rxGroupId][rxDistId].sens[j].moving == false) break;				
-							j ++;
-						} while ( j < rxSensNum );
-								
-						if( j >= rxSensNum ){
-//--- send nomal operation signal
-							WSNT[rxGroupId][rxDistId].endDevice.status = 1;
-							break;
-						}
-					} else {
-						time = timeNow.getTime();
-						savedTime = saveDate.getTime();
-						elapsed = (time - savedTime())/1000/60/60;  // change to hour
- 							
-						if(elapsed > 48 ){ 
-//--- sens stalled for 2 days 
-							WSNT[rxGroupId][rxDistId].sens[i].moving == false;
-							WSNT[rxGroupId][rxDistId].endDevice.status == 2;
-							io.to('sensornet').emit('stalled',{x: rxDistId, y:rxGroupId});
-						}
-					}	
+			if( x == 7){
+				if( y == 5 ){
+					endDeviceProc(msg,1,11);
+					endDeviceProc(msg,2,9);
+				}else if( y == 4 ){
+					endDeviceProc(msg,2,26);
+					endDeviceProc(msg,5,15);
+				}else if( y == 12 ){
+					endDeviceProc(msg,1,17);
+					endDeviceProc(msg,2,35);
+					endDeviceProc(msg,6,13);
 				}
-			}  
-				
-			// first rx sensor data
-			if( notExistId == true){
-				var temp = rxCount % rxSensNum;
+			}else if(( x == 4) && ( y == 13)){
+					endDeviceProc(msg,4,10);
+			}							
+		}else if(( tmp1[0] === 'L') && (tmp1[12][0] === 'G')){
+			var x = Number(tmp1[12][1]);
+			var y = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
 
-				WSNT[rxGroupId][rxDistId].sens[temp].sensId = rxSensId;
-				WSNT[rxGroupId][rxDistId].sens[temp].rxData = msg;
-				WSNT[rxGroupId][rxDistId].sens[temp].status = rxStatus;
-				io.to('sensornet').emit('received',{x: rxDistId, y:rxGroupId});
-			}
+			sensProc(msg,x,y);
+
+			if( x == 7){
+				if( y == 5 ){
+					sensProc(msg,1,11);
+					sensProc(msg,2,9);
+				}else if( y == 4 ){
+					sensProc(msg,2,26);
+					sensProc(msg,5,15);
+				}else if( y == 12 ){
+					sensProc(msg,1,17);
+					sensProc(msg,2,35);
+					sensProc(msg,6,13);
+				}
+			}else if(( x == 4) && ( y == 13)){
+					sensProc(msg,4,10);
+			}				
 		}
+
 	}
 	catch(error){
 		console.log('try cach error', error.message);
