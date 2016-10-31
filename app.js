@@ -9,7 +9,7 @@ var agn3 = [4,4];
 var agn4 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
 var agn5 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
 var agn6 = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
-var agn7 = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
+var agn7 = [2,3,3,3,4, 3,2,2,3,2, 3,2,2,4,3, 3,3,2];
 
 var now = new Date(); 
 var arrySensNo = [agn0,agn1,agn2,agn3,agn4,agn5,agn6, agn7]; 
@@ -174,11 +174,7 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 			var rxSensId = tmp1[1]*100 + tmp1[2]*1;
 			var rxCount = tmp1[13] *1;
 			var rxSensNum = tmp1[14] *1;
-
 			var rxStatus = [0,0,0,0,0,0];
-			for( var i = 0 ; i < 6 ; i++){
-				if( tmp1[4+i] < 100) rxStatus[i] = 1;
-			}
 
 			var notExistId = true;
 
@@ -186,10 +182,6 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 
 				var sensIdSaved = WSNT[rxGroupId][rxDistId].sens[i].sensId;  
 
-
-				console.log("var i      : ",i);
-				console.log("rxSensId   : ",rxSensId);
-				console.log("sensIdSaved: ",sensIdSaved);
 				if( sensIdSaved === rxSensId){
 
 					var notExistId = false;						
@@ -197,17 +189,28 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 					var statusSaved = WSNT[rxGroupId][rxDistId].sens[i].status;
 					var savedDate   = new Date(WSNT[rxGroupId][rxDistId].sens[i].elapsed);
 
+					WSNT[rxGroupId][rxDistId].sens[i].rxData = msg;
+					WSNT[rxGroupId][rxDistId].sens[i].oldStatus = statusSaved;
+					WSNT[rxGroupId][rxDistId].sens[i].status = rxStatus;						
+
+					var msgSensSaved = WSNT[rxGroupId][rxDistId].sens[i].rxData;						
+
 			
 					console.log("var i        : ",i);
 					console.log("statusSaved  : ",statusSaved);
 					console.log("rxStatus     : ",rxStatus);
 
-					WSNT[rxGroupId][rxDistId].sens[i].rxData = msg;
-					WSNT[rxGroupId][rxDistId].sens[i].oldStatus = statusSaved;
-					WSNT[rxGroupId][rxDistId].sens[i].status = rxStatus;						
+
+					for( var i = 0 ; i < 6 ; i++){
+						if( tmp1[4+i] < 100) rxStatus[i] = 1;
+					}
 
 			//     find algorithm
 					if( rxStatus !=  statusSaved ){
+
+
+						console.log("state chaged");
+
 //--- sens moving 						
 						WSNT[rxGroupId][rxDistId].sens[i].elapsed = timeNow;
 						WSNT[rxGroupId][rxDistId].sens[i].moving = true;
