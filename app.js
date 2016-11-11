@@ -24,7 +24,7 @@ var G0 = [], G1 = [], G2 = [], G3 = [], G4 = [], G5 = [], G6 = [], G7 = [];
 
 var WSNT = [G0,G1,G2,G3,G4,G5,G6,G7];
 
-for ( i = 0 ; i < 8 ; i ++ ){
+for ( var i = 0 ; i < 8 ; i ++ ){
 
 	var count = arryEndDevice[i]; 
 	for ( var j = 0 ; j < count ; j ++){
@@ -117,65 +117,73 @@ app.get('/wsnObj',function ( request, response, next) {
 
 
 function sensProc(msg,x,y){
+
 	var tmp1 = msg.split(",");
+
 	var timeNow = new Date();
 
 // L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
 	var rxSensId = tmp1[1]*100 + tmp1[2]*1;
 	var rxCount = tmp1[13] *1;
-	var rxSensNum = tmp1[14] *1;
+//	var rxSensNum = tmp1[14] *1;
 	var rxStatus = [0,0,0,0,0,0];
+	var sensNum = arrySensNo[x][y];
 
 	var notExistId = true;
 
-	for ( var i = 0 ; i < rxSensNum ; i ++ ){  // must be added coding case not equal table of sensor number
-		var sensIdSaved = WSNT[x][y].sens[i].sensId;  
+	for ( var si = 0 ; si < sensNum ; si ++ ){  // must be added coding case not equal table of sensor number
+		var sensIdSaved = WSNT[x][y].sens[si].sensId;  
 		if( sensIdSaved === rxSensId){
 			var notExistId = false;						
-			var statusSaved = WSNT[x][y].sens[i].status;
-			var savedDate   = new Date(WSNT[x][y].sens[i].elapsed);
-			WSNT[x][y].sens[i].rxData = msg;
-			WSNT[x][y].sens[i].oldStatus = statusSaved;
-			WSNT[x][y].sens[i].status = rxStatus;						
+			var statusSaved = WSNT[x][y].sens[si].status;
+			var savedDate   = new Date(WSNT[x][y].sens[si].elapsed);
 
-			var msgSensSaved = WSNT[x][y].sens[i].rxData;
+			WSNT[x][y].sens[si].rxData = msg;
+			WSNT[x][y].sens[si].oldStatus = statusSaved;
+			WSNT[x][y].sens[si].status = rxStatus;						
+
+			var msgSensSaved = WSNT[x][y].sens[si].rxData;
 			var tmp2 = msgSensSaved.split(",");
 
 
-			for( var i = 0 ; i < 6 ; i++){
-				if( tmp1[4+i] < 100){ 
-					rxStatus[i] = 1;
-				} else if( tmp1[4+i] < (tmp2[4+i]-100)){ 
-					rxStatus[i] = 1;
+			for( var k = 0 ; k < 6 ; k++){
+				if( tmp1[4+k] < 100){ 
+					rxStatus[k] = 1;
+				} else if( tmp1[4+k] < (tmp2[4+k]-100)){ 
+					rxStatus[k] = 1;
 				}
 			}
 	//     find algorithm
-			if( rxStatus !=  statusSaved ){
-				console.log("state chaged");
-//--- sens moving 						
-				WSNT[x][y].sens[i].elapsed = timeNow;
-				WSNT[x][y].sens[i].moving = true;
-				var j = 0;
-				do{
-					if ( WSNT[x][y].sens[j].moving == false) break;				
-					j ++;
-				} while ( j < rxSensNum );
-				if( j >= rxSensNum ){
-//--- send nomal operation signal
-					WSNT[x][y].endDevice.status = 1;
-					break;
-				}
-			} else {
+			if( rxStatus ===  statusSaved ){
+				console.log("Pin state not chaged");
 				time = timeNow.getTime();
 				savedTime = saveDate.getTime();
 				elapsed = (time - savedTime())/1000/60/60;  // change to hour
  							
 				if(elapsed > 48 ){ 
 //--- sens stalled for 2 days 
-					WSNT[x][y].sens[i].moving == false;
+					WSNT[x][y].sens[si].moving == false;
 					WSNT[x][y].endDevice.status == 2;
 					io.to('sensornet').emit('stalled',{x: y, y:x});
 				}
+			}else{
+//--- sens moving 						
+				console.log(" Group %d Id %d Pin %d moved",x,y,si+1);
+
+				WSNT[x][y].sens[si].elapsed = timeNow;
+				WSNT[x][y].sens[si].moving = true;
+				var j = 0;
+				do{
+					if ( WSNT[x][y].sens[j].moving == false) break;				
+					j ++;
+				} while ( j < sensNum );
+				if( j >= sensNum ){
+//--- send nomal operation signal
+					WSNT[x][y].endDevice.status = 1;
+					break;
+				}
+				 io.to('sensornet').emit('endDevice',WSNT[x][y]);
+				// io.to('sensornet').emit('received',{x: y, y:x});
 			}	
 		}
 	}  
@@ -185,8 +193,8 @@ function sensProc(msg,x,y){
 		WSNT[x][y].sens[temp].sensId = rxSensId;
 		WSNT[x][y].sens[temp].rxData = msg;
 		WSNT[x][y].sens[temp].status = rxStatus;
-		io.to('sensornet').emit('received',{x: y, y:x});
 	}
+	io.to('sensornet').emit('received',{x: y, y:x});
 }
 
 function endDeviceProc(msg,x,y){
@@ -200,6 +208,7 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 	var timeNow = new Date();
 	var timeSaved =new Date( WSNT[x][x].endDevice.rxTime);  
 	var a_min = (timeNow.getTime() - timeSaved.getTime()) /1000/60;
+
 
 	console.log( 'elapsed time1 :',a_min); 						
 	WSNT[x][y].endDevice.rxPeriod = a_min;	// saved minute
@@ -224,20 +233,21 @@ function socketProc(from,msg){
 
 			endDeviceProc(msg,x,y);
 
-			if( x == 7){
-				if( y == 5 ){
-					endDeviceProc(msg,1,11);
-					endDeviceProc(msg,2,9);
-				}else if( y == 4 ){
+			if(( x == 4 )&&(y == 11)){
+				endDeviceProc(msg,1,11);
+				endDeviceProc(msg,2,9);
+			}
+			if( (x==5)&&( y == 14 )){
 					endDeviceProc(msg,2,26);
 					endDeviceProc(msg,5,15);
-				}else if( y == 12 ){
-					endDeviceProc(msg,1,17);
-					endDeviceProc(msg,2,35);
-					endDeviceProc(msg,6,13);
-				}
-			}else if(( x == 4) && ( y == 13)){
-					endDeviceProc(msg,4,10);
+			}
+			if((x==1) && ( y == 22 )){
+				endDeviceProc(msg,1,17);
+				endDeviceProc(msg,2,35);
+				endDeviceProc(msg,6,13);
+			}
+			if(( x == 4) && ( y == 14)){
+				endDeviceProc(msg,4,10);
 			}							
 		}else if(( tmp1[0] === 'L') && (tmp1[12][0] === 'G')){
 			var x = Number(tmp1[12][1]);
@@ -245,21 +255,22 @@ function socketProc(from,msg){
 
 			sensProc(msg,x,y);
 
-			if( x == 7){
-				if( y == 5 ){
-					sensProc(msg,1,11);
-					sensProc(msg,2,9);
-				}else if( y == 4 ){
-					sensProc(msg,2,26);
-					sensProc(msg,5,15);
-				}else if( y == 12 ){
-					sensProc(msg,1,17);
-					sensProc(msg,2,35);
-					sensProc(msg,6,13);
-				}
-			}else if(( x == 4) && ( y == 13)){
-					sensProc(msg,4,10);
-			}				
+			if(( x == 4 )&&(y == 11)){
+				sensProc(msg,1,11);
+				sensProc(msg,2,9);
+			}
+			if( (x==5)&&( y == 14 )){
+				sensProc(msg,2,26);
+				sensProc(msg,5,15);
+			}
+			if((x==1) && ( y == 22 )){
+				sensProc(msg,1,17);
+				sensProc(msg,2,35);
+				sensProc(msg,6,13);
+			}
+			if(( x == 4) && ( y == 13)){
+				sensProc(msg,4,10);
+			}							
 		}
 
 	}
