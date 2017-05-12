@@ -125,7 +125,7 @@ function sensProc(msg,x,y){
 // L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
 	var rxSensId = tmp1[1]*100 + tmp1[2]*1;
 	var rxCount = tmp1[13] *1;
-//	var rxSensNum = tmp1[14] *1;
+	var rxSensNum = tmp1[14] *1;
 	var rxStatus = [0,0,0,0,0,0];
 	var sensNum = arrySensNo[x][y];
 

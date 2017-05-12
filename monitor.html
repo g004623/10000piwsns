@@ -52,7 +52,7 @@
     					'DB','D.Id','NI','No.S'
 					];
 
-		var tableWidth = ['60','60','60','60','60','60','30','60','40','40','30','60','60','60','60'];
+		var tableWidth = ['60','60','60','60','40','40','30','60','40','40','30','60','60','60','30','130'];
 		var x = document.createElement('TABLE');
 		x.setAttribute("id","tblData2");
 
@@ -60,21 +60,23 @@
 
 		var tr = tbl.insertRow();
 
-		for( var i = 0; i < 15 ; i ++){
+		for( var i = 0; i < 16 ; i ++){
 			var td = tr.insertCell();
 			td.appendChild(document.createTextNode(title[i+4]));
 			td.style.border = '1px solid black';
 			td.setAttribute('width',tableWidth[i]);
-			td.setAttribute('align','center');
+			td.setAttribute('align','center');			
 		}
 
 		for(var j = 0 ; j < 7 ; j++){
 
 			var tr = tbl.insertRow();	
-			for( var i = 0; i < 15 ; i ++){
+			for( var i = 0; i < 16 ; i ++){
 				var td = tr.insertCell();
 				td.appendChild(document.createTextNode(['000']));
 				td.style.border = '1px solid black';
+				td.setAttribute('align','center');			
+
 			}
 		}
 
@@ -85,22 +87,25 @@
 
 		var tr = tbl.insertRow();
 
-		for( var i = 0; i < 15 ; i ++){
+		for( var i = 0; i < 16 ; i ++){
 			var td = tr.insertCell();
 			td.appendChild(document.createTextNode(title[i+4]));
 			td.style.border = '1px solid black';
 			td.setAttribute('width',tableWidth[i]);
-			td.setAttribute('align','center');
+			td.setAttribute('align','center');			
+
 		}
 
 		for(var j = 0 ; j < 7 ; j++){
 
 			var tr = tbl.insertRow();	
-			for( var i = 0; i < 15 ; i ++){
+			for( var i = 0; i < 16 ; i ++){
 				var td = tr.insertCell();
 				td.appendChild(document.createTextNode(['000']));
 				td.style.border = '1px solid black';
-			}
+				td.setAttribute('align','center');			
+
+			}	
 		}
 	}
 
@@ -138,7 +143,30 @@
 				changeContent('tblData3',test,i-4,val);
 			}
 		}
+	
+		var d = new Date();
+		var weekday = new Array(7);
+		weekday[0]= "Sun";
+		weekday[1]= "Mon";
+		weekday[2]= "Tues";
+		weekday[3]= "Wed";
+		weekday[4]= "Thur";
+		weekday[5]= "Fri";
+		weekday[6]= "Sat";
+
+		var n = weekday[d.getDay()];
+		var h = d.getHours();
+ 	 	var m = d.getMinutes();
+		val = n + ' : ' + h + ' : ' + m ;
+
+		if ( no === 2 ){
+			changeContent('tblData2',test,15,val);
+		} else{
+			changeContent('tblData3',test,15,val);
 	}
+}   
+		
+
 </script>
 
 	<script src="/socket.io/socket.io.js"></script>
@@ -236,12 +264,17 @@
 		});
 
 		socket.on('received',function( data ) {
+
 			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+			console.log('received');
+
 			if( signalToggle == true){
 				signalToggle = false;
+				//$target.removeClass('init stalled moved signalOn1').addClass('signalOn2');
 				$target.removeClass('init stalled moved signalOn1').addClass('signalOn2');
 			} else{
 				signalToggle = true;
+				//$target.removeClass('init stalled moved signalOn2').addClass('signalOn1');
 				$target.removeClass('init stalled moved signalOn2').addClass('signalOn1');
 			}
 			console.log("received On");
@@ -366,11 +399,11 @@
 			<div id="right_div1" style="width: 300px; height: 180px;">
 			</div>	
 			<div id="left_div1" style="width: 855px; height: 180px;">
-				<table id='table2' width = '800'></table>
+				<table id='table2' width = '860'></table>
 			</div>
 			<div id="right_div2" style="width: 300px; height: 180px;"></div>
 			<div id="left_div2" style="width: 855px; height: 180px;">
-				<table id='table3' width = '800'></table>
+				<table id='table3' width = '860'></table>
 			</div>
 	</div>	
 	<div id="test1">		
