@@ -9,6 +9,7 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script type="text/javascript">
+
 	google.charts.load('current', {'packages':['corechart']});
 
 	var pinData = [['Element','Density',{role:'style'}],
@@ -177,8 +178,8 @@
 		var count1 = 0;
 		var count2 = 0;
 
-		var socket = io.connect('http://192.168.110.10:7532');
-		// var socket = io.connect('http://192.168.0.10:7532');
+		//var socket = io.connect('http://192.168.110.10:7532');
+		var socket = io.connect('http://192.168.0.10:7532');
 
 		var signalToggle = true;
 		socket.on('stalled',function( data ) {
@@ -229,17 +230,14 @@
 		});
 
 		socket.on('endDevice1',function( data ) {
-
 			if( count2 < 7) { count2 = count2 +1;
 			} else { count2 = 1;}
-
 			writeTable(data.endDevice.rxData,count2,3);
 
 			var count = data.endDevice.numSens;
 			console.log("data.endDevice.numSense:" + count );
 
 			for(var i = 0 ; i < 4 ; i++){
-
 				if( i < count ){
 					var a = data.sens[i].status;				
 					var sum = 0;
@@ -280,7 +278,62 @@
 			console.log("received On");
 		});
 		
+		socket.on('graphData',function( docs ) {
+			// var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+			// $target.removeClass('init stalled').addClass('moved');
+			console.log(docs);
+		});
+
 	</script>
+
+
+
+<script>
+
+google.charts.load('current', {'packages':['line']});
+google.charts.setOnLoadCallback(drawChart);
+
+function drawChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'Day');
+      data.addColumn('number', 'Guardians of the Galaxy');
+      data.addColumn('number', 'The Avengers');
+      // data.addColumn('number', 'Transformers: Age of Extinction');
+
+      data.addRows([
+        [0, 0, 0],    [1, 10, 5],   [2, 23, 15],  [3, 17, 9],   [4, 18, 10],  [5, 9, 5],
+        [6, 11, 3],   [7, 27, 19],  [8, 33, 25],  [9, 40, 32],  [10, 32, 24], [11, 35, 27],
+        [12, 30, 22], [13, 40, 32], [14, 42, 34], [15, 47, 39], [16, 44, 36], [17, 48, 40],
+        [18, 52, 44], [19, 54, 46], [20, 42, 34], [21, 55, 47], [22, 56, 48], [23, 57, 49],
+        [24, 60, 52], [25, 50, 42], [26, 52, 44], [27, 51, 43], [28, 49, 41], [29, 53, 45],
+        [30, 55, 47], [31, 60, 52], [32, 61, 53], [33, 59, 51], [34, 62, 54], [35, 65, 57],
+        [36, 62, 54], [37, 58, 50], [38, 55, 47], [39, 61, 53], [40, 64, 56], [41, 65, 57],
+        [42, 63, 55], [43, 66, 58], [44, 67, 59], [45, 69, 61], [46, 69, 61], [47, 70, 62],
+        [48, 72, 64], [49, 68, 60], [50, 66, 58], [51, 65, 57], [52, 67, 59], [53, 70, 62],
+        [54, 71, 63], [55, 72, 64], [56, 73, 65], [57, 75, 67], [58, 70, 62], [59, 68, 60],
+        [60, 64, 56], [61, 60, 52], [62, 65, 57], [63, 67, 59], [64, 68, 60], [65, 69, 61],
+        [66, 70, 62], [67, 72, 64], [68, 75, 67], [69, 80, 72]
+      ]);
+
+      var options = {
+		chart: {
+			title: 'Box Office Earnings in First Two Weeks of Opening',
+			subtitle: 'in millions of dollars (USD)'
+		},
+		width: 900,
+		height: 500
+	};
+    
+	var chart = new google.charts.Line(document.getElementById('chart_div'));
+    chart.draw(data, google.charts.Line.convertOptions(options));
+}
+
+</script>
+
+
+
+
+
 
 	<script>		
 		$(document).ready(function() {
@@ -345,7 +398,13 @@
 		    return i;
 		}
 
-
+		function drawGraph(){
+			socket.emit('reqGraph',{
+				x: 1,
+				y: 1
+			});
+		}
+			
 	</script>
 
 <body onload="startTime()">
@@ -411,6 +470,10 @@
 		<p> Eunwho Power Electronics:  eunwho.com eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2016 </p>
 	
 	</div>
+
+	<button onclick='drawGraph()'>Draw Graph</button>
+
+	<div id='chart_div' style = 'width:900px; height: 500px'></div>
 
 </body>
 

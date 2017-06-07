@@ -1,4 +1,22 @@
 //--- mongoose setting
+var mongoose = require('mongoose');
+
+mongoose.Promise = global.Promise;
+
+mongoose.connect('mongodb://localhost/wsns0');
+
+var db = mongoose.connection;
+db.on('error',console.error.bind(console,'mongoose connection error'));
+db.once('open',function(){
+	console.log('Ok db connected');
+});
+
+var wsnSchema = mongoose.Schema({
+	wsnData: String,
+	date:{type:Date,default:Date.now}
+});
+
+var wsnDB1 = mongoose.model('wsnDB1',wsnSchema);
 
 var arryEndDevice = [2,24,36,2,25,36,18,18];
 var agn0 = [4,4];
@@ -8,6 +26,7 @@ var agn2 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,
 var agn3 = [4,4];
 var agn4 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
 var agn5 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
+
 var agn6 = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
 var agn7 = [2,3,3,3,4, 3,2,2,3,2, 3,2,2,4,3, 3,3,2];
 
@@ -289,20 +308,54 @@ io.on('connection',function(socket){
 	// socket.emit('news',{hello:'world'});
 	
 	socket.on('CH0',function(from,msg){  // from backstay
+		var wsnIn = new wsnDB1({wsnData:msg});
+		wsnIn.save(function(err,wsnIn){
+			if(err){
+				console.log(err);
+				return console.error(err);
+			}else{
+				console.log('CH0 SAVED :'+msg);
+			}
+		});
 		socketProc(from,msg);
 	});		
 
 	socket.on('CH1',function(from,msg){  // from backstay
+		var wsnIn = new wsnDB1({wsnData:msg});
+		wsnIn.save(function(err,wsnIn){
+			if(err){
+				console.log(err);
+				return console.error(err);
+			}else{
+				console.log('CH1 SAVED :'+msg);
+			}
+		});
 		socketProc(from,msg);
 	});		
 
 	socket.on('clickDevice',function(data){
 		console.log("sens1 Data: ",WSNT[data.y][data.x]);
-		//console.log("sens2 Data: ",WSNT[data.y][data.x].sens[1].status);
 		//console.log("sens3 Data: ",WSNT[data.y][data.x].sens[2].status);
 		//console.log("sens4 Data: ",WSNT[data.y][data.x].snes[3].status);
 		socket.emit('endDevice1',WSNT[data.y][data.x]);
 	});	
 
+	socket.on('reqGraph',function(data){
+		console.log("reqGraph: ",data);
+		// send db find data
+	
+		wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
+			{"wsnData":{$regex:".G506.*"}}]},
+			{'wsnData':true,_id:false,'date':true},function( err, docs ){
+        		if(err) {
+            		console.log(err);
+        		}else{
+            		//console.log(docs[0].wsnData);
+					console.log(docs);
+					socket.emit('graphData',docs);
+        		}
+    		}
+		);
+	});	
 });
 //--- end of codinater data
