@@ -3,7 +3,86 @@
 <head>
 	<meta charset="utf-8">
 	<link type="text/css" rel="stylesheet" href="/app.css" media="all">
+
 	<title>Auto Grease Monitor</title>
+
+
+	<script type="text/javascript">
+		window.onload = function () {
+			var dataSet1 = [{ x: 23, y: 4 },{ x: 28, y: 5 },{ x: 39, y: 9 },
+					{ x: 34, y: 8 },{ x: 24, y: 3 },{ x: 29, y: 7 },
+					{ x: 29, y: 5 },{ x: 23, y: 6 },{ x: 27, y: 7 },
+					{ x: 34, y: 11 },{ x: 36, y: 9 },{ x: 33, y: 5 },
+					{ x: 32, y: 8 },{ x: 21, y: 2 }
+					];
+
+			var dataSet2 = [
+					{ x: 24, y: 2 },{ x: 27, y: 3 },{ x: 35, y: 7 },
+					{ x: 32, y: 6 },{ x: 29, y: 4 },{ x: 23, y: 5 },
+					{ x: 24, y: 3 },{ x: 26, y: 4 },{ x: 24, y: 5 },
+					{ x: 33, y: 7 },{ x: 34, y: 6 },{ x: 30, y: 4 },
+					{ x: 37, y: 8 },{ x: 24, y: 2 }
+					];
+			 
+			var chart = new CanvasJS.Chart("chartContainer", {
+				title: {
+					text: "Server Performance",
+					fontSize: 20
+				},
+				animationEnabled: true,
+				axisX: {
+					title: "Server Load (TPS)",
+					titleFontSize: 18
+
+				},
+				axisY: {
+					title: "Response Time (sec)",
+					titleFontSize: 16
+				},
+				legend: {
+					verticalAlign: 'bottom',
+					horizontalAlign: "center"
+				},
+
+				data: [
+				{
+					type: "scatter",
+					markerType: "square",
+					toolTipContent: "<span style='\"'color: {color};'\"'><strong>{name}</strong></span><br/><strong> Load</strong> {x} <br/><strong> Response</strong></span> {y}sec",
+
+					name: "Server Pluto",
+					showInLegend: true,
+					dataPoints: dataSet1
+
+				},
+				{
+					type: "scatter",
+					name: "Server Mars",
+					markerType: "triangle",
+					showInLegend: true,
+					toolTipContent: "<span style='\"'color: {color};'\"'><strong>{name}</strong></span><br/><strong> Load</strong> {x} <br/><strong> Response</strong></span> {y}sec",
+
+					dataPoints: dataSet2 
+
+				}
+				],
+				legend: {
+					cursor: "pointer",
+					itemclick: function (e) {
+						if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+							e.dataSeries.visible = false;
+						}
+						else {
+							e.dataSeries.visible = true;
+						}
+						chart.render();
+					}
+				}
+			});
+
+			chart.render();
+		}
+	</script>
 
 <!-- start of goole gauge --> 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -287,54 +366,6 @@
 	</script>
 
 
-
-<script>
-
-google.charts.load('current', {'packages':['line']});
-google.charts.setOnLoadCallback(drawChart);
-
-function drawChart() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('number', 'Day');
-      data.addColumn('number', 'Guardians of the Galaxy');
-      data.addColumn('number', 'The Avengers');
-      // data.addColumn('number', 'Transformers: Age of Extinction');
-
-      data.addRows([
-        [0, 0, 0],    [1, 10, 5],   [2, 23, 15],  [3, 17, 9],   [4, 18, 10],  [5, 9, 5],
-        [6, 11, 3],   [7, 27, 19],  [8, 33, 25],  [9, 40, 32],  [10, 32, 24], [11, 35, 27],
-        [12, 30, 22], [13, 40, 32], [14, 42, 34], [15, 47, 39], [16, 44, 36], [17, 48, 40],
-        [18, 52, 44], [19, 54, 46], [20, 42, 34], [21, 55, 47], [22, 56, 48], [23, 57, 49],
-        [24, 60, 52], [25, 50, 42], [26, 52, 44], [27, 51, 43], [28, 49, 41], [29, 53, 45],
-        [30, 55, 47], [31, 60, 52], [32, 61, 53], [33, 59, 51], [34, 62, 54], [35, 65, 57],
-        [36, 62, 54], [37, 58, 50], [38, 55, 47], [39, 61, 53], [40, 64, 56], [41, 65, 57],
-        [42, 63, 55], [43, 66, 58], [44, 67, 59], [45, 69, 61], [46, 69, 61], [47, 70, 62],
-        [48, 72, 64], [49, 68, 60], [50, 66, 58], [51, 65, 57], [52, 67, 59], [53, 70, 62],
-        [54, 71, 63], [55, 72, 64], [56, 73, 65], [57, 75, 67], [58, 70, 62], [59, 68, 60],
-        [60, 64, 56], [61, 60, 52], [62, 65, 57], [63, 67, 59], [64, 68, 60], [65, 69, 61],
-        [66, 70, 62], [67, 72, 64], [68, 75, 67], [69, 80, 72]
-      ]);
-
-      var options = {
-		chart: {
-			title: 'Box Office Earnings in First Two Weeks of Opening',
-			subtitle: 'in millions of dollars (USD)'
-		},
-		width: 900,
-		height: 500
-	};
-    
-	var chart = new google.charts.Line(document.getElementById('chart_div'));
-    chart.draw(data, google.charts.Line.convertOptions(options));
-}
-
-</script>
-
-
-
-
-
-
 	<script>		
 		$(document).ready(function() {
 			// define variable
@@ -407,6 +438,9 @@ function drawChart() {
 			
 	</script>
 
+	<script type="text/javascript" src="./script.js"></script>
+	<script src="/canvasjs.min.js"></script>
+
 <body onload="startTime()">
 
 
@@ -426,6 +460,7 @@ function drawChart() {
 	</div>
 
 	<div id="tablecontainer">
+
    	<aside> 
    		<table id="tbthsensor">
    			<tr>	<th>LOC. PART</th><th> PMP/S NO </th> </tr>	
@@ -473,7 +508,7 @@ function drawChart() {
 
 	<button onclick='drawGraph()'>Draw Graph</button>
 
-	<div id='chart_div' style = 'width:900px; height: 500px'></div>
+	<div id="chartContainer" style="height: 400px; width: 100%;">
 
 </body>
 
