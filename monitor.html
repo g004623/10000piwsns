@@ -80,38 +80,35 @@
 
         var materialOptions = {
           chart: {
-            title: 'Students\' Final Grades',
-            subtitle: 'based on hours studied'
+            title: 'Sensor Values for Last Week',
+            subtitle: 'based on before last Week'
           },
-          width: 800,
+          width: 1250,
           height: 500,
           series: {
-            0: {axis: 'hours studied'},
-            1: {axis: 'final grade'}
+            0: {axis: 'Sensor Value'},
           },
           axes: {
             y: {
-              'hours studied': {label: 'Hours Studied'},
-              'final grade': {label: 'Final Exam Grade'}
+              'Sensor Value': {label: 'Sensor Value'},
             }
           }
         };
 
         var classicOptions = {
-          width: 800,
+          width: 1250,
           series: {
             0: {targetAxisIndex: 0},
-            1: {targetAxisIndex: 1}
           },
-          title: 'Students\' Final Grades - based on hours studied',
+          title: 'Sensor Values - for Last Week',
 
           vAxes: {
             // Adds titles to each axis.
-            0: {title: 'Hours Studied'},
-            1: {title: 'Final Exam Grade'}
-          }
-        };
-
+            0: {title: 'Sensor Values'},
+          }, 
+        	
+		};
+		
         function drawMaterialChart( ) {
           var materialChart = new google.charts.Scatter(chartDiv);
   		data.addRows( graphData);
@@ -128,8 +125,6 @@
         }
         drawMaterialChart( );
     };
-
-
 </script>
 <!-- end of goole gauge --> 
 

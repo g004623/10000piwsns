@@ -81,7 +81,7 @@ var preExit = [];
 process.stdin.resume();
 process.on('exit',function(code) {
 	var i;
-	console.long('Process exit');
+	console.log('Process exit');
 
 	for( i = 0; i < preExit.length; i++){
 		preExit[i](code);
@@ -345,7 +345,7 @@ io.on('connection',function(socket){
 		// send db find data
 	
 		wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-			{"wsnData":{$regex:"L,4,2"}},
+			{"wsnData":{$regex:"L,4,3"}},
 			{"wsnData":{$regex:".G718.*"}}]},
 			{'wsnData':true,_id:false,'date':true},function( err, docs ){
         		if(err) {
@@ -367,8 +367,23 @@ io.on('connection',function(socket){
 						test[key].push( tmp1[7]*1);
 						test[key].push( tmp1[8]*1);
 						test[key].push( tmp1[9]*1);
-						console.log(test[key]);
 					}
+
+					for( var key in test[0]){
+						test[0][key] = 0*1;
+					}
+
+					var timeNow = new Date();
+					 
+					test[0][0] = timeNow.getTime();
+					console.log(test[0]);
+
+					for( var key in test[1]){
+						test[1][key] = 1000*1;
+					}
+					test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
+					console.log(test[1]);
+
 					//socket.emit('graphData',docs);
 					socket.emit('graphData',test);
         		}
