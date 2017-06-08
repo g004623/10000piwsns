@@ -345,28 +345,30 @@ io.on('connection',function(socket){
 		// send db find data
 	
 		wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-			{"wsnData":{$regex:".G506.*"}}]},
+			{"wsnData":{$regex:"L,4,2"}},
+			{"wsnData":{$regex:".G718.*"}}]},
 			{'wsnData':true,_id:false,'date':true},function( err, docs ){
         		if(err) {
             		console.log(err);
         		}else{
             		//console.log(docs[0].wsnData);
+					//var test1 =[];
+					var test = [];
+
 					console.log(docs);
-					var test = 
-					        [
-          [0, 4, 67],  [1, 11, 88],   [2, 12, 77],
-          [3, 7, 93],  [4, 14, 85],   [5, 15, 91],
-          [6, 9, 71],  [7, 17, 78],   [8, 18, 93],
-          [9, 9, 80],  [10, 110, 82], [11, 10, 75],
-          [12, 15, 80], [13, 13, 90],  [14, 11, 72],
-          [15, 15, 75], [16, 16, 68],  [17, 17, 98],
-          [18, 13, 82], [19, 19, 94],  [20, 12, 79],
-          [21, 12, 95], [22, 12, 86],  [23, 13, 67],
-          [24, 14, 60], [25, 12, 80],  [26, 16, 92],
-          [27, 12, 81], [28, 18, 79],  [29, 19, 83]
-        ];
-
-
+					for(var key in docs){
+						
+						var tmp1 = docs[key].wsnData.split(",");
+						//test.push(test1);
+						test.push([(docs[key].date)*1]);
+						test[key].push( tmp1[4]*1);
+						test[key].push( tmp1[5]*1);
+						test[key].push( tmp1[6]*1);
+						test[key].push( tmp1[7]*1);
+						test[key].push( tmp1[8]*1);
+						test[key].push( tmp1[9]*1);
+						console.log(test[key]);
+					}
 					//socket.emit('graphData',docs);
 					socket.emit('graphData',test);
         		}
