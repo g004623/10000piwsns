@@ -7,83 +7,6 @@
 	<title>Auto Grease Monitor</title>
 
 
-	<script type="text/javascript">
-		window.onload = function () {
-			var dataSet1 = [{ x: 23, y: 4 },{ x: 28, y: 5 },{ x: 39, y: 9 },
-					{ x: 34, y: 8 },{ x: 24, y: 3 },{ x: 29, y: 7 },
-					{ x: 29, y: 5 },{ x: 23, y: 6 },{ x: 27, y: 7 },
-					{ x: 34, y: 11 },{ x: 36, y: 9 },{ x: 33, y: 5 },
-					{ x: 32, y: 8 },{ x: 21, y: 2 }
-					];
-
-			var dataSet2 = [
-					{ x: 24, y: 2 },{ x: 27, y: 3 },{ x: 35, y: 7 },
-					{ x: 32, y: 6 },{ x: 29, y: 4 },{ x: 23, y: 5 },
-					{ x: 24, y: 3 },{ x: 26, y: 4 },{ x: 24, y: 5 },
-					{ x: 33, y: 7 },{ x: 34, y: 6 },{ x: 30, y: 4 },
-					{ x: 37, y: 8 },{ x: 24, y: 2 }
-					];
-			 
-			var chart = new CanvasJS.Chart("chartContainer", {
-				title: {
-					text: "Server Performance",
-					fontSize: 20
-				},
-				animationEnabled: true,
-				axisX: {
-					title: "Server Load (TPS)",
-					titleFontSize: 18
-
-				},
-				axisY: {
-					title: "Response Time (sec)",
-					titleFontSize: 16
-				},
-				legend: {
-					verticalAlign: 'bottom',
-					horizontalAlign: "center"
-				},
-
-				data: [
-				{
-					type: "scatter",
-					markerType: "square",
-					toolTipContent: "<span style='\"'color: {color};'\"'><strong>{name}</strong></span><br/><strong> Load</strong> {x} <br/><strong> Response</strong></span> {y}sec",
-
-					name: "Server Pluto",
-					showInLegend: true,
-					dataPoints: dataSet1
-
-				},
-				{
-					type: "scatter",
-					name: "Server Mars",
-					markerType: "triangle",
-					showInLegend: true,
-					toolTipContent: "<span style='\"'color: {color};'\"'><strong>{name}</strong></span><br/><strong> Load</strong> {x} <br/><strong> Response</strong></span> {y}sec",
-
-					dataPoints: dataSet2 
-
-				}
-				],
-				legend: {
-					cursor: "pointer",
-					itemclick: function (e) {
-						if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
-							e.dataSeries.visible = false;
-						}
-						else {
-							e.dataSeries.visible = true;
-						}
-						chart.render();
-					}
-				}
-			});
-
-			chart.render();
-		}
-	</script>
-
 <!-- start of goole gauge --> 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
@@ -120,6 +43,90 @@
 		var chart = new google.visualization.ColumnChart(document.getElementById(id));
 		chart.draw(view, options);
 	}
+
+<!-- start of google scatter -->
+	
+	var graphData =
+		[
+          [0, 0, 67],  [1, 1, 88],   [2, 2, 77],
+          [3, 3, 93],  [4, 4, 85],   [5, 5, 91],
+          [6, 6, 71],  [7, 7, 78],   [8, 8, 93],
+          [9, 9, 80],  [10, 10, 82], [11, 0, 75],
+          [12, 5, 80], [13, 3, 90],  [14, 1, 72],
+          [15, 5, 75], [16, 6, 68],  [17, 7, 98],
+          [18, 3, 82], [19, 9, 94],  [20, 2, 79],
+          [21, 2, 95], [22, 2, 86],  [23, 3, 67],
+          [24, 4, 60], [25, 2, 80],  [26, 6, 92],
+          [27, 2, 81], [28, 8, 79],  [29, 9, 83]
+        ];
+
+      google.charts.load('current', {'packages':['corechart', 'scatter']});
+      google.charts.setOnLoadCallback(drawStuff);
+
+      function drawStuff( ) {
+
+        var button = document.getElementById('change-chart');
+        var chartDiv = document.getElementById('chart_div');
+
+        var data = new google.visualization.DataTable();
+
+        data.addColumn('number', 'Student ID');
+        data.addColumn('number', 'Hours Studied');
+        data.addColumn('number', 'Final');
+
+        data.addRows( graphData	);
+
+        var materialOptions = {
+          chart: {
+            title: 'Students\' Final Grades',
+            subtitle: 'based on hours studied'
+          },
+          width: 800,
+          height: 500,
+          series: {
+            0: {axis: 'hours studied'},
+            1: {axis: 'final grade'}
+          },
+          axes: {
+            y: {
+              'hours studied': {label: 'Hours Studied'},
+              'final grade': {label: 'Final Exam Grade'}
+            }
+          }
+        };
+
+        var classicOptions = {
+          width: 800,
+          series: {
+            0: {targetAxisIndex: 0},
+            1: {targetAxisIndex: 1}
+          },
+          title: 'Students\' Final Grades - based on hours studied',
+
+          vAxes: {
+            // Adds titles to each axis.
+            0: {title: 'Hours Studied'},
+            1: {title: 'Final Exam Grade'}
+          }
+        };
+
+        function drawMaterialChart( ) {
+          var materialChart = new google.charts.Scatter(chartDiv);
+  		data.addRows( graphData);
+          materialChart.draw(data, google.charts.Scatter.convertOptions(materialOptions));
+          button.innerText = 'Change to Classic';
+          button.onclick = drawClassicChart;
+        }
+
+        function drawClassicChart() {
+          var classicChart = new google.visualization.ScatterChart(chartDiv);
+          classicChart.draw(data, classicOptions);
+          button.innerText = 'Change to Material';
+          button.onclick = drawMaterialChart;
+        }
+        drawMaterialChart( );
+    };
+
 
 </script>
 <!-- end of goole gauge --> 
@@ -361,6 +368,9 @@
 			// var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 			// $target.removeClass('init stalled').addClass('moved');
 			console.log(docs);
+			graphData = docs;
+			drawStuff( );
+	        // drawMaterialChart();
 		});
 
 	</script>
@@ -438,9 +448,6 @@
 			
 	</script>
 
-	<script type="text/javascript" src="./script.js"></script>
-	<script src="/canvasjs.min.js"></script>
-
 <body onload="startTime()">
 
 
@@ -506,9 +513,11 @@
 	
 	</div>
 
-	<button onclick='drawGraph()'>Draw Graph</button>
+	<button id="getGraphData" onclick=drawGraph()>drawGraph</button>
 
-	<div id="chartContainer" style="height: 400px; width: 100%;">
+	<button id="change-chart"></button>
+
+	<div id="chart_div" style="width: 900px; height: 500px;"></div>
 
 </body>
 
