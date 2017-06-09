@@ -344,9 +344,10 @@ io.on('connection',function(socket){
 		console.log("reqGraph: ",data);
 		// send db find data
 	
+		//wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
 		wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-			{"wsnData":{$regex:"L,4,3"}},
-			{"wsnData":{$regex:".G718.*"}}]},
+			{"wsnData":{$regex:data.x}},
+			{"wsnData":{$regex:data.y}}]},
 			{'wsnData':true,_id:false,'date':true},function( err, docs ){
         		if(err) {
             		console.log(err);
