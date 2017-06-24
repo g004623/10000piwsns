@@ -334,13 +334,45 @@ io.on('connection',function(socket){
 	});		
 
 	socket.on('clickDevice',function(data){
-		console.log("sens1 Data: ",WSNT[data.y][data.x]);
+		//console.log("sens1 Data: ",WSNT[data.y][data.x]);
 		//console.log("sens3 Data: ",WSNT[data.y][data.x].sens[2].status);
 		//console.log("sens4 Data: ",WSNT[data.y][data.x].snes[3].status);
-		socket.emit('endDevice1',WSNT[data.y][data.x]);
+		//socket.emit('endDevice1',WSNT[data.y][data.x]);
+		getSensorId(data);
 	});	
 
 	socket.on('reqGraph',function(data){
+
+	});	
+});
+
+
+function getSensorId(data){
+
+	var groupId = data.y;
+	var masterId = data.x*1 + 1;
+
+	if( masterId < 10 ) masterId = '0' + masterId;
+	 
+	var masterName = 'G'+ groupId + masterId;
+
+	console.log( 'masterName = ' + masterName);
+	wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
+		// {"wsnData":{$regex:masterName}},
+		{"wsnData":{$regex:masterName}}]},
+		{'wsnData':true,_id:false,'date':true},function( err, docs ){
+       		if(err) {
+           		console.log(err);
+       		}else{
+           		console.log(docs);
+			}
+		}
+	).limit(20);
+}   
+
+
+/*
+
 		console.log("reqGraph: ",data);
 		// send db find data
 	
@@ -390,6 +422,7 @@ io.on('connection',function(socket){
         		}
     		}
 		);
-	});	
-});
+
+*/
+
 //--- end of codinater data
