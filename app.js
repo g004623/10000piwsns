@@ -306,8 +306,17 @@ function checkMsg(wsnData){
 function checkSensorEqual(wsnData1, wsnData2){
     if(wsnData1[2] != wsnData2[2]){ return false;}
     if(wsnData1[4] != wsnData2[4]){ return false;}
-    if(wsnData1[5] != wsnData2[5]){ return false;}
-    return true;
+    if(wsnData1[5] === ','){ 
+		if(wsnData2[5] ===','){ 
+			return true;
+		} else { 
+			return false;
+		}
+	} else if(wsnData1[5] != wsnData2[5]){ 
+		return false;
+	} else {
+    	return true;
+    } 
 }
 
 function getMasterId(groupId,groupMemberId){
@@ -317,78 +326,32 @@ function getMasterId(groupId,groupMemberId){
 	//console.log(' Master Name : '+ tmp);
 	return tmp;
 }
-/*
-var getSensorId = function (masterId){
-	wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-		// {"wsnData":{$regex:masterName}},
-		{"wsnData":{$regex:masterId}}]},
-		{'wsnData':true,_id:false,'date':true},function( err, docs ){
-       		if(err) {
-           		console.log(err);
-				return false;
-       		}else{
-           		// console.log(docs);
-				if( docs.length < 10 ){
-					console.log( 'no data for graphic');
-					return false;
-				} else {
-					return {
-						results :docs
-					};
-				}
-			}
-		}
-	).limit(10);
-}
-*/
 
-function getSensorList(groupId, groupMemberId){
+var getList = function ( docs ){
 
-	var masterId = getMasterId(groupId,groupMemberId);
-	var masterDB = [];
-
-	wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-		// {"wsnData":{$regex:masterName}},
-		{"wsnData":{$regex:masterId}}]},
-		{'wsnData':true,_id:false,'date':true},function( err, masterDB ){
-       		if(err) {
-           		console.log(err);
-				return false;
-       		}else{
-           		// console.log(docs);
-				if( masterDB.length < 10 ){
-					console.log( 'no data for graphic');
-				}
-			}
-		}
-	).limit(10);
-
-	console.log( masterDB );
-
-
+	var sensorList = [];
 	var count = 0;
 
-	for ( var key in docs ){
-		// var masterMsg = docs[key].wsnData.split(",");
+	var count = 0;
+	var tmpSensorId;
+	var tmp  = docs[0].wsnData;
+	var sensorNumber = (tmp.split(","))[14];
 
-		var sensorList = [];
+	for ( var key in docs ){
+
 		var masterMsg = docs[key].wsnData;
-		var count = 0;
-		var tmpSensorId
 
 		if( ! checkMsg( masterMsg )){
 			continue;
 		} else {
-			if(masterMsg[5] ===','){
-				tmpSensorId = tmp.substr(0,5);
-			}else{
-				tmpSensorId = tmp.substr(0,6);
-			}
+			tmpSensorId = masterMsg.substr(0,6);
 		}
-		if( tmp1[14] == '1'){
+		
+		if( sensorNumber === '1'){
 			sensorList.push(tmpSensorId);
 			break;
 		}
+
 		if( count === 0 ){
 			sensorList.push(tmpSensorId);
 			count ++;
@@ -398,7 +361,7 @@ function getSensorList(groupId, groupMemberId){
 				continue;
 			}else{
 				sensorList.push(tmpSensorId);
-				if( tmp[14] === '2' ) {
+				if( sensorNumber === '2' ) {
 					break;
 				} else {
 					count ++;
@@ -408,11 +371,12 @@ function getSensorList(groupId, groupMemberId){
 		}else if ( count === 2 ){
 			if ( checkSensorEqual(sensorList[0],tmpSensorId)){
 				continue;
-			} else if ( ckeckSensorEqual(sensorList[1],tempSensorId)){
+			} else if ( checkSensorEqual(sensorList[1],tmpSensorId)){
 				continue;
 			} else {
 				sensorList.push(tmpSensorId);
-				if ( tmp[14] === '3' ){
+				if ( sensorNumber === '3' ){
+					console.log('must end this line');
 					break;
 				}else{
 					count ++;
@@ -422,9 +386,9 @@ function getSensorList(groupId, groupMemberId){
 		} else {
 			if ( checkSensorEqual(sensorList[0],tmpSensorId)){
 				continue;
-			} else if ( ckeckSensorEqual(sensorList[1],tempSensorId)){
+			} else if ( checkSensorEqual(sensorList[1],tmpSensorId)){
 				continue;
-			} else if ( ckeckSensorEqual(sensorList[2],tempSensorId)){
+			} else if ( checkSensorEqual(sensorList[2],tmpSensorId)){
 				continue;
 			} else {
 				sensorList.push(tmpSensorId);
@@ -432,10 +396,40 @@ function getSensorList(groupId, groupMemberId){
 			}
 		}
 	}
-	
-	return sensorList;
+	// console.log( sensorList);
+	return {
+		test: sensorList
+	}; 
 }
 
+function getSensorList(groupId, groupMemberId){
+
+	var masterId = getMasterId(groupId,groupMemberId);
+	var tmp1 = [];
+
+	wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
+		// {"wsnData":{$regex:masterName}},
+		{"wsnData":{$regex:masterId}}]},
+		{'wsnData':true,_id:false,'date':true},function( err, docs ){
+       		if(err) {
+           		console.log(err);
+       		}else{
+           		// console.log(docs);
+				if( docs.length < 10 ){
+					console.log( 'no data for graphic');
+				}else {
+					console.log((getList(docs)).test);
+					tmp1 = (getList(docs)).test;
+				}
+			}
+		}
+	).limit(10);
+
+	console.log(tmp1);
+	return {
+		test: tmp1
+	};
+}
 
 io.on('connection',function(socket){
 
@@ -472,11 +466,22 @@ io.on('connection',function(socket){
 	});		
 
 	socket.on('clickDevice',function(data){
-		//console.log("sens1 Data: ",WSNT[data.y][data.x]);
-		//console.log("sens3 Data: ",WSNT[data.y][data.x].sens[2].status);
-		//console.log("sens4 Data: ",WSNT[data.y][data.x].snes[3].status);
-		getSensorList(data.y,data.x);
-		// socket.emit('endDevice1',WSNT[data.y][data.x]);
+
+		var masterName = getMasterId(data.y,data.x);
+		console.log(masterName);
+
+		var sensorList = (getSensorList(data.y,data.x)).test;
+
+		// console.log(sensorList);
+
+
+/*
+		for ( var kyes in sensorList ) {
+			var graphData = getGraphData(masterName,sensorList[keys]);
+			console.log(graphData);	
+		}		
+		// socket.emit('graphData',test);
+*/
 
 	});	
 
@@ -487,55 +492,51 @@ io.on('connection',function(socket){
 
 
 // select for different masterId each
-/*
-		console.log("reqGraph: ",data);
-		// send db find data
-	
-		//wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-		wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-			{"wsnData":{$regex:data.x}},
-			{"wsnData":{$regex:data.y}}]},
-			{'wsnData':true,_id:false,'date':true},function( err, docs ){
-        		if(err) {
-            		console.log(err);
-        		}else{
-            		//console.log(docs[0].wsnData);
-					//var test1 =[];
-					var test = [];
+function getGraphData(mastName, sensorId){
 
-					console.log(docs);
-					for(var key in docs){
-						
-						var tmp1 = docs[key].wsnData.split(",");
-						//test.push(test1);
-						test.push([(docs[key].date)*1]);
-						test[key].push( tmp1[4]*1);
-						test[key].push( tmp1[5]*1);
-						test[key].push( tmp1[6]*1);
-						test[key].push( tmp1[7]*1);
-						test[key].push( tmp1[8]*1);
-						test[key].push( tmp1[9]*1);
-					}
+	var test = [];
 
-					for( var key in test[0]){
-						test[0][key] = 0*1;
-					}
+	wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
+		{"wsnData":{$regex:masterName}},
+		{"wsnData":{$regex:sensorId}}]},
+		{'wsnData':true,_id:false,'date':true},function( err, docs ){
+        	if(err) {
+           		console.log(err);
+        	}else{
+				console.log(docs);
 
-					var timeNow = new Date();
+				for(var key in docs){
+					
+					var tmp1 = docs[key].wsnData.split(",");
+					//test.push(test1);
+					test.push([(docs[key].date)*1]);
+					test[key].push( tmp1[4]*1);
+					test[key].push( tmp1[5]*1);
+					test[key].push( tmp1[6]*1);
+					test[key].push( tmp1[7]*1);
+					test[key].push( tmp1[8]*1);
+					test[key].push( tmp1[9]*1);
+				}
+
+				for( var key in test[0]){
+					test[0][key] = 0*1;
+				}
+
+				var timeNow = new Date();
 					 
-					test[0][0] = timeNow.getTime();
-					console.log(test[0]);
+				test[0][0] = timeNow.getTime();
+				console.log(test[0]);
 
-					for( var key in test[1]){
-						test[1][key] = 1000*1;
-					}
-					test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
-					console.log(test[1]);
+				for( var key in test[1]){
+					test[1][key] = 1000*1;
+				}
+				test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
+       		}
+   		}
+	);
+	return {
+		graphData: test
+	};
+}
 
-					//socket.emit('graphData',docs);
-					socket.emit('graphData',test);
-        		}
-    		}
-		);
-*/
 //--- end of codinater data
