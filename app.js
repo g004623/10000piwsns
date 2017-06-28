@@ -18,7 +18,7 @@ var wsnSchema = mongoose.Schema({
 
 var wsnDB1 = mongoose.model('wsnDB1',wsnSchema);
 
-var arryEndDevice = [2,24,36,2,25,36,18,18];
+var arryEndDevice = [2,25,36,2,25,36,18,18];
 var agn0 = [4,4];
 var agn1 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
 var agn2 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
@@ -241,10 +241,8 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 
 
 function socketProc(from,msg){
-
 	var tmp1 = msg.split(",");
 	var timeNow = new Date();
-
 	try{
 		if(( tmp1[0] === 'M' )&&(tmp1[16][0]==='G')){
 			var x = Number(tmp1[16][1]);
@@ -291,12 +289,152 @@ function socketProc(from,msg){
 				sensProc(msg,4,10);
 			}							
 		}
-
 	}
 	catch(error){
 		console.log('try cach error', error.message);
 	}
 } 
+
+function checkMsg(wsnData){
+    if( wsnData[0] != 'L' ){    return true;}
+    if ( wsnData[1]< '0' || wsnData[1] > '7'){ return true;}
+    if ( wsnData[14] < '1' || wsnData[4] > '4' ){return true;}
+
+    return false;
+}
+
+function checkSensorEqual(wsnData1, wsnData2){
+    if(wsnData1[2] != wsnData2[2]){ return false;}
+    if(wsnData1[4] != wsnData2[4]){ return false;}
+    if(wsnData1[5] != wsnData2[5]){ return false;}
+    return true;
+}
+
+function getMasterId(groupId,groupMemberId){
+
+	if( groupMemberId < 9 ) groupMemberId = '0' + ( groupMemberId*1 + 1);	 
+	var tmp = 'G'+ groupId + groupMemberId;
+	//console.log(' Master Name : '+ tmp);
+	return tmp;
+}
+/*
+var getSensorId = function (masterId){
+	wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
+		// {"wsnData":{$regex:masterName}},
+		{"wsnData":{$regex:masterId}}]},
+		{'wsnData':true,_id:false,'date':true},function( err, docs ){
+       		if(err) {
+           		console.log(err);
+				return false;
+       		}else{
+           		// console.log(docs);
+				if( docs.length < 10 ){
+					console.log( 'no data for graphic');
+					return false;
+				} else {
+					return {
+						results :docs
+					};
+				}
+			}
+		}
+	).limit(10);
+}
+*/
+
+function getSensorList(groupId, groupMemberId){
+
+	var masterId = getMasterId(groupId,groupMemberId);
+	var masterDB = [];
+
+	wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
+		// {"wsnData":{$regex:masterName}},
+		{"wsnData":{$regex:masterId}}]},
+		{'wsnData':true,_id:false,'date':true},function( err, masterDB ){
+       		if(err) {
+           		console.log(err);
+				return false;
+       		}else{
+           		// console.log(docs);
+				if( masterDB.length < 10 ){
+					console.log( 'no data for graphic');
+				}
+			}
+		}
+	).limit(10);
+
+	console.log( masterDB );
+
+
+	var count = 0;
+
+	for ( var key in docs ){
+		// var masterMsg = docs[key].wsnData.split(",");
+
+		var sensorList = [];
+		var masterMsg = docs[key].wsnData;
+		var count = 0;
+		var tmpSensorId
+
+		if( ! checkMsg( masterMsg )){
+			continue;
+		} else {
+			if(masterMsg[5] ===','){
+				tmpSensorId = tmp.substr(0,5);
+			}else{
+				tmpSensorId = tmp.substr(0,6);
+			}
+		}
+		if( tmp1[14] == '1'){
+			sensorList.push(tmpSensorId);
+			break;
+		}
+		if( count === 0 ){
+			sensorList.push(tmpSensorId);
+			count ++;
+			continue;
+		}else if ( count === 1 ){
+			if ( checkSensorEqual(sensorList[0],tmpSensorId)) {
+				continue;
+			}else{
+				sensorList.push(tmpSensorId);
+				if( tmp[14] === '2' ) {
+					break;
+				} else {
+					count ++;
+					continue;
+				}
+			}
+		}else if ( count === 2 ){
+			if ( checkSensorEqual(sensorList[0],tmpSensorId)){
+				continue;
+			} else if ( ckeckSensorEqual(sensorList[1],tempSensorId)){
+				continue;
+			} else {
+				sensorList.push(tmpSensorId);
+				if ( tmp[14] === '3' ){
+					break;
+				}else{
+					count ++;
+					continue;
+				}
+			}		
+		} else {
+			if ( checkSensorEqual(sensorList[0],tmpSensorId)){
+				continue;
+			} else if ( ckeckSensorEqual(sensorList[1],tempSensorId)){
+				continue;
+			} else if ( ckeckSensorEqual(sensorList[2],tempSensorId)){
+				continue;
+			} else {
+				sensorList.push(tmpSensorId);
+				break;
+			}
+		}
+	}
+	
+	return sensorList;
+}
 
 
 io.on('connection',function(socket){
@@ -337,8 +475,9 @@ io.on('connection',function(socket){
 		//console.log("sens1 Data: ",WSNT[data.y][data.x]);
 		//console.log("sens3 Data: ",WSNT[data.y][data.x].sens[2].status);
 		//console.log("sens4 Data: ",WSNT[data.y][data.x].snes[3].status);
-		//socket.emit('endDevice1',WSNT[data.y][data.x]);
-		getSensorId(data);
+		getSensorList(data.y,data.x);
+		// socket.emit('endDevice1',WSNT[data.y][data.x]);
+
 	});	
 
 	socket.on('reqGraph',function(data){
@@ -347,32 +486,8 @@ io.on('connection',function(socket){
 });
 
 
-function getSensorId(data){
-
-	var groupId = data.y;
-	var masterId = data.x*1 + 1;
-
-	if( masterId < 10 ) masterId = '0' + masterId;
-	 
-	var masterName = 'G'+ groupId + masterId;
-
-	console.log( 'masterName = ' + masterName);
-	wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-		// {"wsnData":{$regex:masterName}},
-		{"wsnData":{$regex:masterName}}]},
-		{'wsnData':true,_id:false,'date':true},function( err, docs ){
-       		if(err) {
-           		console.log(err);
-       		}else{
-           		console.log(docs);
-			}
-		}
-	).limit(20);
-}   
-
-
+// select for different masterId each
 /*
-
 		console.log("reqGraph: ",data);
 		// send db find data
 	
@@ -422,7 +537,5 @@ function getSensorId(data){
         		}
     		}
 		);
-
 */
-
 //--- end of codinater data

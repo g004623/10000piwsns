@@ -78,6 +78,8 @@ address{        }
 .stalled{background: red;}
 .signalOn1{background: blue;}
 .signalOn2{background: lightblue;}
-#test1{ position: relative; top: 40px;  font-size: 14px; display:  text-align: center;  }
+#test1{ top:1500px;  left:335px;  position: relative; font-size: 14px; display:  text-align: center;  }
 
+#getGraphData{ margin-top: 10px;}
 
+#chart_div {margin-top: 20px; }
