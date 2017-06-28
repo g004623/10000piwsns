@@ -1,3 +1,4 @@
+var Promise = require('promise');
 //--- mongoose setting
 var mongoose = require('mongoose');
 
@@ -295,12 +296,14 @@ function socketProc(from,msg){
 	}
 } 
 
-function checkMsg(wsnData){
-    if( wsnData[0] != 'L' ){    return true;}
-    if ( wsnData[1]< '0' || wsnData[1] > '7'){ return true;}
-    if ( wsnData[14] < '1' || wsnData[4] > '4' ){return true;}
+function checkMsg(masterMsg){
 
-    return false;
+	var wsnData = masterMsg.split(",");
+    if( wsnData[0] != 'L' ){    return false;}
+    if ( wsnData[2]< '0' || wsnData[2] > '7'){ return false;}
+    if ( wsnData[14] < '1' || wsnData[14] > '4' ){return false;}
+
+    return true;
 }
 
 function checkSensorEqual(wsnData1, wsnData2){
@@ -327,7 +330,7 @@ function getMasterId(groupId,groupMemberId){
 	return tmp;
 }
 
-var getList = function ( docs ){
+var getSensorTable = function ( docs ){
 
 	var sensorList = [];
 	var count = 0;
@@ -341,7 +344,7 @@ var getList = function ( docs ){
 
 		var masterMsg = docs[key].wsnData;
 
-		if( ! checkMsg( masterMsg )){
+		if( !checkMsg( masterMsg )){
 			continue;
 		} else {
 			tmpSensorId = masterMsg.substr(0,6);
@@ -396,39 +399,100 @@ var getList = function ( docs ){
 			}
 		}
 	}
-	// console.log( sensorList);
-	return {
-		test: sensorList
-	}; 
+	return sensorList; 
 }
 
-function getSensorList(groupId, groupMemberId){
+//function getSensorList(groupId, groupMemberId){
+var getSensorList = function(groupId, groupMemberId){
 
-	var masterId = getMasterId(groupId,groupMemberId);
-	var tmp1 = [];
+	return new Promise( function(resolved, rejected){
 
-	wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-		// {"wsnData":{$regex:masterName}},
-		{"wsnData":{$regex:masterId}}]},
-		{'wsnData':true,_id:false,'date':true},function( err, docs ){
-       		if(err) {
-           		console.log(err);
-       		}else{
-           		// console.log(docs);
-				if( docs.length < 10 ){
-					console.log( 'no data for graphic');
-				}else {
-					console.log((getList(docs)).test);
-					tmp1 = (getList(docs)).test;
+		var masterId = getMasterId(groupId,groupMemberId);
+		var tmp1 = [];
+
+		wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
+			{"wsnData":{$regex:'L'}},
+			{"wsnData":{$regex:masterId}}]},
+			{'wsnData':true,_id:false,'date':true},function( err, docs ){
+       			if(err) {
+           			rejected(err);
+       			}else{
+           			// console.log(docs);
+					if( docs.length < 10 ){
+						console.log( 'no data for graphic');
+					}else {
+						tmp1 = (getSensorTable(docs)) ;
+						resolved(masterId,tmp1[0]);
+					}	
 				}
 			}
-		}
-	).limit(10);
+		).limit(10);
 
-	console.log(tmp1);
-	return {
-		test: tmp1
-	};
+	});
+}
+
+function checkValidSensorData(tmp){
+	var temp = tmp.split(",");
+
+	if( temp[0] != 'L' ){ return false;}
+	if( isNaN(temp[4]) ){ return false;}
+	if( isNaN(temp[5]) ){ return false;}
+	if( isNaN(temp[6]) ){ return false;}
+	if( isNaN(temp[7]) ){ return false;}
+	if( isNaN(temp[8]) ){ return false;}
+	if( isNaN(temp[9]) ){ return false;}
+	return true;
+}
+	
+
+// select for different masterId each
+var getGraphData = function (masterName, sensorId){
+
+	return new Promise(function(resolve,reject){
+		var test = [];
+
+		wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
+			{"wsnData":{$regex:masterName}},
+			{"wsnData":{$regex:sensorId}}]},
+			{'wsnData':true,_id:false,'date':true},function( err, docs ){
+        		if(err) {
+           			reject(err);
+        		}else{
+					// console.log(docs);
+
+					for(var key in docs){
+					
+						var tmp1 = docs[key].wsnData.split(",");
+						//var tmp2 = docs[key].wsnData;
+						//if( checkValidSensorData(tmp2)){continue;}
+						//var tmp1 = docs[key].wsnData.split(",");
+
+						test.push([(docs[key].date)*1]);
+						test[key].push( tmp1[4]*1);
+						test[key].push( tmp1[5]*1);
+						test[key].push( tmp1[6]*1);
+						test[key].push( tmp1[7]*1);
+						test[key].push( tmp1[8]*1);
+						test[key].push( tmp1[9]*1);
+					}
+
+					for( var key in test[0]){
+						test[0][key] = 0*1;
+					}
+
+					var timeNow = new Date();
+					 
+					test[0][0] = timeNow.getTime();
+					for( var key in test[1]){
+						test[1][key] = 1000*1;
+					}
+					test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
+					console.log(test);
+					resolve('graphData',test);
+       			}
+   			}
+		);
+	});
 }
 
 io.on('connection',function(socket){
@@ -470,10 +534,12 @@ io.on('connection',function(socket){
 		var masterName = getMasterId(data.y,data.x);
 		console.log(masterName);
 
-		var sensorList = (getSensorList(data.y,data.x)).test;
+		var promise = getSensorList(data.y,data.x);
 
+		promise
+		.then(getGraphData)
+		.then((socket.emit),console.err);
 		// console.log(sensorList);
-
 
 /*
 		for ( var kyes in sensorList ) {
@@ -491,52 +557,5 @@ io.on('connection',function(socket){
 });
 
 
-// select for different masterId each
-function getGraphData(mastName, sensorId){
-
-	var test = [];
-
-	wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-		{"wsnData":{$regex:masterName}},
-		{"wsnData":{$regex:sensorId}}]},
-		{'wsnData':true,_id:false,'date':true},function( err, docs ){
-        	if(err) {
-           		console.log(err);
-        	}else{
-				console.log(docs);
-
-				for(var key in docs){
-					
-					var tmp1 = docs[key].wsnData.split(",");
-					//test.push(test1);
-					test.push([(docs[key].date)*1]);
-					test[key].push( tmp1[4]*1);
-					test[key].push( tmp1[5]*1);
-					test[key].push( tmp1[6]*1);
-					test[key].push( tmp1[7]*1);
-					test[key].push( tmp1[8]*1);
-					test[key].push( tmp1[9]*1);
-				}
-
-				for( var key in test[0]){
-					test[0][key] = 0*1;
-				}
-
-				var timeNow = new Date();
-					 
-				test[0][0] = timeNow.getTime();
-				console.log(test[0]);
-
-				for( var key in test[1]){
-					test[1][key] = 1000*1;
-				}
-				test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
-       		}
-   		}
-	);
-	return {
-		graphData: test
-	};
-}
 
 //--- end of codinater data
