@@ -487,8 +487,9 @@ var getGraphData = function (masterName, sensorId){
 						test[1][key] = 1000*1;
 					}
 					test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
-					console.log(test);
+					//console.log(test);
 					resolve('graphData',test);
+					return test;
        			}
    			}
 		);
@@ -537,7 +538,7 @@ io.on('connection',function(socket){
 		var promise = getSensorList(data.y,data.x);
 
 		promise
-		.then(getGraphData)
+		.then( getGraphData)
 		.then((socket.emit),console.err);
 		// console.log(sensorList);
 
