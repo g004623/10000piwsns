@@ -520,8 +520,8 @@ io.on('connection',function(socket){
 			if(err)
 				return console.log(err);
 
+			console.log(docs);
 			var sensorList = getSensorTable( docs );
-			
 			console.log(sensorList);
 
 			var graphData = getGraphData(masterName, sensorList[0] );
@@ -534,7 +534,12 @@ io.on('connection',function(socket){
 				var i = 0;
 
 				collections.forEach(function (collection){
+
+					console.log(collection);
 					var tmp1 = collection.wsnData.split(",");
+
+					console.log(tmp1);
+
 					test.push([(collection.date)*1]);
 					test[i].push( tmp1[4]*1);
 					test[i].push( tmp1[5]*1);
@@ -542,7 +547,11 @@ io.on('connection',function(socket){
 					test[i].push( tmp1[7]*1);
 					test[i].push( tmp1[8]*1);
 					test[i].push( tmp1[9]*1);
+
+					console.log(test[i]);
+
 					i ++;
+						
 				});
 
 				for( var key in test[0]){
