@@ -330,7 +330,7 @@ function getMasterId(groupId,groupMemberId){
 	return tmp;
 }
 
-var getSensorTable = function ( docs ){
+function getSensorTable( docs ){
 
 	var sensorList = [];
 	var count = 0;
@@ -403,22 +403,32 @@ var getSensorTable = function ( docs ){
 }
 
 function getSensorList(groupId, groupMemberId){
-//var getSensorList = function(groupId, groupMemberId){
 
 	var masterId = getMasterId(groupId,groupMemberId);
 	var tmp1 = [];
 
-	var query = wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-		{"wsnData":{$regex:'L'}},
-		{"wsnData":{$regex:masterId}}]},
-		{'wsnData':true,_id:false,'date':true}
+	var query = wsnDB1.find(
+		{$and:
+			[{ "date" : {
+				$lte:new Date(), 
+				$gte: new Date( new Date().setDate( new Date().getDate()-7))}
+				},
+				{"wsnData":{$regex:'L'}},
+				{"wsnData":{$regex:masterId}}
+			]
+		},
+		{
+			'wsnData':true,
+			_id:false,'date':true
+		}
 	).limit(10);
 
 	return query;
 }
-/*
-var query = getSensorList(7, 0 );
 
+// var query = getSensorList(7, 0 );
+
+/*
 query.exec(function(err,jedis){
 	if(err)
 		return console.log(err);
@@ -427,6 +437,8 @@ query.exec(function(err,jedis){
 	});
 });
 */
+
+
 
 function checkValidSensorData(tmp){
 	var temp = tmp.split(",");
@@ -498,57 +510,52 @@ io.on('connection',function(socket){
 
 	socket.on('clickDevice',function(data){
 
-		var test = [];
+		var sensorList = [];
 		var masterName = getMasterId(data.y,data.x);
 		console.log(masterName);
 		
-		var query = getSensorList(7, 0 );
+		var query = getSensorList(data.y, data.x );
 
-		var temp = query.exec(function(err,jedis){
+		query.exec(function(err,docs){
 			if(err)
 				return console.log(err);
 
-			return jedis;
-/*
-			jedis.forEach(function (jedi){
-				console.log(jedi.wsnData);
+			var sensorList = getSensorTable( docs );
+			
+			console.log(sensorList);
+
+			var graphData = getGraphData(masterName, sensorList[0] );
+	
+			graphData.exec(function(err,collections){
+				if(err)
+					return console.log(err);
+
+				var test = [];
+				var i = 0;
+
+				collections.forEach(function (collection){
+					var tmp1 = collection.wsnData.split(",");
+					test.push([(collection.date)*1]);
+					test[i].push( tmp1[4]*1);
+					test[i].push( tmp1[5]*1);
+					test[i].push( tmp1[6]*1);
+					test[i].push( tmp1[7]*1);
+					test[i].push( tmp1[8]*1);
+					test[i].push( tmp1[9]*1);
+					i ++;
+				});
+
+				for( var key in test[0]){
+					test[0][key] = 0*1;
+				}
+				var timeNow = new Date();
+				test[0][0] = timeNow.getTime();
+				for( var key in test[1]){
+					test[1][key] = 1000*1;
+				}
+				test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
+				socket.emit('graphData',test);
 			});
-*/
-		});
-
-		console.log(temp);
-
-		var query = getGraphData('G701', 'L,5,3,' );
-
-		query.exec(function(err,collections){
-			if(err)
-				return console.log(err);
-
-			var i = 0;
-			collections.forEach(function (collection){
-
-				var tmp1 = collection.wsnData.split(",");
-
-				test.push([(collection.date)*1]);
-				test[i].push( tmp1[4]*1);
-				test[i].push( tmp1[5]*1);
-				test[i].push( tmp1[6]*1);
-				test[i].push( tmp1[7]*1);
-				test[i].push( tmp1[8]*1);
-				test[i].push( tmp1[9]*1);
-				i ++;
-			});
-
-			for( var key in test[0]){
-				test[0][key] = 0*1;
-			}
-			var timeNow = new Date();
-			test[0][0] = timeNow.getTime();
-			for( var key in test[1]){
-				test[1][key] = 1000*1;
-			}
-			test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
-			socket.emit('graphData',test);
 		});
 	});	
 
