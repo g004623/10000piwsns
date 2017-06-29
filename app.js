@@ -402,34 +402,31 @@ var getSensorTable = function ( docs ){
 	return sensorList; 
 }
 
-//function getSensorList(groupId, groupMemberId){
-var getSensorList = function(groupId, groupMemberId){
+function getSensorList(groupId, groupMemberId){
+//var getSensorList = function(groupId, groupMemberId){
 
-	return new Promise( function(resolved, rejected){
+	var masterId = getMasterId(groupId,groupMemberId);
+	var tmp1 = [];
 
-		var masterId = getMasterId(groupId,groupMemberId);
-		var tmp1 = [];
+	var query = wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
+		{"wsnData":{$regex:'L'}},
+		{"wsnData":{$regex:masterId}}]},
+		{'wsnData':true,_id:false,'date':true}
+	).limit(10);
 
-		wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-			{"wsnData":{$regex:'L'}},
-			{"wsnData":{$regex:masterId}}]},
-			{'wsnData':true,_id:false,'date':true},function( err, docs ){
-       			if(err) {
-           			rejected(err);
-       			}else{
-           			// console.log(docs);
-					if( docs.length < 10 ){
-						console.log( 'no data for graphic');
-					}else {
-						tmp1 = (getSensorTable(docs)) ;
-						resolved(masterId,tmp1[0]);
-					}	
-				}
-			}
-		).limit(10);
-
-	});
+	return query;
 }
+/*
+var query = getSensorList(7, 0 );
+
+query.exec(function(err,jedis){
+	if(err)
+		return console.log(err);
+	jedis.forEach(function (jedi){
+		console.log(jedi.wsnData);
+	});
+});
+*/
 
 function checkValidSensorData(tmp){
 	var temp = tmp.split(",");
@@ -444,57 +441,26 @@ function checkValidSensorData(tmp){
 	return true;
 }
 	
-
-// select for different masterId each
-var getGraphData = function (masterName, sensorId){
-
-	return new Promise(function(resolve,reject){
-		var test = [];
-
-		wsnDB1.find({$and:[{ "date" : {$lte:new Date(), $gte: new Date( new Date().setDate( new Date().getDate()-7))}},
-			{"wsnData":{$regex:masterName}},
-			{"wsnData":{$regex:sensorId}}]},
-			{'wsnData':true,_id:false,'date':true},function( err, docs ){
-        		if(err) {
-           			reject(err);
-        		}else{
-					// console.log(docs);
-
-					for(var key in docs){
-					
-						var tmp1 = docs[key].wsnData.split(",");
-						//var tmp2 = docs[key].wsnData;
-						//if( checkValidSensorData(tmp2)){continue;}
-						//var tmp1 = docs[key].wsnData.split(",");
-
-						test.push([(docs[key].date)*1]);
-						test[key].push( tmp1[4]*1);
-						test[key].push( tmp1[5]*1);
-						test[key].push( tmp1[6]*1);
-						test[key].push( tmp1[7]*1);
-						test[key].push( tmp1[8]*1);
-						test[key].push( tmp1[9]*1);
-					}
-
-					for( var key in test[0]){
-						test[0][key] = 0*1;
-					}
-
-					var timeNow = new Date();
-					 
-					test[0][0] = timeNow.getTime();
-					for( var key in test[1]){
-						test[1][key] = 1000*1;
-					}
-					test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
-					//console.log(test);
-					resolve('graphData',test);
-					return test;
-       			}
-   			}
-		);
-	});
+function getGraphData(masterName, sensorId){
+	var query = wsnDB1.find(
+		{$and:
+			[{ "date" : 
+				{ 
+					$lte:new Date(), 
+					$gte: new Date( new Date().setDate( new Date().getDate()-7))}
+				},
+				{"wsnData":{$regex:masterName}},
+				{"wsnData":{$regex:sensorId}}
+			]
+		},
+		{'wsnData':true,_id:false,'date':true}
+	);
+	return query;
 }
+
+
+/*
+*/
 
 io.on('connection',function(socket){
 
@@ -532,31 +498,63 @@ io.on('connection',function(socket){
 
 	socket.on('clickDevice',function(data){
 
+		var test = [];
 		var masterName = getMasterId(data.y,data.x);
 		console.log(masterName);
+		
+		var query = getSensorList(7, 0 );
 
-		var promise = getSensorList(data.y,data.x);
+		var temp = query.exec(function(err,jedis){
+			if(err)
+				return console.log(err);
 
-		promise
-		.then( getGraphData)
-		.then((socket.emit),console.err);
-		// console.log(sensorList);
-
+			return jedis;
 /*
-		for ( var kyes in sensorList ) {
-			var graphData = getGraphData(masterName,sensorList[keys]);
-			console.log(graphData);	
-		}		
-		// socket.emit('graphData',test);
+			jedis.forEach(function (jedi){
+				console.log(jedi.wsnData);
+			});
 */
+		});
 
+		console.log(temp);
+
+		var query = getGraphData('G701', 'L,5,3,' );
+
+		query.exec(function(err,collections){
+			if(err)
+				return console.log(err);
+
+			var i = 0;
+			collections.forEach(function (collection){
+
+				var tmp1 = collection.wsnData.split(",");
+
+				test.push([(collection.date)*1]);
+				test[i].push( tmp1[4]*1);
+				test[i].push( tmp1[5]*1);
+				test[i].push( tmp1[6]*1);
+				test[i].push( tmp1[7]*1);
+				test[i].push( tmp1[8]*1);
+				test[i].push( tmp1[9]*1);
+				i ++;
+			});
+
+			for( var key in test[0]){
+				test[0][key] = 0*1;
+			}
+			var timeNow = new Date();
+			test[0][0] = timeNow.getTime();
+			for( var key in test[1]){
+				test[1][key] = 1000*1;
+			}
+			test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
+			socket.emit('graphData',test);
+		});
 	});	
 
 	socket.on('reqGraph',function(data){
 
 	});	
 });
-
-
 
 //--- end of codinater data
