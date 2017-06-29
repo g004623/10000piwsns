@@ -404,38 +404,13 @@ function getSensorTable( docs ){
 
 function checkValidSensorData(tmp){
 	var temp = tmp.split(",");
-
 	if( temp[0] != 'L' ){ return false;}
-	if( isNaN(temp[4]) ){ return false;}
-	if( isNaN(temp[5]) ){ return false;}
-	if( isNaN(temp[6]) ){ return false;}
-	if( isNaN(temp[7]) ){ return false;}
-	if( isNaN(temp[8]) ){ return false;}
-	if( isNaN(temp[9]) ){ return false;}
+	for( var key = 4 ; key < 10 ; key ++ ){
+		if( isNaN(temp[key]) ){ return false;}
+	}
 	return true;
 }
 	
-function getGraphData(masterName, sensorId){
-	var query = wsnDB1.find(
-		{$and:
-			[{ "date" : 
-				{ 
-					$lte:new Date(), 
-					$gte: new Date( new Date().setDate( new Date().getDate()-7))}
-				},
-				{"wsnData":{$regex:masterName}},
-				{"wsnData":{$regex:sensorId}}
-			]
-		},
-		{'wsnData':true,_id:false,'date':true}
-	);
-	return query;
-}
-
-
-/*
-*/
-
 io.on('connection',function(socket){
 
 	socket.join('sensornet');
@@ -510,14 +485,10 @@ io.on('connection',function(socket){
 
 
 			sensorData.then(function(collections){
-				// if(err)
-				// 	return console.log(err);
-
 				var test = [];
 				var i = 0;
 
 				collections.forEach(function (collection){
-					// console.log(collection);
 					var tmp1 = collection.wsnData.split(",");
 					test.push([(collection.date)*1]);
 					test[i].push( tmp1[4]*1);
