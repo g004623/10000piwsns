@@ -154,7 +154,7 @@
 			td.setAttribute('align','center');			
 		}
 
-		for(var j = 0 ; j < 7 ; j++){
+		for(var j = 0 ; j < 5 ; j++){
 
 			var tr = tbl.insertRow();	
 			for( var i = 0; i < 16 ; i ++){
@@ -452,8 +452,7 @@
 
 	<div class="wrapper">
 	<header>
-		<h1>LUBRICATION RECORD</h1>
-		<h2> HHI HD-10000 Auto Grease Monitoring System </h2>
+		<h2>LUBRICATION RECORD HHI HD-10000 Auto Grease Monitoring System </h2>
 	</header>
 
 
@@ -495,16 +494,22 @@
 	
 </wrapper>
 
-	<div id="wrap1" style="width: 1250px; height: 455px;">
-			<div id="right_div1" style="width: 300px; height: 180px;">
+
+	<div id="wrap1" style="width: 1280px; height: 660px;">
+			<div id="right_div1" style="width: 300px; height: 145px;">
 			</div>	
-			<div id="left_div1" style="width: 855px; height: 180px;">
+			<div id="left_div1" style="width: 855px; height: 145px;">
 				<table id='table2' width = '860'></table>
 			</div>
-			<div id="right_div2" style="width: 300px; height: 180px;"></div>
+
+			<div id="chart_div" style="" ></div>
+
+			
+		<!--	<div id="right_div2" style="width: 300px; height: 180px;"></div>
 			<div id="left_div2" style="width: 855px; height: 180px;">
 				<table id='table3' width = '860'></table>
-			</div>
+			</div>    
+		-->
 	</div>	
 	<div id="test1">		
 	
@@ -514,9 +519,10 @@
 
 
 
-	<button id="getGraphData" style="width: 100px; height: 30px;"  onclick=drawGraph()>drawGraph</button>
+<!--	<button id="getGraphData" style="width: 100px; height: 30px;"  onclick=drawGraph()>drawGraph</button>
 
-	<button id="change-chart" style="width: 100px; height: 30px;"></button>
+	<button id="change-chart" style="width: 100px; height: 30px;"></button>  
+-->
 
 	<div id="chart_div" style="width: 90opx; height: 500px;"></div>
 
