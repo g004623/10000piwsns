@@ -1,5 +1,5 @@
-#warpper{ width: 1200px; height:1000px;}    
-header{ width: 65%;  height: 30px;}
+#warpper{ width: 1200px; height: 1000px; }    
+header{ width: 65%;  height: 30px; }
 header h1{ text-align: center;  }
 header h2{ text-align: center;  }
 
@@ -10,7 +10,7 @@ position: relative;
     height: 275px;
     border : 1px solid black;}  
     
-#subTitle{ position : relative; top:35px; left:0px; }
+#subTitle{ position : relative; top:30px; left:220px; }
 #txt {
 	position: relative;
     top: 0px;
@@ -23,15 +23,15 @@ left: 0px;
 border: 1px solid black; }
 #right_div1{
 	position : relative; 
-    top: 467px;
-    left: 928px;
+    top: 352px;
+    left: 452px;
     border: 1px solid black;
     padding: 15px;
 }
 #left_div1{
 	position : relative;
-    top: 290px;
-    left : 20px;
+    top: 175px;
+    left : -178px;
     border: 1px solid  black;
     padding: 15px;      
 }
@@ -78,8 +78,9 @@ address{        }
 .stalled{background: red;}
 .signalOn1{background: blue;}
 .signalOn2{background: lightblue;}
-#test1{ top:40px;  left:360px;  position: relative; font-size: 14px; display:  text-align: center;  }
+#test1{ top: 40px; left: 120px;  position: relative; font-size: 16px; }
 
 #getGraphData{ margin-top: 10px;}
 
-#chart_div {margin-left: 10px; margin-top: -270px;  } 
+#chart_div {margin-left: 10px; margin-top: -370px;  } 
+#graphTitle{     }

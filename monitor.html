@@ -5,38 +5,25 @@
 	<link type="text/css" rel="stylesheet" href="/app.css" media="all">
 
 	<title>Auto Grease Monitor</title>
-
-
-
 <!-- start of goole gauge --> 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
 <script type="text/javascript">
-
 	google.charts.load('current', {'packages':['corechart']});
-
 	var pinData = [['Element','Density',{role:'style'}],
 					['LUBE1',100, 'blue'],
 					['LUBE2',100, 'darkgray'],
 					['LUBE3',100, 'darkgray'],
 					['LUBE4',100, 'darkgray']
 					];
-					
 	function drawPin( pinData,id){
 		var data = new google.visualization.arrayToDataTable(pinData);
-
 		var view = new google.visualization.DataView(data);
 		view.setColumns([0,1,
-						{calc:'stringify',
-						 sourceColumn:1,
-						 type: 'string',
-						 role:'annotation'},
+						{calc:'stringify', sourceColumn:1,
+						 type: 'string', role:'annotation'},
 						 2]);
-						
 		var options = {
-			// title: 'Lubrication Pin state',
-			width: 300,
-			bar  : {groupWidth:'30%'},
+			width: 300,	bar  : {groupWidth:'30%'},
 			legend: { position: 'none' },
 			vAxis:{title:'Pin State',minValue: 0, maxValue: 100}
 			};	
@@ -44,11 +31,8 @@
 		var chart = new google.visualization.ColumnChart(document.getElementById(id));
 		chart.draw(view, options);
 	}
-
 <!-- start of google scatter -->
-	
 	var graphData = []
-	
 	for( var i = 0 ; i < 1000; i++){
 		graphData.push([i]);
 		graphData[i].push(700*1);
@@ -58,15 +42,13 @@
 		graphData[i].push(700*1);
 		graphData[i].push(700*1);
 	}
-		
       google.charts.load('current', {'packages':['corechart', 'scatter']});
       google.charts.setOnLoadCallback(drawStuff);
 
-      function drawStuff( ) {
-
+<!-- drawStuff() -->
+      function drawStuff(graphId ) {
         var button = document.getElementById('change-chart');
-        var chartDiv = document.getElementById('chart_div');
-
+        var chartDiv = document.getElementById('chart_div'+graphId);
         var data = new google.visualization.DataTable();
 
         data.addColumn('number', 'Date');
@@ -80,20 +62,14 @@
         data.addRows( graphData	);
 
         var materialOptions = {
-          chart: {
-            title: 'Sensor Values for Last Week',
-            subtitle: 'based on before last Week'
-          },
-          width: 1250,
-          height: 350,
-          series: {
-            0: {axis: 'Sensor Value'},
-          },
-          axes: {
-            y: {
-              'Sensor Value': {label: 'Sensor Value'},
-            }
-          }
+        	chart: {
+            	title: 'Sensor Values for Last Week',
+            	subtitle: 'based on before last Week'
+          	},
+          	width: 1250,
+          	height: 350,
+          	series: {0: {axis: 'Sensor Value'},	},
+          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}}
         };
 
         var classicOptions = {
@@ -103,12 +79,9 @@
             0: {targetAxisIndex: 0},
           },
           title: 'Sensor Values - for Last Week',
-
-          vAxes: {
-            // Adds titles to each axis.
+          vAxes: { // Adds titles to each axis.
             0: {title: 'Sensor Values'},
           }, 
-        	
 		};
 		
         function drawMaterialChart( ) {
@@ -129,23 +102,18 @@
     };
 </script>
 <!-- end of goole gauge --> 
-
 <script>
 	function tableCreate( ){
 
 		var title = ['M','version','group','sensor#','MY', 'MP','SH','SL','DH','DL',
 						'%V','S.V','B.V','C.T', 'C.V', 
-    					'DB','D.Id','NI','No.S'
-					];
+    					'DB','D.Id','NI','No.S'];
 
 		var tableWidth = ['60','60','60','60','40','40','30','60','40','40','30','60','60','60','30','130'];
 		var x = document.createElement('TABLE');
 		x.setAttribute("id","tblData2");
-
 		var tbl = document.getElementById('table2').appendChild(x);
-
 		var tr = tbl.insertRow();
-
 		for( var i = 0; i < 16 ; i ++){
 			var td = tr.insertCell();
 			td.appendChild(document.createTextNode(title[i+4]));
@@ -153,7 +121,6 @@
 			td.setAttribute('width',tableWidth[i]);
 			td.setAttribute('align','center');			
 		}
-
 		for(var j = 0 ; j < 5 ; j++){
 
 			var tr = tbl.insertRow();	
@@ -162,10 +129,8 @@
 				td.appendChild(document.createTextNode(['000']));
 				td.style.border = '1px solid black';
 				td.setAttribute('align','center');			
-
 			}
 		}
-
 		var x = document.createElement('TABLE');
 		x.setAttribute("id","tblData3");
 
@@ -209,8 +174,6 @@
     	x[cell].innerHTML = content;
     	x[cell].setAttribute('bgColor','yellow');
 	}		
-
-
 	function writeTable(msg, test, no){
 
 		var val ='---';
@@ -277,7 +240,6 @@
 			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 			$target.removeClass('init stalled').addClass('moved');
 		});
-
 
 		socket.on('endDevice',function( data ) {
 			// console.log(data.endDevice.rxData);
@@ -362,14 +324,15 @@
 			}
 			console.log("received On");
 		});
-		
 		socket.on('graphData',function( docs ) {
 			// var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 			// $target.removeClass('init stalled').addClass('moved');
-			console.log(docs);
-			graphData = docs;
-			drawStuff( );
+			// console.log(docs);
 	        // drawMaterialChart();
+			for ( key in docs){
+				graphData = docs[key];				
+				drawStuff(key);
+			}
 		});
 
 	</script>
@@ -381,10 +344,23 @@
 			var onClickSeat = function () {
 				var x = $(this).attr('data-x');
 				var y = $(this).attr('data-y');
-				socket.emit('clickDevice',{
-					x: x,
-					y: y
-				});
+
+				var a = '';
+				if( y < 3 ) { 
+					a = 'Boom Port Side Group '+ (y*1+1);
+				} else if (y < 6 ){
+					a = 'Boom Star Board Side Group ' + (y*1 +1);
+				} else if ( y == 6 ){
+					a = 'Backstay Port Side ';
+				} else if ( y == 7 ){
+					a = 'Backstay Start Board Side ';
+				} else {
+					a = ' Error';
+				}
+
+				var vGraphTitle = a + ' #' + (x*1+1);
+				document.getElementById('graphTitle').innerHTML = vGraphTitle;
+				socket.emit('clickDevice',{	x: x, y: y });
 			};
 
 			$.getJSON('/wsnObj', { dummy: new Date().getTime() }, function(wsnObj){
@@ -450,16 +426,16 @@
 <body onload="startTime()">
 
 
-	<div class="wrapper">
+	<div align="center" class="wrapper">
 	<header>
-		<h2>LUBRICATION RECORD HHI HD-10000 Auto Grease Monitoring System </h2>
+		<H2>LUBRICATION RECORD HHI HD-10000 Auto Grease Monitoring System </h2>
 	</header>
 
 
    	<div id="subTitle">
 	    <div class = "content2">
 	    	<div>
-	    		<div id= "subtile"> [ Ship's name : HD10000    ] &nbsp &nbsp &nbsp &nbsp &nbsp [ Lubrication part : Crane &nbsp] &nbsp &nbsp <a id="dispTime"></a></div>  
+	    		<div id= "subtile"> [ Ship's name : HD10000 ]  &nbsp &nbsp [ Lubrication part : Crane &nbsp] &nbsp &nbsp <a id="dispTime"></a></div>  
 	    	</div>
 	    </div> 
 	</div>
@@ -494,15 +470,20 @@
 	
 </wrapper>
 
-
-	<div id="wrap1" style="width: 1280px; height: 660px;">
+	<div id="wrap1" style="width: 1280px; height: 620px;">
+			<H2 align="center"  id = "graphTitle"> Boom Port Side Group1 #1 </H2> 
+		
 			<div id="right_div1" style="width: 300px; height: 145px;">
 			</div>	
+		
 			<div id="left_div1" style="width: 855px; height: 145px;">
 				<table id='table2' width = '860'></table>
 			</div>
 
-			<div id="chart_div" style="" ></div>
+			<div id="chart_div1" style="" ></div>
+			<div id="chart_div2" style="" ></div>
+			<div id="chart_div3" style="" ></div>
+			<div id="chart_div4" style="" ></div>
 
 			
 		<!--	<div id="right_div2" style="width: 300px; height: 180px;"></div>
@@ -513,6 +494,7 @@
 	</div>	
 	<div id="test1">		
 	
+
 		<p> Eunwho Power Electronics:  eunwho.com eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2016 </p>
 	
 	</div>
