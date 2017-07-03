@@ -46,9 +46,10 @@
       google.charts.setOnLoadCallback(drawStuff);
 
 <!-- drawStuff() -->
-      function drawStuff(graphId ) {
+      function drawStuff() {
         var button = document.getElementById('change-chart');
-        var chartDiv = document.getElementById('chart_div'+graphId);
+        <!-- var chartDiv = document.getElementById('chart_div'+graphId); -->
+        var chartDiv = document.getElementById('chart_div');
         var data = new google.visualization.DataTable();
 
         data.addColumn('number', 'Date');
@@ -88,8 +89,8 @@
           var materialChart = new google.charts.Scatter(chartDiv);
   		data.addRows( graphData);
           materialChart.draw(data, google.charts.Scatter.convertOptions(materialOptions));
-          button.innerText = 'Change to Classic';
-          button.onclick = drawClassicChart;
+          // button.innerText = 'Change to Classic';
+          // button.onclick = drawClassicChart;
         }
 
         function drawClassicChart() {
@@ -131,33 +132,7 @@
 				td.setAttribute('align','center');			
 			}
 		}
-		var x = document.createElement('TABLE');
-		x.setAttribute("id","tblData3");
-
-		var tbl = document.getElementById('table3').appendChild(x);
-
-		var tr = tbl.insertRow();
-
-		for( var i = 0; i < 16 ; i ++){
-			var td = tr.insertCell();
-			td.appendChild(document.createTextNode(title[i+4]));
-			td.style.border = '1px solid black';
-			td.setAttribute('width',tableWidth[i]);
-			td.setAttribute('align','center');			
-
-		}
-
-		for(var j = 0 ; j < 7 ; j++){
-
-			var tr = tbl.insertRow();	
-			for( var i = 0; i < 16 ; i ++){
-				var td = tr.insertCell();
-				td.appendChild(document.createTextNode(['000']));
-				td.style.border = '1px solid black';
-				td.setAttribute('align','center');			
-
-			}	
-		}
+		
 	}
 
 	function changeContent(id, row, cell, content) {
@@ -329,10 +304,12 @@
 			// $target.removeClass('init stalled').addClass('moved');
 			// console.log(docs);
 	        // drawMaterialChart();
-			for ( key in docs){
-				graphData = docs[key];				
-				drawStuff(key);
-			}
+			graphData = docs.graphData;
+			console.log(docs.masterName);
+			console.log(docs.sensorId);
+			console.log(graphData);
+				
+			drawStuff();
 		});
 
 	</script>
