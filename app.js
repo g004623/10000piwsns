@@ -454,66 +454,15 @@ io.on('connection',function(socket){
 			sensorId: 'sensorList',
 			graphData:[]
 		}
-		
-		// var query = getSensorList(data.y, data.x );
-		var	query = wsnDB1.find(
-			{$and:
-				[{ "date" : {
-					$lte:new Date(), 
-					$gte: new Date( new Date().setDate( new Date().getDate()-7))}
-					},
-					{"wsnData":{$regex:'L'}},
-					{"wsnData":{$regex:masterName}}
-				]
-			},
-			{
-				'wsnData':true,
-				_id:false,'date':true
-			}
-		).limit(10);
 
-		query.then(function ( docs ) {
+		var promise = asyncfunc1(masterName);
 
-			var sensorList = getSensorTable( docs );
-			var sensorId = 'test';
-			for( var key in sensorList){
-				sensorId = sensorList[key];
-				var sensorData = wsnDB1.find(
-					{$and:[{ 
-						"date" :{ 
-							$lte:new Date(), 
-							$gte: new Date( new Date().setDate( new Date().getDate()-7))}
-						},{"wsnData":{$regex:masterName}},
-						{"wsnData":{$regex:sensorList[key]}}
-					]},
-					{'wsnData':true,_id:false,'date':true}
-				);		
+		promise
+		.then(asyncGetSensorDB0)
+		.then(console.log)
+		.catch(console.err);
 
-				sensorData.then(function(collections){
-					var test = [];
-					var i = 0;
-					collections.forEach(function (collection){
-						var tmp1 = collection.wsnData.split(",");
-						test.push([(collection.date)*1]);
-						test[i].push( tmp1[4]*1);
-						for ( var j = 5 ; j < 10 ; j++){ test[i].push( tmp1[j]*1);}
-						i ++;
-					});
-	
-					for( var key in test[0]){ test[0][key] = 0*1; }
-					var timeNow = new Date();
-					test[0][0] = timeNow.getTime();
-					for( var key in test[1]){ test[1][key] = 1000*1; }
-					test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
-
-					graphObj.mastName = masterName;
-					// graphObj.sensorId = sensorList[key];
-					graphObj.sensorId = sensorId;
-					graphObj.graphData = test;
-					socket.emit('graphData',graphObj);
-				});
-			}
-		});
+		//	// socket.emit('graphData',data);
 	});	
 
 	socket.on('reqGraph',function(data){
@@ -521,105 +470,86 @@ io.on('connection',function(socket){
 	});	
 });
 
-/*
-var asyncfunction1 = function ( param ){
-	return new Promise(function(resolve, reject){	
-	var graphData = [];
-	
-	for( var key in sensorList ){
-		var sensorData = wsnDB1.find(
-			{$and:[{ 
-				"date" :{ 
+
+var asyncfunc1 = function( param) {
+
+	return new Promise(function ( resolve,reject ){ 
+		wsnDB1.find(
+			{$and:
+				[{ "date" : {
 					$lte:new Date(), 
 					$gte: new Date( new Date().setDate( new Date().getDate()-7))}
-				},{"wsnData":{$regex:masterName}},
-				{"wsnData":{$regex:param[key]}
-				}
-			]},
-			{'wsnData':true,_id:false,'date':true}
-		);		
-		sensorData.then(function(collections){
-			var test = [];
-			var i = 0;
-			collections.forEach(function (collection){
-				var tmp1 = collection.wsnData.split(",");
-				test.push([(collection.date)*1]);
-				test[i].push( tmp1[4]*1);
-				for ( var j = 5 ; j < 10 ; j++){ test[i].push( tmp1[j]*1);}
-				i ++;
-			});
-	
-			for( var key in test[0]){ test[0][key] = 0*1; }
-			var timeNow = new Date();
-			test[0][0] = timeNow.getTime();
-			for( var key in test[1]){ test[1][key] = 1000*1; }
-			test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
-			graphData.push(test);
-		});
-	}});
-	// resolve(graphData);
-	resolve('ok it is result');
+					},
+					{"wsnData":{$regex:'L'}},
+					{"wsnData":{$regex:param}}
+				]
+			},
+			{
+				'wsnData':true,
+				_id:false,'date':true
+			},function(err,docs){
+			if( err ) {
+				reject(err);
+			}else {
+				var tmp1 = docs[0].wsnData.split(",");
+				var masterName = tmp1[12];
+				console.log('masterName : ' + masterName);
+				var sensorList = getSensorTable( docs);
+				sensorList.push(masterName);
+				console.log('sensorList : ' + sensorList[0]);
+				resolve(sensorList);
+			}}
+		).limit(10);
+	});
 }
-*/
 
-var asyncfunc1 = function ( param ){
+// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
+function setSensorDataTb(docs){
+	var test = [];
+	var i = 0;
+	docs.forEach(function (collection){
+		var tmp1 = collection.wsnData.split(",");
+		test.push([(collection.date)*1]);
+		test[i].push( tmp1[4]*1);
+		for ( var j = 5 ; j < 10 ; j++){ test[i].push( tmp1[j]*1);}
+			i ++;
+	});
+	for( var key in test[0]){ test[0][key] = 0*1; }
+	var timeNow = new Date();
+	test[0][0] = timeNow.getTime();
+	for( var key in test[1]){ test[1][key] = 1000*1; }
+	test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
+	return test;
+}	
+
+//console.log(test);
+
+var asyncGetSensorDB0 = function ( param ){
+
 	return new Promise(function(resolve, reject){		
-	var sensorData = wsnDB1.find(
+	
+	var masterName = param.pop();
+
+	wsnDB1.find(
 		{$and:[{ 
 			"date" :{ 
 				$lte:new Date(), 
 				$gte: new Date( new Date().setDate( new Date().getDate()-7))}
 			},{"wsnData":{$regex:masterName}},
-			{"wsnData":{$regex:param}}
+			{"wsnData":{$regex:param[0]}}
 		]},
-		{'wsnData':true,_id:false,'date':true}
-	);		
-	sensorData.then(function(collections){
-		var test = [];
-		var i = 0;
-		collections.forEach(function (collection){
-			var tmp1 = collection.wsnData.split(",");
-			test.push([(collection.date)*1]);
-			test[i].push( tmp1[4]*1);
-			for ( var j = 5 ; j < 10 ; j++){ test[i].push( tmp1[j]*1);}
-			i ++;
-		});
-	
-		for( var key in test[0]){ test[0][key] = 0*1; }
-		var timeNow = new Date();
-		test[0][0] = timeNow.getTime();
-		for( var key in test[1]){ test[1][key] = 1000*1; }
-		test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
-		//resolve(test[0]);
-		resolve('chaining');
-	});
-	});
+		{'wsnData':true,_id:false,'date':true},
+		function ( err, docs){
+			if( err ) {
+				reject(err);
+			}else{
+				var test = setSensorDataTb(docs);
+				resolve(test);
+			}
+		}
+	);	
+	});	
 }
 
-/*
-var asyncfunc1 = function(param){
-    return new Promise(function(resolve, reject){
-        setTimeout(
-            function(){
-                resolve('result 1:'+param);
-            },1000);
-    });
-}
-*/
-var asyncfunc2 = function(param){
-    return new Promise(function(resolve, reject){
-        setTimeout(
-            function(){
-                resolve(param);
-            },1000);
-    });
-}
-var asyncfunc3 = function(param){
-    return new Promise(function(resolve, reject){
-        setTimeout(
-            function(){
-                resolve(param);
-            },1000);
-    });
-}
+
 //--- end of codinater data
