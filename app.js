@@ -458,7 +458,10 @@ io.on('connection',function(socket){
 		var promise = asyncfunc1(masterName);
 
 		promise
-		.then(asyncGetSensorDB0)
+		.then(asyncSetSensorTb)
+		.then(asyncSetSensorTb)
+		.then(asyncSetSensorTb)
+		.then(asyncSetSensorTb)
 		.then(console.log)
 		.catch(console.err);
 
@@ -495,9 +498,10 @@ var asyncfunc1 = function( param) {
 				var masterName = tmp1[12];
 				console.log('masterName : ' + masterName);
 				var sensorList = getSensorTable( docs);
-				sensorList.push(masterName);
-				console.log('sensorList : ' + sensorList[0]);
-				resolve(sensorList);
+				var returns = [];
+				returns.push(sensorList);
+				returns.push(masterName);
+				resolve(returns);
 			}}
 		).limit(10);
 	});
@@ -524,11 +528,13 @@ function setSensorDataTb(docs){
 
 //console.log(test);
 
-var asyncGetSensorDB0 = function ( param ){
+var asyncSetSensorTb = function ( param ){
 
 	return new Promise(function(resolve, reject){		
-	
+
 	var masterName = param.pop();
+	var sensorList = param.pop();
+	var sensorId = sensorList.pop();
 
 	wsnDB1.find(
 		{$and:[{ 
@@ -536,7 +542,7 @@ var asyncGetSensorDB0 = function ( param ){
 				$lte:new Date(), 
 				$gte: new Date( new Date().setDate( new Date().getDate()-7))}
 			},{"wsnData":{$regex:masterName}},
-			{"wsnData":{$regex:param[0]}}
+			{"wsnData":{$regex:sensorId}}
 		]},
 		{'wsnData':true,_id:false,'date':true},
 		function ( err, docs){
@@ -544,11 +550,14 @@ var asyncGetSensorDB0 = function ( param ){
 				reject(err);
 			}else{
 				var test = setSensorDataTb(docs);
-				resolve(test);
+				param.push(test);
+				param.push(sensorList);
+				param.push(masterName);
+				resolve(param);
 			}
 		}
-	);	
-	});	
+	).limit(5);	
+	}); // return promise 	
 }
 
 
