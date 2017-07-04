@@ -39,6 +39,9 @@
 	var graphData3 = [];
 	var graphData4 = [];
 
+	var scatGraphTitle=['','','',''];
+
+
 	for( var i = 0 ; i < 1000; i++){
 		graphData1.push([i]);
 		graphData1[i].push(700*1);
@@ -90,12 +93,41 @@
 
         <!-- data.addRows( graphData1); -->
 
-        var materialOptions = {
+        var materialOptions1 = {
         	chart: {
-            	title: 'Sensor Values for Last Week',
-            	<!-- subtitle: 'based on before last Week' -->
+            title: scatGraphTitle[0]
           	},
-          	width: 500,
+          	width: 610,
+          	height:300,
+          	series: {0: {axis: 'Sensor Value'},	},
+          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}}
+        };
+
+        var materialOptions2 = {
+        	chart: {
+            title: scatGraphTitle[1]
+          	},
+          	width: 610,
+          	height:300,
+          	series: {0: {axis: 'Sensor Value'},	},
+          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}}
+        };
+
+        var materialOptions3 = {
+        	chart: {
+            title: scatGraphTitle[2]
+          	},
+          	width: 610,
+          	height:300,
+          	series: {0: {axis: 'Sensor Value'},	},
+          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}}
+        };
+
+        var materialOptions4 = {
+        	chart: {
+            title: scatGraphTitle[3]
+          	},
+          	width: 610,
           	height:300,
           	series: {0: {axis: 'Sensor Value'},	},
           	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}}
@@ -104,28 +136,28 @@
         function drawMaterialChart1( ) {
 			var materialChart = new google.charts.Scatter(chartDiv[0]);
 			data1.addRows( graphData1);
-          	materialChart.draw(data1, google.charts.Scatter.convertOptions(materialOptions));
+          	materialChart.draw(data1, google.charts.Scatter.convertOptions(materialOptions1));
         }
         drawMaterialChart1( );
 
         function drawMaterialChart2( ) {
 			var materialChart = new google.charts.Scatter(chartDiv[1]);
 			data2.addRows( graphData2);
-          	materialChart.draw(data2, google.charts.Scatter.convertOptions(materialOptions));
+          	materialChart.draw(data2, google.charts.Scatter.convertOptions(materialOptions2));
         }
         drawMaterialChart2( );
 
         function drawMaterialChart3( ) {
 			var materialChart = new google.charts.Scatter(chartDiv[2]);
 			data3.addRows( graphData3);
-          	materialChart.draw(data3, google.charts.Scatter.convertOptions(materialOptions));
+          	materialChart.draw(data3, google.charts.Scatter.convertOptions(materialOptions3));
         }
         drawMaterialChart3( );
 
         function drawMaterialChart4( ) {
 			var materialChart = new google.charts.Scatter(chartDiv[3]);
 			data4.addRows( graphData4);
-          	materialChart.draw(data4, google.charts.Scatter.convertOptions(materialOptions));
+          	materialChart.draw(data4, google.charts.Scatter.convertOptions(materialOptions4));
         }
         drawMaterialChart4( );
     };
@@ -325,6 +357,7 @@
 			}
 			console.log("received On");
 		});
+
 		socket.on('graphData',function( docs ) {
 			graphData1 = docs.table4;
 			graphData2 = docs.table3;
@@ -332,8 +365,37 @@
 			graphData4 = docs.table1;
 			console.log(docs.masterName);
 			console.log(docs.sensorList);
+
+			var name = docs.masterName;
+
+			for(var key in docs.sensorList){ 
+			    var y = name[1]*1;
+				var x = name.substr(2,2)*1;
+				scatGraphTitle[key] = setScatGraphTitle(x,y)+ docs.sensorList[key];
+			}
+
 			drawStuff();
 		});
+
+		function setScatGraphTitle(x,y){
+
+			var a = '';
+
+			if( y < 3 ) { 
+				a = 'Boom Port Side Group '+ (y*1+1);
+			} else if (y < 6 ){
+				a = 'Boom Star Board Side Group ' + (y*1 +1);
+			} else if ( y == 6 ){
+				a = 'Backstay Port Side ';
+			} else if ( y == 7 ){
+				a = 'Backstay Start Board Side ';
+			} else {
+				a = ' Error';
+			}
+			a = a+ ' #' + x;
+			return a;
+		}
+
 	</script>
 
 
@@ -343,22 +405,7 @@
 			var onClickSeat = function () {
 				var x = $(this).attr('data-x');
 				var y = $(this).attr('data-y');
-
-				var a = '';
-				if( y < 3 ) { 
-					a = 'Boom Port Side Group '+ (y*1+1);
-				} else if (y < 6 ){
-					a = 'Boom Star Board Side Group ' + (y*1 +1);
-				} else if ( y == 6 ){
-					a = 'Backstay Port Side ';
-				} else if ( y == 7 ){
-					a = 'Backstay Start Board Side ';
-				} else {
-					a = ' Error';
-				}
-
-				var vGraphTitle = a + ' #' + (x*1+1);
-				document.getElementById('graphTitle').innerHTML = vGraphTitle;
+				// document.getElementById('graphTitle').innerHTML = vGraphTitle;
 				socket.emit('clickDevice',{	x: x, y: y });
 			};
 
@@ -469,15 +516,9 @@
 	
 </wrapper>
 
-	<div id="wrap1" style="width: 1280px; height: 620px;">
-			<H2 align="center"  id = "graphTitle"> Boom Port Side Group1 #1 </H2> 
+	<div id="wrap1" style="width: 1280px; height: 860px;">
+<!--		<H2 align="center"  id = "graphTitle"> Boom Port Side Group1 #1 </H2> --> 
 		
-			<div id="right_div1" style="width: 300px; height: 145px;">
-			</div>	
-		
-			<div id="left_div1" style="width: 855px; height: 145px;">
-				<table id='table2' width = '860'></table>
-			</div>
 			<table id="scatter">
 				<tr> 
 					<th> <div id="chart_div1" style="" > </div> </th>
@@ -488,6 +529,15 @@
 					<th> <div id="chart_div4" style="" > </div> </th>
 				</tr>
 			</table>
+
+			<div id="left_div1" style="width: 855px; height: 145px;">
+
+				<table id='table2' width = '860'></table>
+			</div>
+			<div id="right_div1" style="width: 300px; height: 145px;">
+			</div>	
+		
+
 			
 	</div>	
 	<div id="test1">		
@@ -497,7 +547,7 @@
 	
 	</div>
 
-	<div id="chart_div5" style="width: 900px; height: 500px;"></div>
+<!--	<div id="chart_div5" style="width: 900px; height: 500px;"></div> -->
 
 </body>
 
