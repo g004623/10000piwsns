@@ -58,49 +58,35 @@
 <!-- drawStuff() -->
 
       function drawStuff( ) {
+		var chartDiv = [];
 
-        var chartDiv1 = document.getElementById('chart_div1');
-        var chartDiv2 = document.getElementById('chart_div2');
-        var chartDiv3 = document.getElementById('chart_div3');
-        var chartDiv4 = document.getElementById('chart_div4');
+		for( var i = 0 ; i < 4 ; i++ ){
+	        chartDiv.push(document.getElementById('chart_div'+(i+1)));
+		}	
 
-        var data1 = new google.visualization.DataTable();
-        var data2 = new google.visualization.DataTable();
-        var data3 = new google.visualization.DataTable();
-        var data4 = new google.visualization.DataTable();
+        data1 = new google.visualization.DataTable();
+        data2 = new google.visualization.DataTable();
+        data3 = new google.visualization.DataTable();
+        data4 = new google.visualization.DataTable();
 
+		data1.addColumn('number', 'Date');
+       	for( var k = 1 ; k < 7 ; k++){ 
+			data1.addColumn('number', 'Sens'+k);
+		}
 
-        data1.addColumn('number', 'Date');
-        data1.addColumn('number', 'Sens1');
-        data1.addColumn('number', 'Sens2');
-        data1.addColumn('number', 'Sens3');
-        data1.addColumn('number', 'Sens4');
-        data1.addColumn('number', 'Sens5');
-        data1.addColumn('number', 'Sens6');
-
-        data2.addColumn('number', 'Date');
-        data2.addColumn('number', 'Sens1');
-        data2.addColumn('number', 'Sens2');
-        data2.addColumn('number', 'Sens3');
-        data2.addColumn('number', 'Sens4');
-        data2.addColumn('number', 'Sens5');
-        data2.addColumn('number', 'Sens6');
-
-        data3.addColumn('number', 'Date');
-        data3.addColumn('number', 'Sens1');
-        data3.addColumn('number', 'Sens2');
-        data3.addColumn('number', 'Sens3');
-        data3.addColumn('number', 'Sens4');
-        data3.addColumn('number', 'Sens5');
-        data3.addColumn('number', 'Sens6');
-
-        data4.addColumn('number', 'Date');
-        data4.addColumn('number', 'Sens1');
-        data4.addColumn('number', 'Sens2');
-        data4.addColumn('number', 'Sens3');
-        data4.addColumn('number', 'Sens4');
-        data4.addColumn('number', 'Sens5');
-        data4.addColumn('number', 'Sens6');
+		data2.addColumn('number', 'Date');
+       	for( var k = 1 ; k < 7 ; k++){ 
+			data2.addColumn('number', 'Sens'+k);
+		}
+		
+		data3.addColumn('number', 'Date');
+       	for( var k = 1 ; k < 7 ; k++){ 
+			data3.addColumn('number', 'Sens'+k);
+		}
+		data4.addColumn('number', 'Date');
+       	for( var k = 1 ; k < 7 ; k++){ 
+			data4.addColumn('number', 'Sens'+k);
+		}
 
         <!-- data.addRows( graphData1); -->
 
@@ -116,28 +102,28 @@
         };
 
         function drawMaterialChart1( ) {
-			var materialChart = new google.charts.Scatter(chartDiv1);
+			var materialChart = new google.charts.Scatter(chartDiv[0]);
 			data1.addRows( graphData1);
           	materialChart.draw(data1, google.charts.Scatter.convertOptions(materialOptions));
         }
         drawMaterialChart1( );
 
         function drawMaterialChart2( ) {
-			var materialChart = new google.charts.Scatter(chartDiv2);
+			var materialChart = new google.charts.Scatter(chartDiv[1]);
 			data2.addRows( graphData2);
           	materialChart.draw(data2, google.charts.Scatter.convertOptions(materialOptions));
         }
         drawMaterialChart2( );
 
         function drawMaterialChart3( ) {
-			var materialChart = new google.charts.Scatter(chartDiv3);
+			var materialChart = new google.charts.Scatter(chartDiv[2]);
 			data3.addRows( graphData3);
           	materialChart.draw(data3, google.charts.Scatter.convertOptions(materialOptions));
         }
         drawMaterialChart3( );
 
         function drawMaterialChart4( ) {
-			var materialChart = new google.charts.Scatter(chartDiv4);
+			var materialChart = new google.charts.Scatter(chartDiv[3]);
 			data4.addRows( graphData4);
           	materialChart.draw(data4, google.charts.Scatter.convertOptions(materialOptions));
         }
