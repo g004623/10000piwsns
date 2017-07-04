@@ -35,6 +35,9 @@
 <!-- start of google scatter -->
 
 	var graphData1 = [];
+	var graphData2 = [];
+	var graphData3 = [];
+	var graphData4 = [];
 
 	for( var i = 0 ; i < 1000; i++){
 		graphData1.push([i]);
@@ -48,9 +51,6 @@
 	graphData1[0][1] = 0;
 	graphData1[0][2] = 1000;
 
-	var graphData2 = graphData1;
-	var graphData3 = graphData1;
-	var graphData4 = graphData1;
 
       google.charts.load('current', {'packages':['corechart', 'scatter']});
       google.charts.setOnLoadCallback(drawStuff);
@@ -115,7 +115,6 @@
           	materialChart.draw(data, google.charts.Scatter.convertOptions(materialOptions));
         }
         drawMaterialChart4( );
-
     };
 </script>
 <!-- end of goole gauge --> 
@@ -171,8 +170,6 @@
        	var tmp = msg.split(",");
 
 		console.log("msg :", tmp);
-
-
 		for(var i = 4 ; i < 19 ; i++){
 
 			if( tmp[0] === 'M'){ val = tmp[i];}
@@ -316,18 +313,20 @@
 			console.log("received On");
 		});
 		socket.on('graphData',function( docs ) {
-			// var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-			// $target.removeClass('init stalled').addClass('moved');
-			// console.log(docs);
-	        // drawMaterialChart();
-			graphData = docs.graphData;
+			graphData1 = docs.table4;
+			graphData2 = docs.table3;
+			graphData3 = docs.table2;
+			graphData4 = docs.table1;
 			console.log(docs.masterName);
-			console.log(docs.sensorId);
-			console.log(graphData);
+			console.log(docs.sensorList);
+
+			console.log(JSON.stringify(graphData1));
+			console.log(JSON.stringify(graphData2));
+			console.log(JSON.stringify(graphData3));
+			console.log(JSON.stringify(graphData4));
 				
 			drawStuff();
 		});
-
 	</script>
 
 

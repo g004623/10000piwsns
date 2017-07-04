@@ -474,9 +474,7 @@ io.on('connection',function(socket){
 			graphData.table3 = result.table[2];
 			graphData.table4 = result.table[3];
 			graphData.sensorList = result.sensorList;
-			console.log(graphData);
-			// console.log(result);
-			// socket.emit('graphData',graphData);
+			socket.emit('graphData',graphData);
 		})	
 		.catch(console.err);
 		
