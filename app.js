@@ -462,7 +462,7 @@ io.on('connection',function(socket){
 		.then(asyncSetSensorTb)
 		.then(asyncSetSensorTb)
 		.then(asyncSetSensorTb)
-		.then(asyncSetSensorTb4)
+		.then(asyncSetSensorTb)
 		.then(function(result){
 			var graphData = {masterName:'',sensorList:[],table1:[],table2:[],table3:[],table4:[]};
 
@@ -509,13 +509,15 @@ var asyncfunc1 = function( param) {
 			if( err ) {
 				reject(err);
 			}else {
+
+				var returns = {table: [], sensorId: [], masterName: 'G001', sensorList:[]};
 				var tmp1 = docs[0].wsnData.split(",");
 				var masterName = tmp1[12];
 				var sensorList = getSensorTable( docs);
-				var returns = {sensorList:'',sensorId:'',masterName:'',table:[]};
+				var sensorId = getSensorTable( docs);
 
 				returns.sensorList = sensorList;
-				returns.sensorId = sensorList;
+				returns.sensorId = sensorId;
 				returns.masterName = masterName;
 				console.log(returns);
 				resolve(returns);
@@ -557,15 +559,13 @@ var asyncSetSensorTb = function ( param ){
 
 	return new Promise(function(resolve, reject){		
 	
-	console.log('param : ');
-	console.log(param);
+	console.log('param : '); console.log(param);
 
 	var masterName = param.masterName;
-	var sensorId_tmp = param.sensorId;
-	var sensorId = sensorId_tmp.pop();
+	var tmp = param.sensorId;
+	console.log('sensorId_tmp : ' + tmp);
 
-	console.log('sensorId_tmp : ' + sensorId_tmp);
-	var sensorId = sensorId_tmp.pop();
+	var sensorId = tmp.pop();
 	console.log('sensorId : ' + sensorId);
 
 	wsnDB1.find(
@@ -583,7 +583,7 @@ var asyncSetSensorTb = function ( param ){
 			}else{
 				var test = setSensorDataTb(docs);
 				(param.table).push(test);
-				// param.sensorId = sensorId_tmp;
+				param.sensorId = tmp;
 				resolve(param);
 			}
 		}
@@ -591,6 +591,7 @@ var asyncSetSensorTb = function ( param ){
 	}); // return promise 	
 }
 
+/*
 var asyncSetSensorTb4 = function ( param ){
 
 	return new Promise(function(resolve, reject){		
@@ -601,8 +602,8 @@ var asyncSetSensorTb4 = function ( param ){
 	var masterName = param.masterName;
 	var sensorId_tmp = param.sensorId;
 	var sensorId = sensorId_tmp.pop();
-
 	console.log('sensorId_tmp : ' + sensorId_tmp);
+	
 	var sensorId = sensorId_tmp.pop();
 	console.log('sensorId : ' + sensorId);
 
@@ -628,4 +629,5 @@ var asyncSetSensorTb4 = function ( param ){
 	).limit(3);	
 	}); // return promise 	
 }
+*/
 //--- end of codinater data
