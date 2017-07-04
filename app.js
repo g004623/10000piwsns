@@ -488,7 +488,6 @@ io.on('connection',function(socket){
 
 
 var asyncfunc1 = function( param) {
-
 	return new Promise(function ( resolve,reject ){ 
 		wsnDB1.find(
 			{$and:
@@ -509,18 +508,29 @@ var asyncfunc1 = function( param) {
 			}else {
 
 				var returns = {table: [], sensorId: [], masterName: 'G001', sensorList:[]};
-				var tmp1 = docs[0].wsnData.split(",");
-				var masterName = tmp1[12];
-				var sensorList = getSensorTable( docs);
-				var sensorId = getSensorTable( docs);
+				var tmp1 = '';
+				
+				try{	
+					for ( var key in docs ){
+						if( tmp1 = docs[key].wsnData.split(",")){ break;}
+					}	
+														
+					var masterName = tmp1[12];
+					var sensorList = getSensorTable( docs);
+					var sensorId = getSensorTable( docs);
 
-				returns.sensorList = sensorList;
-				returns.sensorId = sensorId;
-				returns.masterName = masterName;
-				console.log(returns);
-				resolve(returns);
+					returns.sensorList = sensorList;
+					returns.sensorId = sensorId;
+					returns.masterName = masterName;
+					console.log(returns);
+					resolve(returns);
+				}
+				catch(e){
+					console.error(e);
+					reject(e);
+				}
 			}}
-		).limit(10);
+		).limit(20);
 	});
 }
 
@@ -585,8 +595,8 @@ var asyncSetSensorTb = function ( param ){
 				resolve(param);
 			}
 		}
-//	).limit(10);	
-	);	
+	).limit(5);	
+//	);	
 	}); // return promise 	
 }
 

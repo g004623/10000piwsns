@@ -74,21 +74,21 @@
 
 		data1.addColumn('number', 'Date');
        	for( var k = 1 ; k < 7 ; k++){ 
-			data1.addColumn('number', 'Sens'+k);
+			data1.addColumn('number', 'S'+k);
 		}
 
 		data2.addColumn('number', 'Date');
        	for( var k = 1 ; k < 7 ; k++){ 
-			data2.addColumn('number', 'Sens'+k);
+			data2.addColumn('number', 'S'+k);
 		}
 		
 		data3.addColumn('number', 'Date');
        	for( var k = 1 ; k < 7 ; k++){ 
-			data3.addColumn('number', 'Sens'+k);
+			data3.addColumn('number', 'S'+k);
 		}
 		data4.addColumn('number', 'Date');
        	for( var k = 1 ; k < 7 ; k++){ 
-			data4.addColumn('number', 'Sens'+k);
+			data4.addColumn('number', 'S'+k);
 		}
 
         <!-- data.addRows( graphData1); -->
@@ -100,7 +100,10 @@
           	width: 610,
           	height:300,
           	series: {0: {axis: 'Sensor Value'},	},
-          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}}
+          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'}, }},
+			hAxis:{ title:'Hello',titleTextStyle:{color: '#FF0000'},
+				gridlines:{count:1,units:{days:'MM/DD/YYYY'}}
+			}
         };
 
         var materialOptions2 = {
