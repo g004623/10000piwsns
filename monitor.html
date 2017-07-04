@@ -64,17 +64,44 @@
         var chartDiv3 = document.getElementById('chart_div3');
         var chartDiv4 = document.getElementById('chart_div4');
 
-        var data = new google.visualization.DataTable();
+        var data1 = new google.visualization.DataTable();
+        var data2 = new google.visualization.DataTable();
+        var data3 = new google.visualization.DataTable();
+        var data4 = new google.visualization.DataTable();
 
-<!--
-        data.addColumn('number', 'Date');
-        data.addColumn('number', 'Sens1');
-        data.addColumn('number', 'Sens2');
-        data.addColumn('number', 'Sens3');
-        data.addColumn('number', 'Sens4');
-        data.addColumn('number', 'Sens5');
-        data.addColumn('number', 'Sens6');
--->
+
+        data1.addColumn('number', 'Date');
+        data1.addColumn('number', 'Sens1');
+        data1.addColumn('number', 'Sens2');
+        data1.addColumn('number', 'Sens3');
+        data1.addColumn('number', 'Sens4');
+        data1.addColumn('number', 'Sens5');
+        data1.addColumn('number', 'Sens6');
+
+        data2.addColumn('number', 'Date');
+        data2.addColumn('number', 'Sens1');
+        data2.addColumn('number', 'Sens2');
+        data2.addColumn('number', 'Sens3');
+        data2.addColumn('number', 'Sens4');
+        data2.addColumn('number', 'Sens5');
+        data2.addColumn('number', 'Sens6');
+
+        data3.addColumn('number', 'Date');
+        data3.addColumn('number', 'Sens1');
+        data3.addColumn('number', 'Sens2');
+        data3.addColumn('number', 'Sens3');
+        data3.addColumn('number', 'Sens4');
+        data3.addColumn('number', 'Sens5');
+        data3.addColumn('number', 'Sens6');
+
+        data4.addColumn('number', 'Date');
+        data4.addColumn('number', 'Sens1');
+        data4.addColumn('number', 'Sens2');
+        data4.addColumn('number', 'Sens3');
+        data4.addColumn('number', 'Sens4');
+        data4.addColumn('number', 'Sens5');
+        data4.addColumn('number', 'Sens6');
+
         <!-- data.addRows( graphData1); -->
 
         var materialOptions = {
@@ -90,29 +117,29 @@
 
         function drawMaterialChart1( ) {
 			var materialChart = new google.charts.Scatter(chartDiv1);
-			data.addRows( graphData1);
-          	materialChart.draw(data, google.charts.Scatter.convertOptions(materialOptions));
+			data1.addRows( graphData1);
+          	materialChart.draw(data1, google.charts.Scatter.convertOptions(materialOptions));
         }
         drawMaterialChart1( );
 
         function drawMaterialChart2( ) {
 			var materialChart = new google.charts.Scatter(chartDiv2);
-			data.addRows( graphData2);
-          	materialChart.draw(data, google.charts.Scatter.convertOptions(materialOptions));
+			data2.addRows( graphData2);
+          	materialChart.draw(data2, google.charts.Scatter.convertOptions(materialOptions));
         }
         drawMaterialChart2( );
 
         function drawMaterialChart3( ) {
 			var materialChart = new google.charts.Scatter(chartDiv3);
-			data.addRows( graphData3);
-          	materialChart.draw(data, google.charts.Scatter.convertOptions(materialOptions));
+			data3.addRows( graphData3);
+          	materialChart.draw(data3, google.charts.Scatter.convertOptions(materialOptions));
         }
         drawMaterialChart3( );
 
         function drawMaterialChart4( ) {
 			var materialChart = new google.charts.Scatter(chartDiv4);
-			data.addRows( graphData4);
-          	materialChart.draw(data, google.charts.Scatter.convertOptions(materialOptions));
+			data4.addRows( graphData4);
+          	materialChart.draw(data4, google.charts.Scatter.convertOptions(materialOptions));
         }
         drawMaterialChart4( );
     };
@@ -319,12 +346,6 @@
 			graphData4 = docs.table1;
 			console.log(docs.masterName);
 			console.log(docs.sensorList);
-
-			console.log(JSON.stringify(graphData1));
-			console.log(JSON.stringify(graphData2));
-			console.log(JSON.stringify(graphData3));
-			console.log(JSON.stringify(graphData4));
-				
 			drawStuff();
 		});
 	</script>

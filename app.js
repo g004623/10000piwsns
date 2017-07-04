@@ -585,47 +585,9 @@ var asyncSetSensorTb = function ( param ){
 				resolve(param);
 			}
 		}
-	).limit(3);	
+//	).limit(10);	
+	);	
 	}); // return promise 	
 }
 
-/*
-var asyncSetSensorTb4 = function ( param ){
-
-	return new Promise(function(resolve, reject){		
-	
-	console.log('param : ');
-	console.log(param);
-
-	var masterName = param.masterName;
-	var sensorId_tmp = param.sensorId;
-	var sensorId = sensorId_tmp.pop();
-	console.log('sensorId_tmp : ' + sensorId_tmp);
-	
-	var sensorId = sensorId_tmp.pop();
-	console.log('sensorId : ' + sensorId);
-
-	wsnDB1.find(
-		{$and:[{ 
-			"date" :{ 
-				$lte:new Date(), 
-				$gte: new Date( new Date().setDate( new Date().getDate()-7))}
-			},{"wsnData":{$regex:masterName}},
-			{"wsnData":{$regex:sensorId}}
-		]},
-		{'wsnData':true,_id:false,'date':true},
-		function ( err, docs){
-			if( err ) {
-				reject(err);
-			}else{
-				var test = setSensorDataTb(docs);
-				(param.table).push(test);
-				// param.sensorId = sensorId_tmp;
-				resolve(param);
-			}
-		}
-	).limit(3);	
-	}); // return promise 	
-}
-*/
 //--- end of codinater data
