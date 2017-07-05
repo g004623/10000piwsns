@@ -92,7 +92,6 @@
 		}
 
         <!-- data.addRows( graphData1); -->
-
         var materialOptions1 = {
         	chart: {
             title: scatGraphTitle[0]
@@ -101,8 +100,8 @@
           	height:300,
           	series: {0: {axis: 'Sensor Value'},	},
           	axes: {	y: {'Sensor Value': {label: 'Sensor Value'}, }},
-			hAxis:{ title:'Hello',titleTextStyle:{color: '#FF0000'},
-				gridlines:{count:1,units:{days:'MM/DD/YYYY'}}
+			hAxis:{ title:' 주간 그리스 동작 상태 ( auto grease sensor state  one week )',titleTextStyle:{color: '#3d91b0'}	
+				,format:'#일'
 			}
         };
 
@@ -113,8 +112,12 @@
           	width: 610,
           	height:300,
           	series: {0: {axis: 'Sensor Value'},	},
-          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}}
-        };
+          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'}, }},
+			hAxis:{ title:' 주간 그리스 동작 상태 ( auto grease sensor state  one week )',titleTextStyle:{color: '#3d91b0'}	
+				,format:'#일'
+			}
+
+		};
 
         var materialOptions3 = {
         	chart: {
@@ -123,7 +126,10 @@
           	width: 610,
           	height:300,
           	series: {0: {axis: 'Sensor Value'},	},
-          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}}
+          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}},
+			hAxis:{ title:' 주간 그리스 동작 상태 ( auto grease sensor state  one week )',titleTextStyle:{color: '#3d91b0'}	
+				,format:'#일'
+			}
         };
 
         var materialOptions4 = {
@@ -133,8 +139,11 @@
           	width: 610,
           	height:300,
           	series: {0: {axis: 'Sensor Value'},	},
-          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}}
-        };
+          	axes: {	y: {'Sensor Value': {label: 'Sensor Value'},}},
+			hAxis:{ title:' 주간 그리스 동작 상태 ( auto grease sensor state  one week )',titleTextStyle:{color: '#3d91b0'}	
+				,format:'#일'
+			}        
+		};
 
         function drawMaterialChart1( ) {
 			var materialChart = new google.charts.Scatter(chartDiv[0]);

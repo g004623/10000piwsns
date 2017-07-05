@@ -539,18 +539,25 @@ function setSensorDataTb(docs){
 	var test = [];
 	var i = 0;
 	try{
+		var timeNow = new Date();
+		var now = timeNow.getTime();
+
+		var oneDayCount = 24 * 60 * 60 * 1000;
+		var oneWeekCount = oneDayCount*7;
+
 		docs.forEach(function (collection){
 			var tmp1 = collection.wsnData.split(",");
-			test.push([(collection.date)*1]);
+			var dateCount = ( collection.date*1 - now ) / oneDayCount;
+			
+			test.push([dateCount]);
 			test[i].push( tmp1[4]*1);
 			for ( var j = 5 ; j < 10 ; j++){ test[i].push( tmp1[j]*1);}
 				i ++;
 		});
 		for( var key in test[0]){ test[0][key] = 0*1; }
-		var timeNow = new Date();
-		test[0][0] = timeNow.getTime();
+		test[0][0] = 0.0 ; // timeNow.getTime();
 		for( var key in test[1]){ test[1][key] = 1000*1; }
-		test[1][0] = timeNow.getTime() - 1000*60*60*24*7;
+		test[1][0] = -7.0;
 		// return test;
 	}
 	catch(e){
@@ -595,8 +602,8 @@ var asyncSetSensorTb = function ( param ){
 				resolve(param);
 			}
 		}
-	).limit(5);	
-//	);	
+//	).limit(5);	
+	);	
 	}); // return promise 	
 }
 
