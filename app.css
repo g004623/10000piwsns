@@ -1,5 +1,5 @@
 #warpper{ width: 1200px; height: 1000px; }    
-header{ width: 65%;  height: 30px; }
+header{ width: 65%;  height: 10px; }
 header h1{ text-align: center;  }
 header h2{ text-align: center;  }
 
@@ -23,31 +23,10 @@ left: 0px;
 border: 1px solid black; }
 #right_div1{
 	position : relative; 
-    top: -152px;
-    left: 452px;
+    top: -145px;
+    left: 460px;
     border: 1px solid black;
     padding: 15px;
-}
-#left_div1{
-	position : relative;
-    top: 25px;
-    left : -178px;
-    border: 1px solid  black;
-    padding: 15px;      
-}
-#right_div2{
-	position : relative; 
-    top: -192px;
-    left: 908px;
-    border: 1px solid black;
-    padding: 15px;
-    }
-#left_div2{
-	position : relative;
-    top: -404px;
-    left :10px;
-    border: 1px solid  black;
-    padding: 15px;      
 }
 aside{ font-size    : 14px; display : block; width: 175px; height: 250px; float: left; margin-top: 5px;
 	margin-left : 5px;}
@@ -78,11 +57,13 @@ address{        }
 .stalled{background: red;}
 .signalOn1{background: blue;}
 .signalOn2{background: lightblue;}
-#test1{ top: 40px; left: 120px;  position: relative; font-size: 16px; }
+#test1{ top: 35px; left: 120px;  position: relative; font-size: 16px; }
 
 #getGraphData{ margin-top: 10px;}
 
 #chart_div {margin-left: 10px; margin-top: -370px;  } 
 #graphTitle{     }
 
-#scatter {margin-top: 17px;}
+#scatter { height: 480px; margin-top: 10px;}
+
+#table2 { margin-top: 10px;  margin-left: -244px; }
