@@ -20,12 +20,13 @@ var wsnSchema = mongoose.Schema({
 var wsnDB1 = mongoose.model('wsnDB1',wsnSchema);
 
 var arryEndDevice = [2,25,36,2,25,36,18,18];
+
 var agn0 = [4,4];
-var agn1 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
+var agn1 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2,2];
 var agn2 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
 
 var agn3 = [4,4];
-var agn4 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2];
+var agn4 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2,2];
 var agn5 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
 
 var agn6 = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
@@ -55,27 +56,10 @@ for ( var i = 0 ; i < 8 ; i ++ ){
 	}
 }
 
-var fs = require('fs');
+//var fs = require('fs');
 
 
 var now = new Date();
-var logfile_name = now.getFullYear() +'_'+ now.getMonth() + "_" + now.getDay() +'.json';
-var logFile = 'eunwhoData.json';
-// Check that the file exists locally
-if(!fs.existsSync(logFile)) {
-
-  	console.log("File not found");
-
-	var test = JSON.stringify(WSNT);
-	fs.writeFileSync(logFile,test, 'utf8');
-	fs.writeFileSync(logfile_name,test, 'utf8');
-
-} else {
-  // Read the file and do anything you want
-	var content = fs.readFileSync(logFile, 'utf8');
-	WSNT = JSON.parse(content);
-}
-
 // Pre-exit scripts
 var preExit = [];
 // Catch exit
@@ -300,8 +284,8 @@ function checkMsg(masterMsg){
 
 	var wsnData = masterMsg.split(",");
     if( wsnData[0] != 'L' ){    return false;}
-    if ( wsnData[2]< '0' || wsnData[2] > '7'){ return false;}
-    if ( wsnData[14] < '1' || wsnData[14] > '4' ){return false;}
+//    if ( wsnData[2]< '0' || wsnData[2] > '7'){ return false;}    // 조사할 것 
+//    if ( wsnData[14] < '1' || wsnData[14] > '4' ){return false;} // 연구가 필요함
 
     return true;
 }
@@ -324,7 +308,8 @@ function checkSensorEqual(wsnData1, wsnData2){
 
 function getMasterId(groupId,groupMemberId){
 
-	if( groupMemberId < 9 ) groupMemberId = '0' + ( groupMemberId*1 + 1);	 
+	if( groupMemberId < 9 ){ groupMemberId = '0' + ( groupMemberId*1 + 1);
+	} else{ groupMemberId = groupMemberId * 1 + 1 ;}	 
 	var tmp = 'G'+ groupId + groupMemberId;
 	//console.log(' Master Name : '+ tmp);
 	return tmp;
@@ -346,6 +331,8 @@ function getSensorTable( docs ){
 		var masterMsg = docs[key].wsnData;
 
 		if( !checkMsg( masterMsg )){
+			console.log(masterMsg);
+			
 			continue;
 		} else {
 			tmpSensorId = masterMsg.substr(0,6);
@@ -448,6 +435,7 @@ io.on('connection',function(socket){
 
 	socket.on('clickDevice',function(data){
 
+		console.log('data.y : ' + data.y +'    data.x : '+ data.x);
 		var sensorList = [];
 		var masterName = getMasterId(data.y,data.x);
 		var graphObj = {
@@ -455,7 +443,6 @@ io.on('connection',function(socket){
 			sensorId: 'sensorList',
 			graphData:[]
 		}
-
 		var promise = asyncfunc1(masterName);
 
 		promise
@@ -466,8 +453,6 @@ io.on('connection',function(socket){
 		.then(function(result){
 			var graphData = {masterName:'',sensorList:[],table1:[],table2:[],table3:[],table4:[]};
 
-			console.log('result : ');
-			console.log(result);
 			graphData.masterName = result.masterName;
 			graphData.table1 = result.table[0];
 			graphData.table2 = result.table[1];
@@ -510,6 +495,10 @@ var asyncfunc1 = function( param) {
 				var returns = {table: [], sensorId: [], masterName: 'G001', sensorList:[]};
 				var tmp1 = '';
 				
+				console.log('debug docs:');
+				console.log(docs);
+
+
 				try{	
 					for ( var key in docs ){
 						if( tmp1 = docs[key].wsnData.split(",")){ break;}
