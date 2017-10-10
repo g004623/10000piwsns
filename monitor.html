@@ -287,6 +287,23 @@
 			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
 			$target.removeClass('init stalled').addClass('moved');
 		});
+		socket.on('lowbattery',function( data ) {
+			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+			$target.removeClass('init stalled').addClass('lowbattery');
+		});
+		socket.on('sensorErr',function( data ) {
+			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+			$target.removeClass('init stalled').addClass('sensorErr');
+		});
+		socket.on('normal',function( data ) {
+			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+			$target.removeClass('init stalled').addClass('signalOn1');
+		});
+		
+
+
+
+
 
 		socket.on('endDevice',function( data ) {
 			// console.log(data.endDevice.rxData);

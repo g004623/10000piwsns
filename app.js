@@ -1,3 +1,4 @@
+// test1
 var Promise = require('promise');
 //--- mongoose setting
 var mongoose = require('mongoose');
@@ -21,8 +22,8 @@ var wsnDB1 = mongoose.model('wsnDB1',wsnSchema);
 
 var arryEndDevice = [2,25,36,2,25,36,18,18];
 
-var agn0 = [4,4];
-var agn1 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2,2];
+var agn0 = [4,2];
+var agn1 = [2,3,4,4,1, 4,4,3,3,3, 3,2,1,3,2, 1,2,2,2,2, 2,2,2,2,2];
 var agn2 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
 
 var agn3 = [4,4];
@@ -417,6 +418,29 @@ io.on('connection',function(socket){
 				console.log('CH0 SAVED :'+msg);
 			}
 		});
+
+		var tmp1 = msg.split(",");
+		if(( tmp1[0] === 'M' )&&(tmp1[16][0]==='G')){
+			var x = Number(tmp1[16][1]);
+			var y = tmp1[16][2] * 10 + tmp1[16][3]*1 -1;
+			console.log("sensornumber=" + tmp1[16] );
+			console.log("battery volt=" + tmp1[12] );
+			console.log("number of sensors =" + tmp1[18] );
+			if(tmp1[12]< 3.3) {
+				io.to('sensornet').emit('lowbattery',{x: y, y:x});
+			}
+		} else if((tmp1[0] ==='L')&&(tmp1[12][0]==='G')){
+			var x = Number(tmp1[12][1]);
+			var y = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
+			console.log("sensor=" + tmp1[14] );
+ 			if(arrySensNo[x][y] != tmp1[14]){
+				io.to('sensornet').emit('sensorErr',{x: y, y:x});
+			}else {
+				io.to('sensornet').emit('normal',{x: y, y:x});
+			}
+		}
+
+
 		socketProc(from,msg);
 	});		
 
