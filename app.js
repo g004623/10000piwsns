@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb://localhost/wsns0');
+mongoose.connect('mongodb://localhost/wsns1');
 
 var db = mongoose.connection;
 db.on('error',console.error.bind(console,'mongoose connection error'));
@@ -22,8 +22,8 @@ var wsnDB1 = mongoose.model('wsnDB1',wsnSchema);
 
 var arryEndDevice = [2,25,36,2,25,36,18,18];
 
-var agn0 = [4,2];
-var agn1 = [2,3,4,4,1, 4,4,3,3,3, 3,2,1,3,2, 1,2,2,2,2, 2,2,2,2,2];
+var agn0 = [3,2];
+var agn1 = [2,1,2,3,4, 2,4,4,3,3, 3,2,1,3,2, 1,2,2,2,2, 2,2,2,2,2];
 var agn2 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
 
 var agn3 = [4,4];
@@ -502,7 +502,7 @@ var asyncfunc1 = function( param) {
 			{$and:
 				[{ "date" : {
 					$lte:new Date(), 
-					$gte: new Date( new Date().setDate( new Date().getDate()-7))}
+					$gte: new Date( new Date().setDate( new Date().getDate()-30))}
 					},
 					{"wsnData":{$regex:'L'}},
 					{"wsnData":{$regex:param}}
@@ -600,7 +600,7 @@ var asyncSetSensorTb = function ( param ){
 		{$and:[{ 
 			"date" :{ 
 				$lte:new Date(), 
-				$gte: new Date( new Date().setDate( new Date().getDate()-7))}
+				$gte: new Date( new Date().setDate( new Date().getDate()-30))}
 			},{"wsnData":{$regex:masterName}},
 			{"wsnData":{$regex:sensorId}}
 		]},

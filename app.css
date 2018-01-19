@@ -1,4 +1,4 @@
-#warpper{ width: 1200px; height: 1000px; }    
+#warpper{ width: 1200px; height: 1000px;  }    
 header{ width: 65%;  height: 10px; }
 header h1{ text-align: center;  }
 header h2{ text-align: center;  }
@@ -71,3 +71,4 @@ address{        }
 #scatter { height: 480px; margin-top: 10px;}
 
 #table2 { margin-top: 10px;  margin-left: -244px; }
+
