@@ -53,7 +53,7 @@ address{        }
 .seat{  margin: 2px ; float: left; width : 25px; height: 25px; border-radius : 3px; }
 
 .init{ background: gray; }
-.moved{background: green;}
+.moved{background: gray;}
 .stalled{background: red;}
 .signalOn1{background: blue;}
 .signalOn2{background: lightblue;}
@@ -61,7 +61,7 @@ address{        }
 .sensorErr{background: red;}
 
 
-#test1{ top: 35px; left: 120px;  position: relative; font-size: 16px; }
+#test1{ top: 35px; left: 0px;  position: relative; font-size: 16px; }
 
 #getGraphData{ margin-top: 10px;}
 

@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb://localhost/wsns1');
+mongoose.connect('mongodb://localhost/wsns0');
 
 var db = mongoose.connection;
 db.on('error',console.error.bind(console,'mongoose connection error'));
@@ -22,16 +22,16 @@ var wsnDB1 = mongoose.model('wsnDB1',wsnSchema);
 
 var arryEndDevice = [2,25,36,2,25,36,18,18];
 
-var agn0 = [3,2];
-var agn1 = [2,1,2,3,4, 2,4,4,3,3, 3,2,1,3,2, 1,2,2,2,2, 2,2,2,2,2];
+var agn0 = [4,4];
+var agn1 = [1,4,4,2,1, 4,4,2,1,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2,2];
 var agn2 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
 
 var agn3 = [4,4];
-var agn4 = [1,4,4,2,1, 4,4,2,4,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2,2];
-var agn5 = [2,4,2,3,3, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 3,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
+var agn4 = [1,4,4,2,1, 4,4,2,1,1, 4,4,1,4,4, 1,2,2,2,2, 2,2,2,2,2];
+var agn5 = [2,4,2,3,4, 3,3,4,4,4, 4,3,3,3,3, 2,2,4,3,3, 1,3,2,4,2, 3,4,4,3,4, 4,3,3,2,2, 4];
 
 var agn6 = [3,3,3,4,4, 3,2,3,2,3, 2,3,4,4,3, 3,3,2];
-var agn7 = [2,3,3,3,4, 3,2,2,3,2, 3,2,2,4,3, 3,3,2];
+var agn7 = [2,3,3,3,4, 4,3,2,3,2, 3,2,3,4,4, 3,3,2];
 
 var now = new Date(); 
 var arrySensNo = [agn0,agn1,agn2,agn3,agn4,agn5,agn6, agn7]; 
@@ -160,7 +160,6 @@ function sensProc(msg,x,y){
 			}
 	//     find algorithm
 			if( rxStatus ===  statusSaved ){
-				console.log("Pin state not chaged");
 				time = timeNow.getTime();
 				savedTime = saveDate.getTime();
 				elapsed = (time - savedTime())/1000/60/60;  // change to hour
@@ -173,7 +172,6 @@ function sensProc(msg,x,y){
 				}
 			}else{
 //--- sens moving 						
-				console.log(" Group %d Id %d Pin %d moved",x,y,si+1);
 
 				WSNT[x][y].sens[si].elapsed = timeNow;
 				WSNT[x][y].sens[si].moving = true;
@@ -215,7 +213,6 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 	var a_min = (timeNow.getTime() - timeSaved.getTime()) /1000/60;
 
 
-	console.log( 'elapsed time1 :',a_min); 						
 	WSNT[x][y].endDevice.rxPeriod = a_min;	// saved minute
 	WSNT[x][y].endDevice.oldRxTime = timeSaved; 
 	WSNT[x][y].endDevice.rxTime	  = timeNow;  
@@ -277,7 +274,6 @@ function socketProc(from,msg){
 		}
 	}
 	catch(error){
-		console.log('try cach error', error.message);
 	}
 } 
 
@@ -368,7 +364,6 @@ function getSensorTable( docs ){
 			} else {
 				sensorList[2] = tmpSensorId;
 				if ( sensorNumber === '3' ){
-					console.log('must end this line');
 					break;
 				}else{
 					count ++;
@@ -423,16 +418,16 @@ io.on('connection',function(socket){
 		if(( tmp1[0] === 'M' )&&(tmp1[16][0]==='G')){
 			var x = Number(tmp1[16][1]);
 			var y = tmp1[16][2] * 10 + tmp1[16][3]*1 -1;
-			console.log("sensornumber=" + tmp1[16] );
-			console.log("battery volt=" + tmp1[12] );
-			console.log("number of sensors =" + tmp1[18] );
+			//console.log("sensornumber=" + tmp1[16] );
+			//console.log("battery volt=" + tmp1[12] );
+			//console.log("number of sensors =" + tmp1[18] );
 			if(tmp1[12]< 3.3) {
 				io.to('sensornet').emit('lowbattery',{x: y, y:x});
 			}
 		} else if((tmp1[0] ==='L')&&(tmp1[12][0]==='G')){
 			var x = Number(tmp1[12][1]);
 			var y = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
-			console.log("sensor=" + tmp1[14] );
+			//console.log("sensor=" + tmp1[14] );
  			if(arrySensNo[x][y] != tmp1[14]){
 				io.to('sensornet').emit('sensorErr',{x: y, y:x});
 			}else {
@@ -459,7 +454,7 @@ io.on('connection',function(socket){
 
 	socket.on('clickDevice',function(data){
 
-		console.log('data.y : ' + data.y +'    data.x : '+ data.x);
+		//console.log('data.y : ' + data.y +'    data.x : '+ data.x);
 		var sensorList = [];
 		var masterName = getMasterId(data.y,data.x);
 		var graphObj = {
@@ -519,8 +514,8 @@ var asyncfunc1 = function( param) {
 				var returns = {table: [], sensorId: [], masterName: 'G001', sensorList:[]};
 				var tmp1 = '';
 				
-				console.log('debug docs:');
-				console.log(docs);
+				//console.log('debug docs:');
+				//console.log(docs);
 
 
 				try{	
@@ -535,7 +530,7 @@ var asyncfunc1 = function( param) {
 					returns.sensorList = sensorList;
 					returns.sensorId = sensorId;
 					returns.masterName = masterName;
-					console.log(returns);
+				//	console.log(returns);
 					resolve(returns);
 				}
 				catch(e){
@@ -570,7 +565,7 @@ function setSensorDataTb(docs){
 		for( var key in test[0]){ test[0][key] = 0*1; }
 		test[0][0] = 0.0 ; // timeNow.getTime();
 		for( var key in test[1]){ test[1][key] = 1000*1; }
-		test[1][0] = -7.0;
+		test[1][0] = -30.0;
 		// return test;
 	}
 	catch(e){
@@ -587,14 +582,14 @@ var asyncSetSensorTb = function ( param ){
 
 	return new Promise(function(resolve, reject){		
 	
-	console.log('param : '); console.log(param);
+	//console.log('param : '); console.log(param);
 
 	var masterName = param.masterName;
 	var tmp = param.sensorId;
-	console.log('sensorId_tmp : ' + tmp);
+	//console.log('sensorId_tmp : ' + tmp);
 
 	var sensorId = tmp.pop();
-	console.log('sensorId : ' + sensorId);
+	//console.log('sensorId : ' + sensorId);
 
 	wsnDB1.find(
 		{$and:[{ 

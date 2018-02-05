@@ -74,21 +74,21 @@
 
 		data1.addColumn('number', 'Date');
        	for( var k = 1 ; k < 7 ; k++){ 
-			data1.addColumn('number', 'S'+k);
+			data1.addColumn('number');
 		}
 
 		data2.addColumn('number', 'Date');
        	for( var k = 1 ; k < 7 ; k++){ 
-			data2.addColumn('number', 'S'+k);
+			data2.addColumn('number');
 		}
 		
 		data3.addColumn('number', 'Date');
        	for( var k = 1 ; k < 7 ; k++){ 
-			data3.addColumn('number', 'S'+k);
+			data3.addColumn('number');
 		}
 		data4.addColumn('number', 'Date');
        	for( var k = 1 ; k < 7 ; k++){ 
-			data4.addColumn('number', 'S'+k);
+			data4.addColumn('number');
 		}
 
         <!-- data.addRows( graphData1); -->
@@ -274,7 +274,7 @@
 		var count2 = 0;
 
 		//var socket = io.connect('http://192.168.110.10:7532');
-		var socket = io.connect('http://192.168.0.10:7532');
+		var socket = io.connect('http://192.168.110.10:7532');
 
 		var signalToggle = true;
 		socket.on('stalled',function( data ) {
@@ -457,11 +457,14 @@
 						if( status == 0 ){			
 							$output.removeClass("moved stalled").addClass('init'); 
 						}else if( status == 1 ) {	
-							$output.removeClass("init stalled").addClass('moved'); 
+							$output.removeClass("init stalled").addClass('init'); 
 							$output.addClass('moved'); 
 						}else if( status == 2 ) {
 							$output.removeClass("init moved").addClass('stalled'); 
 						} 
+						else {
+							$output.removeClass("moved stalled").addClass('init'); 
+						}	
 					});
 					// Add Document Object
 					$line.appendTo('section');
@@ -522,15 +525,15 @@
    	<aside> 
    		<table id="tbthsensor">
    			<tr>	<th>LOC. PART</th><th> PMP/S NO </th> </tr>	
-	    		<tr> <th rowspan="3">JIB PORT</th><th>NO.1</th> </tr>
-	 		<tr> <th>NO.2</th> </tr>
-	 		<tr> <th>NO.3</th> </tr>
+	    		<tr> <th rowspan="3">JIB PORT</th><th>P1</th> </tr>
+	 		<tr> <th>P2</th> </tr>
+	 		<tr> <th>P3</th> </tr>
 			
-	    		<tr> <th rowspan="3">JIB STBD</th><th>NO.1</th> </tr>
-	 		<tr>	<th>NO.2</th>	</tr>
-	 		<tr>	<th>NO.3</th>	</tr>
-	 		<tr>	<th>A-PORT</th><th>NO.1</th> </tr>
-	 		<tr>	<th>A-STBD</th><th>NO.1</th> </tr>
+	    		<tr> <th rowspan="3">JIB STBD</th><th>S1</th> </tr>
+	 		<tr>	<th>S2</th>	</tr>
+	 		<tr>	<th>S3</th>	</tr>
+	 		<tr>	<th>A-PORT</th><th>P1</th> </tr>
+	 		<tr>	<th>A-STBD</th><th>S1</th> </tr>
 	    </table>
 	</aside>
 
@@ -566,14 +569,11 @@
 				<table id='table2' width = '1000' ></table>
 				<div id="right_div1" style="width: 290px; height: 113px;">
 			</div>	
-		
-
-			
 	</div>	
-	<div id="test1">		
-	
 
-		<p> Eunwho Power Electronics:  eunwho.com eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2017 </p>
+	<div id="test1">		
+		<p><a href="https://cafeptthumb-phinf.pstatic.net/MjAxODAyMDFfMTIx/MDAxNTE3NDYzOTkxNDE5.99_T-ZDtKACtHyV2i7qPPxv6oDGWN8OhBSp2_BOpDekg.sWLWAdaoPJWHUtZbOMJF05MY7hYSIBQ5-seLI5yluBog.JPEG.g04623/eunwho.jpg?type=w740" target="_black">사용설명서</a>
+		 &nbsp;&nbsp;&nbsp;Eunwho Power Electronics:  eunwho.com eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2017 </p>
 	
 	</div>
 
