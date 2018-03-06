@@ -497,7 +497,7 @@ var asyncfunc1 = function( param) {
 			{$and:
 				[{ "date" : {
 					$lte:new Date(), 
-					$gte: new Date( new Date().setDate( new Date().getDate()-30))}
+					$gte: new Date( new Date().setDate( new Date().getDate()-7))}
 					},
 					{"wsnData":{$regex:'L'}},
 					{"wsnData":{$regex:param}}
@@ -565,7 +565,7 @@ function setSensorDataTb(docs){
 		for( var key in test[0]){ test[0][key] = 0*1; }
 		test[0][0] = 0.0 ; // timeNow.getTime();
 		for( var key in test[1]){ test[1][key] = 1000*1; }
-		test[1][0] = -30.0;
+		test[1][0] = -7.0;
 		// return test;
 	}
 	catch(e){
@@ -595,7 +595,7 @@ var asyncSetSensorTb = function ( param ){
 		{$and:[{ 
 			"date" :{ 
 				$lte:new Date(), 
-				$gte: new Date( new Date().setDate( new Date().getDate()-30))}
+				$gte: new Date( new Date().setDate( new Date().getDate()-7))}
 			},{"wsnData":{$regex:masterName}},
 			{"wsnData":{$regex:sensorId}}
 		]},

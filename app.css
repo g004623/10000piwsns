@@ -68,7 +68,75 @@ address{        }
 #chart_div {margin-left: 10px; margin-top: -370px;  } 
 #graphTitle{     }
 
-#scatter { height: 480px; margin-top: 10px;}
+#scatter { height: 680px; margin-top: 10px;}
 
 #table2 { margin-top: 10px;  margin-left: -244px; }
 
+#box{
+	margin-top: 10px;
+	height: 20px;
+}
+#box1{ 
+	width: 20px;
+	height: 20px;
+	margin-left: -75px;
+	float: left;
+	background: #0000ff;
+}
+#box2{ 
+	width: 20px;
+	height: 20px;
+	margin-left: 80px;
+	background: #A9F5F2;
+	float: left;
+}
+#box3{ 
+	width: 20px;
+	height: 20px;
+	margin-left: 100px;
+	background: red;
+	float: left;
+}
+#box4{ 
+	width: 20px;
+	height: 20px;
+	margin-left: 90px;
+	background: yellow;
+	float: left;
+}
+#box5{ 
+	width: 20px;
+	height: 20px;
+	margin-left: 130px;
+	background: gray;
+	float: left;
+}
+
+#name{
+	font-size: 15px;
+}
+#name1{
+	margin-top: -20px;
+	margin-left: -50px;
+	float: left;
+}
+#name2{
+	margin-top: -20px;
+	margin-left: 110px;
+	float: left;
+}
+#name3{
+	margin-top: -20px;
+	margin-left: 230px;
+	float: left;
+}
+#name4{
+	margin-top: -20px;
+	margin-left: 340px;
+	float: left;
+}
+#name5{
+	margin-top: -20px;
+	margin-left: 490px;
+	float: left;
+}

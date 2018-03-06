@@ -97,7 +97,7 @@
             title: scatGraphTitle[0]
           	},
           	width: 1220,
-          	height: 100,
+          	height: 150,
           	series: {0: {axis: 'Sensor Value'},	},
           	axes: {	y: {'Sensor Value': {label: ''}, }},
 			hAxis:{ title:'',titleTextStyle:{color: ''}	
@@ -112,7 +112,7 @@
             title: scatGraphTitle[1]
           	},
           	width: 1220,
-          	height:100,
+          	height:150,
           	series: {0: {axis: 'Sensor Value'},	},
           	axes: {	y: {'Sensor Value': {label: ''}, }},
 			hAxis:{ title:'',titleTextStyle:{color: ''}	
@@ -126,7 +126,7 @@
             title: scatGraphTitle[2]
           	},
           	width: 1220,
-          	height:100,
+          	height:150,
           	series: {0: {axis: 'Sensor Value'},	},
           	axes: {	y: {'Sensor Value': {label: ''},}},
 			hAxis:{ title:'',titleTextStyle:{color: ''}	
@@ -139,7 +139,7 @@
             title: scatGraphTitle[3]
           	},
           	width: 1220,
-          	height:100,
+          	height:150,
           	series: {0: {axis: 'Sensor Value'},	},
           	axes: {	y: {'Sensor Value': {label: ''},}},
 			hAxis:{ title:'',titleTextStyle:{color: ''}	
@@ -517,7 +517,21 @@
 	    	<div>
 	    		<div id= "subtile"> [ Ship's name : HD10000 ]  &nbsp &nbsp [ Lubrication part : Crane &nbsp] &nbsp &nbsp <a id="dispTime"></a></div>  
 	    	</div>
-	    </div> 
+			<div id="box">
+				<div id="box1"></div>
+				<div id="box2"></div>
+				<div id="box3"></div>
+				<div id="box4"></div>
+				<div id="box5"></div>
+			</div>
+			<div id="name">
+				<div id="name1">분배기 정상동작</div>
+				<div id="name2">신호 처리중</div>
+				<div id="name3">센서 불량</div>
+				<div id="name4">배터리 3.6V이하</div>
+				<div id="name5">센서컨트롤러 동작안함</div>
+			</div>
+		</div>
 	</div>
 
 	<div id="tablecontainer">
@@ -550,7 +564,7 @@
 	
 </wrapper>
 
-	<div id="wrap1" style="width: 1280px; height: 670px;">
+	<div id="wrap1" style="width: 1280px; height: 870px;">
 			<table id="scatter">
 				<tr>
 					<th> <div id="chart_div1" style="" > </div> </th>
