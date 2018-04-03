@@ -233,44 +233,11 @@ function socketProc(from,msg){
 
 			endDeviceProc(msg,x,y);
 
-			if(( x == 4 )&&(y == 11)){
-				endDeviceProc(msg,1,11);
-				endDeviceProc(msg,2,9);
-			}
-			if( (x==5)&&( y == 14 )){
-					endDeviceProc(msg,2,26);
-					endDeviceProc(msg,5,15);
-			}
-			if((x==1) && ( y == 22 )){
-				endDeviceProc(msg,1,17);
-				endDeviceProc(msg,2,35);
-				endDeviceProc(msg,6,13);
-			}
-			if(( x == 4) && ( y == 14)){
-				endDeviceProc(msg,4,10);
-			}							
 		}else if(( tmp1[0] === 'L') && (tmp1[12][0] === 'G')){
 			var x = Number(tmp1[12][1]);
 			var y = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
 
 			sensProc(msg,x,y);
-
-			if(( x == 4 )&&(y == 11)){
-				sensProc(msg,1,11);
-				sensProc(msg,2,9);
-			}
-			if( (x==5)&&( y == 14 )){
-				sensProc(msg,2,26);
-				sensProc(msg,5,15);
-			}
-			if((x==1) && ( y == 22 )){
-				sensProc(msg,1,17);
-				sensProc(msg,2,35);
-				sensProc(msg,6,13);
-			}
-			if(( x == 4) && ( y == 13)){
-				sensProc(msg,4,10);
-			}							
 		}
 	}
 	catch(error){
