@@ -8,6 +8,12 @@
 <!-- start of goole gauge --> 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
+
+//---
+		// var socket = io.connect('http://192.168.110.10:7532');
+		// var socket = io.connect('http://192.168.0.10:7532');
+//------
+
 	google.charts.load('current', {'packages':['corechart']});
 	var pinData = [['Element','Density',{role:'style'}],
 					['LUBE1',100, 'blue'],
@@ -222,7 +228,8 @@
     	var x = document.getElementById(id).rows[row].cells;
     	x[cell].innerHTML = content;
     	x[cell].setAttribute('bgColor','yellow');
-	}		
+	}
+		
 	function writeTable(msg, test, no){
 
 		var val ='---';
@@ -269,12 +276,19 @@
 	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 
 	<script>
-
+		var textArea =[];
 		var count1 = 0;
 		var count2 = 0;
+		var msgCount = 0;
 
+		for ( var i = 0 ; i < 20 ; i ++){
+			textArea.push(' \n');
+		} 
+
+//-----
 		//var socket = io.connect('http://192.168.110.10:7532');
-		var socket = io.connect('http://192.168.110.10:7532');
+		var socket = io.connect('http://192.168.0.10:7532');
+//------
 
 		var signalToggle = true;
 		socket.on('stalled',function( data ) {
@@ -300,21 +314,32 @@
 			$target.removeClass('init stalled').addClass('signalOn1');
 		});
 		
+		socket.on('rxdmsg',function(msg){
+			console.log(msg);
 
+			var k = msgCount;
 
+			textArea[msgCount] = msg;
+			msgCount = ( msgCount > 18 ? 0: msgCount+1);
+			
+			var textA ='';
 
-
+			for( var j = 0 ; j < 19 ; j ++){
+				textA += textArea[k];
+				k = ( k > 1 ? k-1: 19);
+			}
+			document.getElementById('rxdMsg').innerHTML = textA;
+		});
 
 		socket.on('endDevice',function( data ) {
 			// console.log(data.endDevice.rxData);
 
-			if( count1 < 7) { count1 = count1 +1;
+			if( count1 < 5) { count1 = count1 +1;
 			} else { count1 = 1;}
 
 			writeTable(data.endDevice.rxData,count1,2);
 			
 			var count = data.endDevice.numSens;
-			console.log("data.endDevice.numSense:" + count );
 
 			for(var i = 0 ; i < 4 ; i++){
 
@@ -584,11 +609,13 @@
 				<div id="right_div1" style="width: 290px; height: 113px;">
 			</div>	
 	</div>	
-
 	<div id="test1">		
 		<p><a href="https://cafeptthumb-phinf.pstatic.net/MjAxODAyMDFfMTIx/MDAxNTE3NDYzOTkxNDE5.99_T-ZDtKACtHyV2i7qPPxv6oDGWN8OhBSp2_BOpDekg.sWLWAdaoPJWHUtZbOMJF05MY7hYSIBQ5-seLI5yluBog.JPEG.g04623/eunwho.jpg?type=w740" target="_black">사용설명서</a>
 		 &nbsp;&nbsp;&nbsp;Eunwho Power Electronics:  eunwho.com eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2017 </p>
-	
+
+	</div>
+	<div id='testArea'>
+		<textarea id='rxdMsg' cols='100' rows='20'></textarea>
 	</div>
 
 <!--	<div id="chart_div5" style="width: 900px; height: 500px;"></div> -->
@@ -596,7 +623,3 @@
 </body>
 
 </html>
-
-
-	
-

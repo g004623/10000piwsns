@@ -83,8 +83,8 @@ db.once('open', function(){
 		var testIn = JSON.stringify(result);
 
 		var testOut = testIn.replace(/],/g,']\r\n');
-//		console.log(testOut);
-		
+		//var testOut = testIn.replace(///g,'');
+		//var testOut2 = testOut1.replace(,'');
 		fs.writeFileSync(fileName,testOut, 'utf8');	
 	})
 	.catch(function(){
@@ -129,25 +129,6 @@ preExit.push (function (code) {
   console.log ('Whoa! Exit code %d, cleaning up...', code);
   // i.e. close database
 });
-
-// serve
-var app = require('express')();
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-
-server.listen(7532);
-
-app.get('/',function ( req,res){
-	res.sendFile(__dirname +'/monitor.html');
-});
-
-app.get('/app.css', function (req, res) {
-  res.sendfile(__dirname + '/app.css');  
-});
-
-app.get('/wsnObj',function ( request, response, next) {
-	response.send(WSNT);
-}); 
 
 
 var mastStat = {rxdSignal:NO,solarVolt:0,battVolt:0,chipVolt:0,sensNumb:0};

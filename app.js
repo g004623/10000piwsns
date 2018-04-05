@@ -59,16 +59,12 @@ for ( var i = 0 ; i < 8 ; i ++ ){
 
 //var fs = require('fs');
 
-
 var now = new Date();
-// Pre-exit scripts
 var preExit = [];
-// Catch exit
 process.stdin.resume();
 process.on('exit',function(code) {
 	var i;
 	console.log('Process exit');
-
 	for( i = 0; i < preExit.length; i++){
 		preExit[i](code);
 	}
@@ -77,7 +73,6 @@ process.on('exit',function(code) {
 
 // Catch CTRL+C
 process.on ('SIGINT', function () {
-	
 	console.log ('\nCTRL+C...');
 
 	var test = JSON.stringify(WSNT);
@@ -122,9 +117,7 @@ app.get('/wsnObj',function ( request, response, next) {
 
 
 function sensProc(msg,x,y){
-
 	var tmp1 = msg.split(",");
-
 	var timeNow = new Date();
 
 // L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
@@ -212,7 +205,6 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 	var timeSaved =new Date( WSNT[x][x].endDevice.rxTime);  
 	var a_min = (timeNow.getTime() - timeSaved.getTime()) /1000/60;
 
-
 	WSNT[x][y].endDevice.rxPeriod = a_min;	// saved minute
 	WSNT[x][y].endDevice.oldRxTime = timeSaved; 
 	WSNT[x][y].endDevice.rxTime	  = timeNow;  
@@ -221,7 +213,6 @@ Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,
 
 	io.to('sensornet').emit('endDevice',WSNT[x][y]);
 }
-
 
 function socketProc(from,msg){
 	var tmp1 = msg.split(",");
@@ -367,10 +358,11 @@ io.on('connection',function(socket){
 	socket.join('sensornet');
 
 	console.log('Cooool now connected socket.io');
-	
-	// socket.emit('news',{hello:'world'});
-	
+
 	socket.on('CH0',function(from,msg){  // from backstay
+
+		io.to('sensornet').emit('rxdmsg',msg);
+
 		var wsnIn = new wsnDB1({wsnData:msg});
 		wsnIn.save(function(err,wsnIn){
 			if(err){
@@ -401,10 +393,8 @@ io.on('connection',function(socket){
 				io.to('sensornet').emit('normal',{x: y, y:x});
 			}
 		}
-
-
 		socketProc(from,msg);
-	});		
+	});
 
 	socket.on('CH1',function(from,msg){  // from backstay
 		var wsnIn = new wsnDB1({wsnData:msg});
