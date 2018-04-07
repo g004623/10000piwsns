@@ -108,8 +108,6 @@
           	axes: {	y: {'Sensor Value': {label: ''}, }},
 			hAxis:{ title:'',titleTextStyle:{color: ''}	
 				,format:'#일'
-
-
 			}
         };
 
@@ -188,7 +186,7 @@
 
 		var title = ['M','version','group','sensor#','MY', 'MP','SH','SL','DH','DL',
 						'%V','S.V','B.V','C.T', 'C.V', 
-    					'DB','D.Id','NI','No.S'];
+    					'DB','D.Id','NI','No.S','Rx Time'];
 
 		var tableWidth = ['60','60','60','60','40','40','30','60','40','40','30','60','60','60','30','130'];
 		var x = document.createElement('TABLE');
@@ -215,45 +213,37 @@
 		
 	}
 
-	function changeContent(id, row, cell, content) {
+	function changeContent(id, targRow, cell, content) {
+		var rowIn = targRow;
+		console.log('row = ',targRow);
 
-		var test = row;
-		
-		if( test === 1 ){ test = 7;
-		} else { test = row -1;}
-		
-    	var a = document.getElementById(id).rows[test].cells;
+		rowIn = ( rowIn == 6 ) ? 1 : rowIn -1 ;
+
+    	var a = document.getElementById(id).rows[rowIn].cells;
     	a[cell].setAttribute('bgColor','white');
     	
-    	var x = document.getElementById(id).rows[row].cells;
+    	var x = document.getElementById(id).rows[targRow].cells;
     	x[cell].innerHTML = content;
     	x[cell].setAttribute('bgColor','yellow');
 	}
 		
-	function writeTable(msg, test, no){
+	function writeTable(msg, row, no){
 
 		var val ='---';
-       	var tmp = msg.split(",");
-
-		console.log("msg :", tmp);
+		var tmp = msg.split(',');
 		for(var i = 4 ; i < 19 ; i++){
-
-			if( tmp[0] === 'M'){ val = tmp[i];}
-		
-			if( no === 2 ){
-				changeContent('tblData2',test,i-4,val);
-			} else{
-				changeContent('tblData3',test,i-4,val);
-			}
+			if( tmp[0] === 'M')  val = tmp[i] ;
+			( no == 2 ) ? changeContent('tblData2',row,i-4,val) : changeContent('tblData3',row,i-4,val);
 		}
 	
 		var d = new Date();
 		var weekday = new Array(7);
+
 		weekday[0]= "Sun";
 		weekday[1]= "Mon";
-		weekday[2]= "Tues";
+		weekday[2]= "Tue";
 		weekday[3]= "Wed";
-		weekday[4]= "Thur";
+		weekday[4]= "Thu";
 		weekday[5]= "Fri";
 		weekday[6]= "Sat";
 
@@ -262,11 +252,7 @@
  	 	var m = d.getMinutes();
 		val = n + ' : ' + h + ' : ' + m ;
 
-		if ( no === 2 ){
-			changeContent('tblData2',test,15,val);
-		} else{
-			changeContent('tblData3',test,15,val);
-	}
+		( no == 2) ? changeContent('tblData2',row,15,val):changeContent('tblData3',row,15,val);
 }   
 		
 
@@ -334,8 +320,7 @@
 		socket.on('endDevice',function( data ) {
 			// console.log(data.endDevice.rxData);
 
-			if( count1 < 5) { count1 = count1 +1;
-			} else { count1 = 1;}
+			count1 = ( (count1 < 6) ? count1 + 1 : 1); 
 
 			writeTable(data.endDevice.rxData,count1,2);
 			
