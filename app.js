@@ -1,4 +1,6 @@
 // test1
+var graphDay = 7;
+
 var Promise = require('promise');
 //--- mongoose setting
 var mongoose = require('mongoose');
@@ -116,11 +118,10 @@ app.get('/wsnObj',function ( request, response, next) {
 }); 
 
 
+// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
 function sensProc(msg,x,y){
 	var tmp1 = msg.split(",");
 	var timeNow = new Date();
-
-// L,2,43,300,620,649,691,722,669,655,281,3.29,CS44,21719,3
 	var rxSensId = tmp1[1]*100 + tmp1[2]*1;
 	var rxCount = tmp1[13] *1;
 	var rxSensNum = tmp1[14] *1;
@@ -193,13 +194,18 @@ function sensProc(msg,x,y){
 	io.to('sensornet').emit('received',{x: y, y:x});
 }
 
-function endDeviceProc(msg,x,y){
+function sensProc1(msgSens,mastId){
+	var msg = 0; // received from zigbee
+	mag.Sens = msgSens;
+	io.to('sensornet').emit('endDevice',msg);
+}	
+
 /*
 M, version, group#, sensor#, MY, MP, SH, SL, DH, DL, %V, solar Volt, battery Volt, coreTemp, chip volt, 
 	DB,NI, packet ID, number of sensors
 Ex) M,717,5,33,C592,0,13A200,412585D0,0,0,D01,4.454,3.626,281,3.30,2B,ES01,1234,2\r\n   
 */
-			
+function endDeviceProc(msg,x,y){
 	var tmp1 = msg.split(",");
 	var timeNow = new Date();
 	var timeSaved =new Date( WSNT[x][x].endDevice.rxTime);  
@@ -228,6 +234,7 @@ function socketProc(from,msg){
 			var x = Number(tmp1[12][1]);
 			var y = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
 
+			var mastId = tmp[16];
 			sensProc(msg,x,y);
 		}
 	}
@@ -266,7 +273,6 @@ function getMasterId(groupId,groupMemberId){
 	if( groupMemberId < 9 ){ groupMemberId = '0' + ( groupMemberId*1 + 1);
 	} else{ groupMemberId = groupMemberId * 1 + 1 ;}	 
 	var tmp = 'G'+ groupId + groupMemberId;
-	//console.log(' Master Name : '+ tmp);
 	return tmp;
 }
 
@@ -286,7 +292,6 @@ function getSensorTable( docs ){
 		var masterMsg = docs[key].wsnData;
 
 		if( !checkMsg( masterMsg )){
-			console.log(masterMsg);
 			
 			continue;
 		} else {
@@ -419,33 +424,104 @@ io.on('connection',function(socket){
 			sensorId: 'sensorList',
 			graphData:[]
 		}
-		var promise = asyncfunc1(masterName);
-
-		promise
-		.then(asyncSetSensorTb)
-		.then(asyncSetSensorTb)
-		.then(asyncSetSensorTb)
-		.then(asyncSetSensorTb)
-		.then(function(result){
-			var graphData = {masterName:'',sensorList:[],table1:[],table2:[],table3:[],table4:[]};
-
-			graphData.masterName = result.masterName;
-			graphData.table1 = result.table[0];
-			graphData.table2 = result.table[1];
-			graphData.table3 = result.table[2];
-			graphData.table4 = result.table[3];
-			graphData.sensorList = result.sensorList;
-			socket.emit('graphData',graphData);
-		})	
-		.catch(console.err);
 		
-		//	// socket.emit('graphData',data);
+		if ( data.z ) {
+
+			console.log ('data.k = ',data.k);
+			graphDay = (( data.k ) ? 7 : 30 );
+
+			var promise = asyncfunc1(masterName);
+
+			promise
+			.then(asyncSetSensorTb)
+			.then(asyncSetSensorTb)
+			.then(asyncSetSensorTb)
+			.then(asyncSetSensorTb)
+			.then(function(result){
+				var graphData = {masterName:'',sensorList:[],table1:[],table2:[],table3:[],table4:[]};
+
+				graphData.masterName = result.masterName;
+				graphData.table1 = result.table[0];
+				graphData.table2 = result.table[1];
+				graphData.table3 = result.table[2];
+				graphData.table4 = result.table[3];
+				graphData.sensorList = result.sensorList;
+				socket.emit('graphData',graphData);
+			})	
+			.catch(console.err);
+		} else{
+			var promise = getMastMsg(masterName);
+			var msg = {mast:0,sens:0};
+			promise
+			.then(function( result){
+				msg.mast = result;
+				return getSensMsg(masterName);
+			})
+			.then(function(result){
+				msg.sens = result;
+				socket.emit('sensData',msg);
+			})
+			.catch(function(reject){
+				console.log(reject);
+			});				
+		}		
+		// socket.emit('graphData',data);
 	});	
 
 	socket.on('reqGraph',function(data){
 
 	});	
 });
+
+// const lastDays = 7;
+
+var getMastMsg = function ( param ){
+   return new Promise(function(resolve, reject){
+   wsnDB1.find(
+      {$and:[{"date" :{
+         $lte:new Date(),
+         $gte:new Date(new Date().setDate(new Date().getDate() - graphDay))}},
+         {"wsnData":{$regex:param}},
+         {"wsnData":{$regex:'M,'}}
+      ]},
+      {'wsnData':true,_id: false, 'date':true},
+      function (err, docs){
+         if( err ) {
+            reject(err);
+         }else{
+            try{
+               if(docs[0]){
+						var tmp1 = 0;
+                  for ( var key in docs){
+                     if( tmp1 = docs[key] ) break;
+                  }
+                  resolve(tmp1);
+               }
+            }
+            catch(err){
+               console.log(err);
+               reject(err);
+            }
+         }}
+      ).limit(5).sort({'date':-1});
+   });
+}
+
+
+var getSensMsg = function( mastId ) {
+	return new Promise(function ( resolve,reject ){ 
+		wsnDB1.find(
+			{$and:[{ "date" : {
+				$lte:new Date(),$gte: new Date( new Date().setDate( new Date().getDate()-graphDay))}
+				}, {"wsnData":{$regex:'L'}}, {"wsnData":{$regex:mastId}}]},
+			{ 'wsnData':true,	_id:false,'date':true},
+			function(err,docs){
+				if( err ) reject(err);
+				else resolve(docs);
+			}
+		).limit(10).sort({'data':-1});
+	});
+}
 
 
 var asyncfunc1 = function( param) {
@@ -454,7 +530,7 @@ var asyncfunc1 = function( param) {
 			{$and:
 				[{ "date" : {
 					$lte:new Date(), 
-					$gte: new Date( new Date().setDate( new Date().getDate()-7))}
+					$gte: new Date( new Date().setDate( new Date().getDate()-graphDay))}
 					},
 					{"wsnData":{$regex:'L'}},
 					{"wsnData":{$regex:param}}
@@ -471,10 +547,6 @@ var asyncfunc1 = function( param) {
 				var returns = {table: [], sensorId: [], masterName: 'G001', sensorList:[]};
 				var tmp1 = '';
 				
-				//console.log('debug docs:');
-				//console.log(docs);
-
-
 				try{	
 					for ( var key in docs ){
 						if( tmp1 = docs[key].wsnData.split(",")){ break;}
@@ -487,7 +559,6 @@ var asyncfunc1 = function( param) {
 					returns.sensorList = sensorList;
 					returns.sensorId = sensorId;
 					returns.masterName = masterName;
-				//	console.log(returns);
 					resolve(returns);
 				}
 				catch(e){
@@ -508,7 +579,7 @@ function setSensorDataTb(docs){
 		var now = timeNow.getTime();
 
 		var oneDayCount = 24 * 60 * 60 * 1000;
-		var oneWeekCount = oneDayCount*7;
+		var oneWeekCount = oneDayCount * graphDay;
 
 		docs.forEach(function (collection){
 			var tmp1 = collection.wsnData.split(",");
@@ -522,8 +593,8 @@ function setSensorDataTb(docs){
 		for( var key in test[0]){ test[0][key] = 0*1; }
 		test[0][0] = 0.0 ; // timeNow.getTime();
 		for( var key in test[1]){ test[1][key] = 1000*1; }
-		test[1][0] = -7.0;
-		// return test;
+		// test[1][0] = -7.0;
+		test[1][0] = -graphDay;
 	}
 	catch(e){
 		console.log(e.message);
@@ -552,7 +623,7 @@ var asyncSetSensorTb = function ( param ){
 		{$and:[{ 
 			"date" :{ 
 				$lte:new Date(), 
-				$gte: new Date( new Date().setDate( new Date().getDate()-7))}
+				$gte: new Date( new Date().setDate( new Date().getDate()-graphDay))}
 			},{"wsnData":{$regex:masterName}},
 			{"wsnData":{$regex:sensorId}}
 		]},
@@ -571,5 +642,4 @@ var asyncSetSensorTb = function ( param ){
 	);	
 	}); // return promise 	
 }
-
 //--- end of codinater data

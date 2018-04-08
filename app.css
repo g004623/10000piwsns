@@ -141,5 +141,9 @@ address{        }
 	float: left;
 }
 #rxdMsg{
-	margin-top: 20px;
+	width: 1200px;
+	height: 400px;
+	margin-top: 50px;
+	text-align: left;
+   border: 1px solid black;
 }

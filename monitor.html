@@ -3,16 +3,20 @@
 <head>
 	<meta charset="utf-8">
 	<link type="text/css" rel="stylesheet" href="/app.css" media="all">
-
 	<title>Auto Grease Monitor</title>
 <!-- start of goole gauge --> 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 
-//---
-		// var socket = io.connect('http://192.168.110.10:7532');
-		// var socket = io.connect('http://192.168.0.10:7532');
-//------
+<script>
+// var socket = io.connect('http://192.168.110.10:7532'); // for Hydai 
+	var socket = io.connect('http://192.168.0.10:7532');   // for eunwho P.E.
+//------------------------------------------------------------
+	var textArea =[];
+	var count1 = 0;
+	var count2 = 0;
+	var msgCount = 0;
 
 	google.charts.load('current', {'packages':['corechart']});
 	var pinData = [['Element','Density',{role:'style'}],
@@ -21,435 +25,293 @@
 					['LUBE3',100, 'darkgray'],
 					['LUBE4',100, 'darkgray']
 					];
-	function drawPin( pinData,id){
-		var data = new google.visualization.arrayToDataTable(pinData);
-		var view = new google.visualization.DataView(data);
-		view.setColumns([0,1,
-						{calc:'stringify', sourceColumn:1,
-						 type: 'string', role:'annotation'},
-						 2]);
-		var options = {
-			width: 300,	bar  : {groupWidth:'30%'},
-			legend: { position: 'none' },
-			vAxis:{title:'Pin State',minValue: 0, maxValue: 100}
-			};	
+
+
+function drawPin( pinData,id){
+	var data = new google.visualization.arrayToDataTable(pinData);
+	var view = new google.visualization.DataView(data);
+	view.setColumns([0,1,
+		{calc:'stringify', sourceColumn:1,
+		 type: 'string', role:'annotation'},
+		 2]);
+	var options = {
+		width: 300,	bar  : {groupWidth:'30%'},
+		legend: { position: 'none' },
+		vAxis:{title:'Pin State',minValue: 0, maxValue: 100}
+	};	
 			
-		var chart = new google.visualization.ColumnChart(document.getElementById(id));
-		chart.draw(view, options);
-	}
+	var chart = new google.visualization.ColumnChart(document.getElementById(id));
+	chart.draw(view, options);
+}
 
 <!-- start of google scatter -->
+var graphData1 = [];
+var scatGraphTitle=['','','',''];
+var graphData = [];
 
-	var graphData1 = [];
-	var graphData2 = [];
-	var graphData3 = [];
-	var graphData4 = [];
+for( var i = 0 ; i < 1000; i++){
+	graphData1.push([i]);
+	for( var j = 0 ; j < 6 ; j++)	graphData1[i].push(700*1);
+}
 
-	var scatGraphTitle=['','','',''];
+graphData1[0][1] = 0;	
+graphData1[0][2] = 1000;
+
+for(var i = 0 ; i < 4 ; i++)	graphData.push(graphData1);
+
+google.charts.load('current', {'packages':['corechart', 'scatter']});
+google.charts.setOnLoadCallback(drawStuff);
+
+function drawStuff( ) {
+
+	var chartDiv = [];
+	var gData = [];
+	var mOption = [];
+
+	for( var i = 0 ; i < 4 ; i++ ) chartDiv.push(document.getElementById('chart_div'+(i+1)));
 
 
-	for( var i = 0 ; i < 1000; i++){
-		graphData1.push([i]);
-		graphData1[i].push(700*1);
-		graphData1[i].push(700*1);
-		graphData1[i].push(700*1);
-		graphData1[i].push(700*1);
-		graphData1[i].push(700*1);
-		graphData1[i].push(700*1);
+   var data1 = new google.visualization.DataTable();
+
+	data1.addColumn('number', 'Date');
+     	for( var k = 1 ; k < 7 ; k++){ 
+		data1.addColumn('number');
 	}
-	graphData1[0][1] = 0;
-	graphData1[0][2] = 1000;
 
+	for ( i = 0 ; i < 4 ; i++) gData.push( data1);
 
-      google.charts.load('current', {'packages':['corechart', 'scatter']});
-      google.charts.setOnLoadCallback(drawStuff);
-
-<!-- drawStuff() -->
-
-      function drawStuff( ) {
-		var chartDiv = [];
-
-		for( var i = 0 ; i < 4 ; i++ ){
-	        chartDiv.push(document.getElementById('chart_div'+(i+1)));
-		}	
-
-        data1 = new google.visualization.DataTable();
-        data2 = new google.visualization.DataTable();
-        data3 = new google.visualization.DataTable();
-        data4 = new google.visualization.DataTable();
-
-		data1.addColumn('number', 'Date');
-       	for( var k = 1 ; k < 7 ; k++){ 
-			data1.addColumn('number');
-		}
-
-		data2.addColumn('number', 'Date');
-       	for( var k = 1 ; k < 7 ; k++){ 
-			data2.addColumn('number');
-		}
-		
-		data3.addColumn('number', 'Date');
-       	for( var k = 1 ; k < 7 ; k++){ 
-			data3.addColumn('number');
-		}
-		data4.addColumn('number', 'Date');
-       	for( var k = 1 ; k < 7 ; k++){ 
-			data4.addColumn('number');
-		}
-
-        <!-- data.addRows( graphData1); -->
-        var materialOptions1 = {
-        	chart: {
-            title: scatGraphTitle[0]
-          	},
+   var materialOptions = {
+    	chart: { title: scatGraphTitle[0]},
           	width: 1220,
           	height: 150,
           	series: {0: {axis: 'Sensor Value'},	},
           	axes: {	y: {'Sensor Value': {label: ''}, }},
-			hAxis:{ title:'',titleTextStyle:{color: ''}	
-				,format:'#일'
+				hAxis:{ title:'',titleTextStyle:{color: ''},	
+				format:'#일'
 			}
-        };
+	};
 
-        var materialOptions2 = {
-        	chart: {
-            title: scatGraphTitle[1]
-          	},
-          	width: 1220,
-          	height:150,
-          	series: {0: {axis: 'Sensor Value'},	},
-          	axes: {	y: {'Sensor Value': {label: ''}, }},
-			hAxis:{ title:'',titleTextStyle:{color: ''}	
-				,format:'#일'
-			}
+	for( var i = 0 ; i < 4 ; i++)	mOption.push(materialOptions);
+ 
+	function drawMaterialChart(key) {
+		var materialChart = new google.charts.Scatter(chartDiv[key]);
+		gData[key].addRows( graphData[key]);
+      materialChart.draw(gData[key], google.charts.Scatter.convertOptions(mOption[key]));
+	}
+   for(var i= 0;i < 4; i++) drawMaterialChart(i);
+};
 
-		};
+function tableCreate( ){
+	var title = ['M','version','group','sensor#','MY', 'MP','SH','SL','DH','DL',
+				'%V','S.V','B.V','C.T', 'C.V', 
+   			'DB','D.Id','NI','No.S','Rx Time'];
 
-        var materialOptions3 = {
-        	chart: {
-            title: scatGraphTitle[2]
-          	},
-          	width: 1220,
-          	height:150,
-          	series: {0: {axis: 'Sensor Value'},	},
-          	axes: {	y: {'Sensor Value': {label: ''},}},
-			hAxis:{ title:'',titleTextStyle:{color: ''}	
-				,format:'#일'
-			}
-        };
+	var tableWidth = ['60','60','60','60','40','40','30','60','40','40','30','60','60','60','30','130'];
+	var x = document.createElement('TABLE');
+	x.setAttribute("id","tblData2");
+	var tbl = document.getElementById('table2').appendChild(x);
+	var tr = tbl.insertRow();
+	for( var i = 0; i < 16 ; i ++){
+		var td = tr.insertCell();
+		td.appendChild(document.createTextNode(title[i+4]));
+		td.style.border = '1px solid black';
+		td.setAttribute('width',tableWidth[i]);
+		td.setAttribute('align','center');			
+	}
 
-        var materialOptions4 = {
-        	chart: {
-            title: scatGraphTitle[3]
-          	},
-          	width: 1220,
-          	height:150,
-          	series: {0: {axis: 'Sensor Value'},	},
-          	axes: {	y: {'Sensor Value': {label: ''},}},
-			hAxis:{ title:'',titleTextStyle:{color: ''}	
-				,format:'#일'
-			}        
-		};
+	for(var j = 0 ; j < 5 ; j++){
 
-        function drawMaterialChart1( ) {
-			var materialChart = new google.charts.Scatter(chartDiv[0]);
-			data1.addRows( graphData1);
-          	materialChart.draw(data1, google.charts.Scatter.convertOptions(materialOptions1));
-        }
-        drawMaterialChart1( );
-
-        function drawMaterialChart2( ) {
-			var materialChart = new google.charts.Scatter(chartDiv[1]);
-			data2.addRows( graphData2);
-          	materialChart.draw(data2, google.charts.Scatter.convertOptions(materialOptions2));
-        }
-        drawMaterialChart2( );
-
-        function drawMaterialChart3( ) {
-			var materialChart = new google.charts.Scatter(chartDiv[2]);
-			data3.addRows( graphData3);
-          	materialChart.draw(data3, google.charts.Scatter.convertOptions(materialOptions3));
-        }
-        drawMaterialChart3( );
-
-        function drawMaterialChart4( ) {
-			var materialChart = new google.charts.Scatter(chartDiv[3]);
-			data4.addRows( graphData4);
-          	materialChart.draw(data4, google.charts.Scatter.convertOptions(materialOptions4));
-        }
-        drawMaterialChart4( );
-    };
-</script>
-<!-- end of goole gauge --> 
-<script>
-	function tableCreate( ){
-
-		var title = ['M','version','group','sensor#','MY', 'MP','SH','SL','DH','DL',
-						'%V','S.V','B.V','C.T', 'C.V', 
-    					'DB','D.Id','NI','No.S','Rx Time'];
-
-		var tableWidth = ['60','60','60','60','40','40','30','60','40','40','30','60','60','60','30','130'];
-		var x = document.createElement('TABLE');
-		x.setAttribute("id","tblData2");
-		var tbl = document.getElementById('table2').appendChild(x);
-		var tr = tbl.insertRow();
+		var tr = tbl.insertRow();	
 		for( var i = 0; i < 16 ; i ++){
-			var td = tr.insertCell();
-			td.appendChild(document.createTextNode(title[i+4]));
+				var td = tr.insertCell();
+			td.appendChild(document.createTextNode(['000']));
 			td.style.border = '1px solid black';
-			td.setAttribute('width',tableWidth[i]);
 			td.setAttribute('align','center');			
 		}
-		for(var j = 0 ; j < 5 ; j++){
-
-			var tr = tbl.insertRow();	
-			for( var i = 0; i < 16 ; i ++){
-				var td = tr.insertCell();
-				td.appendChild(document.createTextNode(['000']));
-				td.style.border = '1px solid black';
-				td.setAttribute('align','center');			
-			}
-		}
-		
 	}
+}
 
-	function changeContent(id, targRow, cell, content) {
-		var rowIn = targRow;
-		console.log('row = ',targRow);
+function changeContent(id, targRow, cell, content) {
 
-		rowIn = ( rowIn == 6 ) ? 1 : rowIn -1 ;
+	var rowIn = targRow;
 
-    	var a = document.getElementById(id).rows[rowIn].cells;
-    	a[cell].setAttribute('bgColor','white');
+	console.log('row = ',targRow);
+	rowIn = ( rowIn > 4 ) ? 1 : rowIn -1 ;
+
+  	var a = document.getElementById(id).rows[rowIn].cells;
+  	a[cell].setAttribute('bgColor','white');
     	
-    	var x = document.getElementById(id).rows[targRow].cells;
-    	x[cell].innerHTML = content;
-    	x[cell].setAttribute('bgColor','yellow');
+  	var x = document.getElementById(id).rows[targRow].cells;
+  	x[cell].innerHTML = content;
+  	x[cell].setAttribute('bgColor','yellow');
+}
+		
+function writeTable(msg, row, no){
+
+	var val ='---';
+	var tmp = msg.split(',');
+	for(var i = 4 ; i < 19 ; i++){
+		if( tmp[0] === 'M')  val = tmp[i] ;
+		( no == 2 ) ? changeContent('tblData2',row,i-4,val) : changeContent('tblData3',row,i-4,val);
 	}
-		
-	function writeTable(msg, row, no){
-
-		var val ='---';
-		var tmp = msg.split(',');
-		for(var i = 4 ; i < 19 ; i++){
-			if( tmp[0] === 'M')  val = tmp[i] ;
-			( no == 2 ) ? changeContent('tblData2',row,i-4,val) : changeContent('tblData3',row,i-4,val);
-		}
 	
-		var d = new Date();
-		var weekday = new Array(7);
+	var d = new Date();
+	var weekday = new Array(7);
 
-		weekday[0]= "Sun";
-		weekday[1]= "Mon";
-		weekday[2]= "Tue";
-		weekday[3]= "Wed";
-		weekday[4]= "Thu";
-		weekday[5]= "Fri";
-		weekday[6]= "Sat";
+	weekday[0]= "Sun"; weekday[1]= "Mon"; weekday[2]= "Tue"; weekday[3]= "Wed";
+	weekday[4]= "Thu"; weekday[5]= "Fri"; weekday[6]= "Sat";
 
-		var n = weekday[d.getDay()];
-		var h = d.getHours();
- 	 	var m = d.getMinutes();
-		val = n + ' : ' + h + ' : ' + m ;
+	var n = weekday[d.getDay()];	var h = d.getHours(); 	var m = d.getMinutes();
+	val = n + ' : ' + h + ' : ' + m ;
 
-		( no == 2) ? changeContent('tblData2',row,15,val):changeContent('tblData3',row,15,val);
+	( no == 2) ? changeContent('tblData2',row,15,val):changeContent('tblData3',row,15,val);
 }   
-		
 
+for ( var i = 0 ; i < 20 ; i ++)	textArea.push(' \n');
+
+var signalToggle = true;
+
+socket.on('stalled',function( data ) {
+	var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+	$target.removeClass('init moving').addClass('stalled');
+	console.log("reserve return");
+});
+socket.on('moved',function( data ) {
+	var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+	$target.removeClass('init stalled').addClass('moved');
+});
+socket.on('lowbattery',function( data ) {
+	var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+	$target.removeClass('init stalled').addClass('lowbattery');
+});
+socket.on('sensorErr',function( data ) {
+	var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+	$target.removeClass('init stalled').addClass('sensorErr');
+});
+socket.on('normal',function( data ) {
+	var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+	$target.removeClass('init stalled').addClass('signalOn1');
+});
+	
+socket.on('rxdmsg',function(msg){
+	var k = msgCount;
+	textArea[msgCount] = msg;
+	msgCount = ( msgCount > 18 ? 0: msgCount+1);
+
+	var textA ='';
+	for( var j = 0 ; j < 19 ; j ++){
+		textA += textArea[k] ;
+		k = ( k > 1 ? k-1: 19);
+	}
+	var temp = textA.replace(/\r\n?/gm,'<br />');
+	document.getElementById('rxdMsg').innerHTML = temp;
+});
+
+socket.on('endDevice',function( data ) {
+
+	count1 = ( (count1 < 5 ) ? count1 + 1 : 1); 
+
+	writeTable(data.endDevice.rxData,count1,2);
+
+	var count = data.endDevice.numSens;
+	for(var i = 0 ; i < 4 ; i++){
+		if( i < count ){
+			var a = data.sens[i].status;
+			var sum = 0;
+			if( a[5] == 1 )			{ sum = 100;
+			} else if ( a[4] == 1) 	{ sum = 83;
+			} else if ( a[3] == 1) 	{ sum = 66;
+			} else if ( a[2] == 1) 	{ sum = 50;
+			} else if ( a[1] == 1) 	{ sum = 33;
+			} else if ( a[0] == 1) 	{ sum = 16;
+			} else	{ sum = 0;}
+
+			pinData[i+1][1] = sum;
+			pinData[i+1][2] = 'blue';
+		}else{
+			pinData[i+1][1] = 100;
+			pinData[i+1][2] = 'gray';
+		}
+	}
+	drawPin( pinData,"right_div1");
+});
+
+socket.on('sensData',function(msg){			
+
+	msgCount = 0;
+	var mastMsg = msg.mast.wsnData;
+
+	for( var j = 0 ; j < 19 ; j ++) textArea[j] = '';
+
+	count1 = ( (count1 < 5) ? count1 + 1 : 1); 
+	console.log(mastMsg);
+	writeTable(mastMsg,count1,2);
+
+	var textA ='';
+	textA += msg.mast.date + ' : ' + msg.mast.wsnData;
+
+	sensData = msg.sens;
+	for( var key in sensData ){
+		textA += sensData[key].date + '  ::  ' + sensData[key].wsnData;				
+	}		
+	var temp = textA.replace(/\r\n?/gm,'<br />');
+	document.getElementById('rxdMsg').innerHTML = temp;
+});
+
+socket.on('received',function( data ) {
+	var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
+	console.log('received');
+
+	if( signalToggle == true){
+		signalToggle = false;
+		$target.removeClass('init stalled moved signalOn1').addClass('signalOn2');
+	} else{
+		signalToggle = true;
+		$target.removeClass('init stalled moved signalOn2').addClass('signalOn1');
+	}
+	console.log("received On");
+});
+
+socket.on('graphData',function( docs ) {
+
+	graphData[0] = docs.table4;
+	graphData[1] = docs.table3;
+	graphData[2] = docs.table2;
+	graphData[3] = docs.table1;
+	var name = docs.masterName;
+	for(var key in docs.sensorList){ 
+		var y = name[1]*1;
+		var x = name.substr(2,2)*1;
+		scatGraphTitle[key] = setScatGraphTitle(x,y)+ docs.sensorList[key];
+	}
+	drawStuff();
+});
+
+
+function setScatGraphTitle(x,y){
+	var a = '';
+	if			(y < 3 ) a = 'Boom Port Side Group '+ (y*1+1);
+	else if 	(y < 6 ) a = 'Boom Star Board Side Group ' + (y*1 +1);
+	else if 	( y == 6 ) a = 'Backstay Port Side ';
+	else if 	( y == 7 ) a = 'Backstay Start Board Side ';
+	else 					a = ' Error';
+
+	a = a+ ' #' + x;
+	return a;
+}
 </script>
 
-	<script src="/socket.io/socket.io.js"></script>
-	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-
-	<script>
-		var textArea =[];
-		var count1 = 0;
-		var count2 = 0;
-		var msgCount = 0;
-
-		for ( var i = 0 ; i < 20 ; i ++){
-			textArea.push(' \n');
-		} 
-
-//-----
-		//var socket = io.connect('http://192.168.110.10:7532');
-		var socket = io.connect('http://192.168.0.10:7532');
-//------
-
-		var signalToggle = true;
-		socket.on('stalled',function( data ) {
-			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-			$target.removeClass('init moving').addClass('stalled');
-			console.log("reserve return");
-		});
-
-		socket.on('moved',function( data ) {
-			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-			$target.removeClass('init stalled').addClass('moved');
-		});
-		socket.on('lowbattery',function( data ) {
-			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-			$target.removeClass('init stalled').addClass('lowbattery');
-		});
-		socket.on('sensorErr',function( data ) {
-			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-			$target.removeClass('init stalled').addClass('sensorErr');
-		});
-		socket.on('normal',function( data ) {
-			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-			$target.removeClass('init stalled').addClass('signalOn1');
-		});
-		
-		socket.on('rxdmsg',function(msg){
-			console.log(msg);
-
-			var k = msgCount;
-
-			textArea[msgCount] = msg;
-			msgCount = ( msgCount > 18 ? 0: msgCount+1);
-			
-			var textA ='';
-
-			for( var j = 0 ; j < 19 ; j ++){
-				textA += textArea[k];
-				k = ( k > 1 ? k-1: 19);
-			}
-			document.getElementById('rxdMsg').innerHTML = textA;
-		});
-
-		socket.on('endDevice',function( data ) {
-			// console.log(data.endDevice.rxData);
-
-			count1 = ( (count1 < 6) ? count1 + 1 : 1); 
-
-			writeTable(data.endDevice.rxData,count1,2);
-			
-			var count = data.endDevice.numSens;
-
-			for(var i = 0 ; i < 4 ; i++){
-
-				if( i < count ){
-					var a = data.sens[i].status;
-					var sum = 0;
-
-					if( a[5] == 1 )			{ sum = 100;
-					} else if ( a[4] == 1) 	{ sum = 83;
-					} else if ( a[3] == 1) 	{ sum = 66;
-					} else if ( a[2] == 1) 	{ sum = 50;
-					} else if ( a[1] == 1) 	{ sum = 33;
-					} else if ( a[0] == 1) 	{ sum = 16;
-					} else	{ sum = 0;}
-
-					pinData[i+1][1] = sum;
-					pinData[i+1][2] = 'blue';
-				}else{
-					pinData[i+1][1] = 100;
-					pinData[i+1][2] = 'gray';
-				}
-			}
-			drawPin( pinData,"right_div1");
-		});
-
-		socket.on('endDevice1',function( data ) {
-			if( count2 < 7) { count2 = count2 +1;
-			} else { count2 = 1;}
-			writeTable(data.endDevice.rxData,count2,3);
-
-			var count = data.endDevice.numSens;
-			console.log("data.endDevice.numSense:" + count );
-
-			for(var i = 0 ; i < 4 ; i++){
-				if( i < count ){
-					var a = data.sens[i].status;				
-					var sum = 0;
-
-					if( a[5] == 1 )			{ sum = 100;
-					} else if ( a[4] == 1) 	{ sum = 83;
-					} else if ( a[3] == 1) 	{ sum = 66;
-					} else if ( a[2] == 1) 	{ sum = 50;
-					} else if ( a[1] == 1) 	{ sum = 33;
-					} else if ( a[0] == 1) 	{ sum = 16;
-					} else	{ sum = 0;}
-
-					pinData[i+1][1] = sum;
-					pinData[i+1][2] = 'blue';
-				}else{
-					pinData[i+1][1] = 100;
-					pinData[i+1][2] = 'gray';
-				}
-			}
-			drawPin( pinData,"right_div2");
-
-		});
-
-		socket.on('received',function( data ) {
-
-			var $target = $('div[data-x = ' + data.x + '][data-y = ' + data.y + ']');
-			console.log('received');
-
-			if( signalToggle == true){
-				signalToggle = false;
-				//$target.removeClass('init stalled moved signalOn1').addClass('signalOn2');
-				$target.removeClass('init stalled moved signalOn1').addClass('signalOn2');
-			} else{
-				signalToggle = true;
-				//$target.removeClass('init stalled moved signalOn2').addClass('signalOn1');
-				$target.removeClass('init stalled moved signalOn2').addClass('signalOn1');
-			}
-			console.log("received On");
-		});
-
-		socket.on('graphData',function( docs ) {
-			graphData1 = docs.table4;
-			graphData2 = docs.table3;
-			graphData3 = docs.table2;
-			graphData4 = docs.table1;
-			console.log(docs.masterName);
-			console.log(docs.sensorList);
-
-			var name = docs.masterName;
-
-			for(var key in docs.sensorList){ 
-			    var y = name[1]*1;
-				var x = name.substr(2,2)*1;
-				scatGraphTitle[key] = setScatGraphTitle(x,y)+ docs.sensorList[key];
-			}
-
-			drawStuff();
-		});
-
-		function setScatGraphTitle(x,y){
-
-			var a = '';
-
-			if( y < 3 ) { 
-				a = 'Boom Port Side Group '+ (y*1+1);
-			} else if (y < 6 ){
-				a = 'Boom Star Board Side Group ' + (y*1 +1);
-			} else if ( y == 6 ){
-				a = 'Backstay Port Side ';
-			} else if ( y == 7 ){
-				a = 'Backstay Start Board Side ';
-			} else {
-				a = ' Error';
-			}
-			a = a+ ' #' + x;
-			return a;
-		}
-
-	</script>
-
-
-	<script>		
-		$(document).ready(function() {
-			// define variable
+<script>
+$(document).ready(function() {
+	// define variable
 			var onClickSeat = function () {
 				var x = $(this).attr('data-x');
 				var y = $(this).attr('data-y');
+				var z = document.getElementById('radio_1').checked;
+				var k = document.getElementById('graph_1').checked;
 				// document.getElementById('graphTitle').innerHTML = vGraphTitle;
-				socket.emit('clickDevice',{	x: x, y: y });
+				socket.emit('clickDevice',{	x: x, y: y,z: z, k : k });
 			};
-
 			$.getJSON('/wsnObj', { dummy: new Date().getTime() }, function(wsnObj){
 	
 				// console.log('wnsObj',wsnObj);
@@ -463,7 +325,6 @@
 						$output.on('click',onClickSeat);
 						
 						var status = sensCtrl.endDevice.status;
-
 						if( status == 0 ){			
 							$output.removeClass("moved stalled").addClass('init'); 
 						}else if( status == 1 ) {	
@@ -483,49 +344,47 @@
 			
 			tableCreate();
 		});
-	</script>
+</script>
 
-	<script>
-		function startTime() {
-		    var today = new Date();
-
-		    var h = today.getHours();
-		    var m = today.getMinutes();
-		    var s = today.getSeconds();
-		    m = checkTime(m);
-		    s = checkTime(s);
-		    document.getElementById('dispTime').innerHTML = Date();
-		    h + ":" + m + ":" + s;
-		    var t = setTimeout(startTime, 30000	);
-		}
+<script>
+function startTime() {
+	var today = new Date();
+	var h = today.getHours();
+	var m = today.getMinutes();
+	var s = today.getSeconds();
+	
+	m = checkTime(m);
+	s = checkTime(s);
+	document.getElementById('dispTime').innerHTML = Date();
+	h + ":" + m + ":" + s;
+	var t = setTimeout(startTime, 30000	);
+}
 		
-		function checkTime(i) {
-		    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-		    return i;
-		}
+function checkTime(i) {
+	if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+	return i;
+}
 
-		function drawGraph(){
-			socket.emit('reqGraph',{
-				x: 'L,4,3',
-				y: 'G718'
-			});
-		}
-			
-	</script>
+function drawGraph(){
+   socket.emit('reqGraph',{
+      x: 'L,4,3',
+      y: 'G718'
+   });
+}
+</script>
 
-<body onload="startTime()">
-
-
+<body onload= 'startTime()'>
 	<div align="center" class="wrapper">
 	<header>
 		<H2>LUBRICATION RECORD HHI HD-10000 Auto Grease Monitoring System </h2>
 	</header>
-
-
    	<div id="subTitle">
 	    <div class = "content2">
 	    	<div>
-	    		<div id= "subtile"> [ Ship's name : HD10000 ]  &nbsp &nbsp [ Lubrication part : Crane &nbsp] &nbsp &nbsp <a id="dispTime"></a></div>  
+	    		<div id= "subtile"> 
+					[ Ship's name : HD10000 ]  &nbsp &nbsp [ Lubrication part : Crane &nbsp] &nbsp &nbsp 
+					<a id="dispTime"></a>
+				</div>  
 	    	</div>
 			<div id="box">
 				<div id="box1"></div>
@@ -540,6 +399,14 @@
 				<div id="name3">센서 불량</div>
 				<div id="name4">배터리 3.6V이하</div>
 				<div id="name5">센서컨트롤러 동작안함</div>
+			</div>
+			<div>
+				<input type ='radio' id='radio_1' name='dataTypeRadio' value='0' /> Get Graph Data  
+				<input type ='radio' id='radio_2' name='dataTypeRadio' value='1' checked='checked'/> Get Text State 
+			</div>
+			<div>
+				<input type ='radio' id='graph_1' name='graphTypeRadio' value='1' checked='checked' /> One Week State   
+				<input type ='radio' id='graph_2' name='graphTypeRadio' value='0' /> One Month State 
 			</div>
 		</div>
 	</div>
@@ -564,9 +431,12 @@
 
 	<div id="div1">
 		<div class= "sensornumber">
-			<div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div><div>21</div><div>22</div><div>23</div><div>24</div><div>25</div><div>26</div><div>27</div><div>28</div><div>29</div><div>30</div><div>31</div><div>32</div><div>33</div><div>34</div><div>35</div><div>36</div>
-			</div>
-		</div>	
+			<div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+			<div>11</div><div>12</div><div>13</div><div>14</div><div>15</div><div>16</div><div>17</div><div>18</div><div>19</div><div>20</div>
+			<div>21</div><div>22</div><div>23</div><div>24</div><div>25</div><div>26</div><div>27</div><div>28</div><div>29</div><div>30</div>
+			<div>31</div><div>32</div><div>33</div><div>34</div><div>35</div><div>36</div>
+		</div>
+	</div>	
 
  		<section>
 		</section>
@@ -599,10 +469,9 @@
 		 &nbsp;&nbsp;&nbsp;Eunwho Power Electronics:  eunwho.com eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2017 </p>
 
 	</div>
-	<div id='testArea'>
-		<textarea id='rxdMsg' cols='100' rows='20'></textarea>
+	<div id='rxdMsgBox' class = 'cssRxMsgBox'>	
+		<p id = 'rxdMsg' class = 'cssRxMsg'>wait data !	</p>
 	</div>
-
 <!--	<div id="chart_div5" style="width: 900px; height: 500px;"></div> -->
 
 </body>
