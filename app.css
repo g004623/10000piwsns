@@ -10,7 +10,7 @@ position: relative;
     height: 275px;
     border : 1px solid black;}  
     
-#subTitle{ position : relative; top:30px; left:220px; }
+#subTitle{ position : relative; top:23px; left:220px; }
 #txt {
 	position: relative;
     top: 0px;
@@ -61,7 +61,7 @@ address{        }
 .sensorErr{background: red;}
 
 
-#test1{ top: 35px; left: 0px;  position: relative; font-size: 16px; }
+#test1{ top: 0px; left: 0px;  position: relative; font-size: 16px; }
 
 #getGraphData{ margin-top: 10px;}
 
@@ -72,72 +72,74 @@ address{        }
 
 #table2 { margin-top: 10px;  margin-left: -244px; }
 
+
 #box{
-	margin-top: 10px;
+	margin-left: -1020px;
 	height: 20px;
+	width: 700px;
 }
 #box1{ 
 	width: 20px;
 	height: 20px;
-	margin-left: -75px;
+	margin-left: 0px;
 	float: left;
 	background: #0000ff;
 }
 #box2{ 
 	width: 20px;
 	height: 20px;
-	margin-left: 80px;
+	margin-left: 125px;
 	background: #A9F5F2;
 	float: left;
 }
 #box3{ 
 	width: 20px;
 	height: 20px;
-	margin-left: 100px;
+	margin-left: 95px;
 	background: red;
 	float: left;
 }
 #box4{ 
 	width: 20px;
 	height: 20px;
-	margin-left: 90px;
+	margin-left: 80px;
 	background: yellow;
 	float: left;
 }
 #box5{ 
 	width: 20px;
 	height: 20px;
-	margin-left: 130px;
+	margin-left: 120px;
 	background: gray;
 	float: left;
 }
 
-#name{
+#namebox{
 	font-size: 15px;
 }
 #name1{
 	margin-top: -20px;
-	margin-left: -50px;
+	margin-left: 110px;
 	float: left;
 }
 #name2{
 	margin-top: -20px;
-	margin-left: 110px;
+	margin-left: 255px;
 	float: left;
 }
 #name3{
 	margin-top: -20px;
-	margin-left: 230px;
+	margin-left: 370px;
 	float: left;
 }
 #name4{
 	margin-top: -20px;
-	margin-left: 340px;
+	margin-left: 470px;
 	float: left;
 }
 #name5{
 	margin-top: -20px;
-	margin-left: 490px;
+	margin-left: 610px;
 	float: left;
 }
 #rxdMsg{
@@ -146,4 +148,15 @@ address{        }
 	margin-top: 50px;
 	text-align: left;
    border: 1px solid black;
+}
+
+#checkbox{
+	margin-top: -20px;
+}
+
+#radio_1{
+	margin-left: -500px; 
+}
+#radio_2{
+
 }
