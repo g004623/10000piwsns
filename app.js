@@ -364,8 +364,7 @@ io.on('connection',function(socket){
 
 	console.log('Cooool now connected socket.io');
 
-	socket.on('CH0',function(from,msg){  // from backstay
-
+	socket.on('CH0',function(from,msg){	// from back
 		io.to('sensornet').emit('rxdmsg',msg);
 
 		var wsnIn = new wsnDB1({wsnData:msg});
@@ -401,7 +400,10 @@ io.on('connection',function(socket){
 		socketProc(from,msg);
 	});
 
-	socket.on('CH1',function(from,msg){  // from backstay
+
+	socket.on('CH1',function(from,msg){	// from boom
+		io.to('sensornet').emit('rxdmsg',msg);
+
 		var wsnIn = new wsnDB1({wsnData:msg});
 		wsnIn.save(function(err,wsnIn){
 			if(err){
@@ -411,12 +413,35 @@ io.on('connection',function(socket){
 				console.log('CH1 SAVED :'+msg);
 			}
 		});
+
+		var tmp1 = msg.split(",");
+		if(( tmp1[0] === 'M' )&&(tmp1[16][0]==='G')){
+			var x = Number(tmp1[16][1]);
+			var y = tmp1[16][2] * 10 + tmp1[16][3]*1 -1;
+			//console.log("sensornumber=" + tmp1[16] );
+			//console.log("battery volt=" + tmp1[12] );
+			//console.log("number of sensors =" + tmp1[18] );
+			if(tmp1[12]< 3.3) {
+				io.to('sensornet').emit('lowbattery',{x: y, y:x});
+			}
+		} else if((tmp1[0] ==='L')&&(tmp1[12][0]==='G')){
+			var x = Number(tmp1[12][1]);
+			var y = tmp1[12][2] * 10 + tmp1[12][3]*1 -1;
+			//console.log("sensor=" + tmp1[14] );
+ 			if(arrySensNo[x][y] != tmp1[14]){
+				io.to('sensornet').emit('sensorErr',{x: y, y:x});
+			}else {
+				io.to('sensornet').emit('normal',{x: y, y:x});
+			}
+		}
 		socketProc(from,msg);
-	});		
+	});
 
 	socket.on('clickDevice',function(data){
 
 		//console.log('data.y : ' + data.y +'    data.x : '+ data.x);
+
+
 		var sensorList = [];
 		var masterName = getMasterId(data.y,data.x);
 		var graphObj = {
