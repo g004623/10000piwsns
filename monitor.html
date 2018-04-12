@@ -82,7 +82,7 @@ function drawStuff( ) {
 
    var materialOptions = {
     	chart: { title: scatGraphTitle[0]},
-          	width: 1220,
+          	width: 1240,
           	height: 150,
           	axes: {	y: {'Sensor Value': {label: ''}, }},
 				hAxis:{ title:'',titleTextStyle:{color: ''},	
@@ -308,9 +308,8 @@ $(document).ready(function() {
 				var y = $(this).attr('data-y');
 				var z = document.getElementById('radio_1').checked;
 				var k = document.getElementById('graph_1').checked;
-				// document.getElementById('graphTitle').innerHTML = vGraphTitle;
 				socket.emit('clickDevice',{	x: x, y: y,z: z, k : k });
-			};
+		};
 			$.getJSON('/wsnObj', { dummy: new Date().getTime() }, function(wsnObj){
 	
 				// console.log('wnsObj',wsnObj);
@@ -378,13 +377,10 @@ function drawGraph(){
 		<H2>LUBRICATION RECORD HHI HD-10000 Auto Grease Monitoring System </h2>
 	</header>
    	<div id="subTitle">
-	    <div class = "content2">
-	    	<div>
-	    		<div id= "subtile"> 
+	    		<div id= "subtitle"> 
 					[ Ship's name : HD10000 ]  &nbsp &nbsp [ Lubrication part : Crane &nbsp] &nbsp &nbsp 
 					<a id="dispTime"></a>
 				</div>  
-	    	</div>
 			<div id="box">
 				<div id="box1"></div>
 				<div id="box2"></div>
@@ -398,14 +394,13 @@ function drawGraph(){
 				<div id="name3">센서 불량</div>
 				<div id="name4">배터리 3.6V이하</div>
 				<div id="name5">센서컨트롤러 동작안함</div>
-			</div>
+			</div>  
 			<div id="checkbox">
 				<input type ='radio' id='radio_1' name='dataTypeRadio' value='0' /> Get Graph Data  
 				<input type ='radio' id='radio_2' name='dataTypeRadio' value='1' checked='checked'/> Get Text State 
 				<input type ='radio' id='graph_1' name='graphTypeRadio' value='1' checked='checked' /> One Week State   
 				<input type ='radio' id='graph_2' name='graphTypeRadio' value='0' /> One Month State 
-			</div>
-
+	    	</div>
 		</div>
 	</div>
 
@@ -467,7 +462,7 @@ function drawGraph(){
 	</div>
 	<div id="test1">		
 		<p><a href="https://cafeptthumb-phinf.pstatic.net/MjAxODAyMDFfMTIx/MDAxNTE3NDYzOTkxNDE5.99_T-ZDtKACtHyV2i7qPPxv6oDGWN8OhBSp2_BOpDekg.sWLWAdaoPJWHUtZbOMJF05MY7hYSIBQ5-seLI5yluBog.JPEG.g04623/eunwho.jpg?type=w740" target="_black">사용설명서</a>
-		 &nbsp;&nbsp;&nbsp;Eunwho Power Electronics:  eunwho.com eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2017 </p>
+		 &nbsp;&nbsp;&nbsp;Eunwho Power Electronics:  eunwho.com eunwho@naver.com &nbsp;&nbsp;&nbsp; tel  82 51 262 7532. fax  82 51 262 7534  H.P. 82 010 3027 4445 Copyright 2018 </p>
 	</div>
 
 

@@ -1,30 +1,57 @@
-#warpper{ width: 1200px; height: 1000px;  }    
+#warpper{ width: 1200px; height: 100%; text-align: center; }    
 header{  height: 10px; width: 900px; }
 header h1{ text-align: center;  }
 header h2{ text-align: center;  }
 
 #tablecontainer{
-position: relative;
-	top: 35px;
+	position: relative;
+	margin: 0 auto;
+	margin-top: 10px;
    width: 1280px;
-    height: 275px;
-    border : 1px solid black;}  
+   height: 280px;
+   border : 1px solid black;
+}  
     
-#subTitle{ position : relative; top:23px; left:220px; }
+#subTitle{ 
+	position: relative;
+	margin: 0 auto;
+	width: 1280px;
+	height: 40px;
+	margin-top: 20px;
+}
+#subtitle{
+	position: absolute;
+	margin-top: 0px;
+	margin-left: 410px;
+	width: 430px;
+	height: 20px;
+	
+}
+#dispTime{
+	position: absolute;
+	margin-top: -20px;
+	margin-left:210px; 
+	width: 430px;
+	height: 20px;
+}
+#wrap1{
+	position : relative;
+	margin: 0 auto;
+	top: 5px;
+	border: 1px solid black;
+}
+
+
 #txt {
 	position: relative;
     top: 0px;
     left: 1190px
 }
-#wrap1{
-position : relative;
-top: 40px;
-left: 0px;
-border: 1px solid black; }
+
 #right_div1{
-	position : relative; 
+	 position : relative; 
     top: -145px;
-    left: 460px;
+    margin-left: 945px;
     border: 1px solid black;
     padding: 15px;
 }
@@ -42,9 +69,10 @@ table, th, td { border-collapse: collapse;}
 	font-size: 1em; font-weight: bold; color: white; text-align: center; margin: 2px ; 
     width : 25px; height: 25px; border-radius : 3px; background-color: darkgray;    }
 
-section{ margin-top  : 30px; margin-left : 10px; padding: 6px; }
-
-
+section{ margin-top: 30px; 
+			margin-left: 10px; 
+			padding: 6px; 
+}
 
 address{        }
 
@@ -61,24 +89,36 @@ address{        }
 .sensorErr{background: red;}
 
 
-#test1{ top: 0px; left: 0px;  position: relative; font-size: 16px; }
+#test1{ 
+	position: relative; 
+	margin: 0 auto;
+	margin-top: -10px;
+	font-size: 16px; 
+	text-align: center;
+	height: 20px;
+	width: 1280px;
+}
 
 #getGraphData{ margin-top: 10px;}
 
 #chart_div {margin-left: 10px; margin-top: -370px;  } 
 #graphTitle{     }
 
-#scatter { height: 680px; margin-top: 10px;}
+#scatter { height: 680px; margin-top: 10px; margin-left: 15px;}
 
-#table2 { margin-top: 10px;  margin-left: -244px; }
+#table2 { margin-top: 10px;  margin-left: 15px; }
 
 
 #box{
-	margin-left: -1020px;
+	position: relative;
+	width: 525px;
+	float: left;
 	height: 20px;
-	width: 700px;
+	margin-left: 0px;
+	margin-top: 22px;
 }
 #box1{ 
+	position: relative;
 	width: 20px;
 	height: 20px;
 	margin-left: 0px;
@@ -116,6 +156,9 @@ address{        }
 
 #namebox{
 	font-size: 15px;
+	position: absolute;
+	margin-top: 42px;
+	margin-left: -85px;
 }
 #name1{
 	margin-top: -20px;
@@ -143,20 +186,19 @@ address{        }
 	float: left;
 }
 #rxdMsg{
-	width: 1200px;
+	position: relative;
+	margin: 0 auto;
+	width: 1280px;
 	height: 400px;
-	margin-top: 50px;
+	margin-top: 10px;
 	text-align: left;
    border: 1px solid black;
 }
 
 #checkbox{
-	margin-top: -20px;
-}
-
-#radio_1{
-	margin-left: -500px; 
-}
-#radio_2{
-
+	position:absolute;
+	margin-top: 22px;
+	margin-left: 680px;
+	width: 600px;;
+	height: 20px;
 }
