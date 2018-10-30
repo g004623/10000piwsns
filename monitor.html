@@ -10,14 +10,15 @@
 <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 
 <script>
- var socket = io.connect('http://192.168.110.10:7532'); // for Hydai 
-//	var socket = io.connect('http://192.168.0.10:7532');   // for eunwho P.E.
+// var socket = io.connect('http://192.168.110.10:7532'); // for Hydai 
+	var socket = io.connect('http://192.168.0.10:7532');   // for eunwho P.E.
 //------------------------------------------------------------
 	var textArea =[];
 	var count1 = 0;
 	var count2 = 0;
 	var msgCount = 0;
 
+//currnet를 지정하면 구글 차트의 최신 공식 출신가도르된다.
 	google.charts.load('current', {'packages':['corechart']});
 	var pinData = [['Element','Density',{role:'style'}],
 					['LUBE1',100, 'blue'],
@@ -26,7 +27,7 @@
 					['LUBE4',100, 'darkgray']
 					];
 
-
+//캔버스에 핀그리기 
 function drawPin( pinData,id){
 	var data = new google.visualization.arrayToDataTable(pinData);
 	var view = new google.visualization.DataView(data);
@@ -40,6 +41,7 @@ function drawPin( pinData,id){
 		vAxis:{title:'Pin State',minValue: 0, maxValue: 100}
 	};	
 			
+// 차트객체에 뷰와 옵션 객체를 컬럼차트를 그릴 수 있는 차트객체를 반환
 	var chart = new google.visualization.ColumnChart(document.getElementById(id));
 	chart.draw(view, options);
 }
@@ -53,6 +55,7 @@ var graphData4 = [];
 var scatGraphTitle=['','','',''];
 var graphData = [];
 
+//그래프
 for( var i = 0 ; i < 1000; i++){
 	graphData1.push([i]);
 	for( var j = 0 ; j < 6 ; j++)	graphData1[i].push(700*1);
@@ -84,8 +87,10 @@ for( var i = 0 ; i < 1000; i++){
 graphData4[0][1] = 0;	
 graphData4[0][2] = 1000;
 
-
+//chart 및 corechart 및 barchart 패키지를 로드한다.
 google.charts.load('current', {'packages':['corechart', 'scatter']});
+
+//chart가 로드될때 원형 자료와 막대형 차트를 그린다.
 google.charts.setOnLoadCallback(drawStuff);
 
 function drawStuff( ) {
@@ -94,6 +99,8 @@ function drawStuff( ) {
 	var gData = [];
 	var mOption = [];
 
+
+//첫번째 그래프 옵션
    var data1 = new google.visualization.DataTable();
 
 	data1.addColumn('number', 'Date');
@@ -119,7 +126,7 @@ function drawStuff( ) {
 	}
 	drawMaterialChart1();
 
-
+//두번째 그래프 옵션
    var data2 = new google.visualization.DataTable();
 
 	data2.addColumn('number', 'Date');
@@ -145,7 +152,7 @@ function drawStuff( ) {
 	}
 	drawMaterialChart2();
 
-//--- graph3
+//세번째 그래프 옵션
    var data3 = new google.visualization.DataTable();
 	data3.addColumn('number', 'Date');
      	for( var k = 1 ; k < 7 ; k++){ 
@@ -168,7 +175,7 @@ function drawStuff( ) {
 	}
 	drawMaterialChart3();
 
-//--- graph4
+//네번째 그래프 옵션
    var data4 = new google.visualization.DataTable();
 	data4.addColumn('number', 'Date');
      	for( var k = 1 ; k < 7 ; k++){ 
@@ -192,6 +199,7 @@ function drawStuff( ) {
 	}
 	drawMaterialChart4();
 };
+
 
 function tableCreate( ){
 	var title = ['M','version','group','sensor#','MY', 'MP','SH','SL','DH','DL',

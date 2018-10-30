@@ -6,20 +6,22 @@ var Promise = require('promise');
 var mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
-
+// wsns0 setting
 mongoose.connect('mongodb://localhost/wsns0');
-
+// 연결된 wsns0 사용
 var db = mongoose.connection;
+// 연결 실패
 db.on('error',console.error.bind(console,'mongoose connection error'));
+// 연결 성공
 db.once('open',function(){
 	console.log('Ok db connected');
 });
-
+// 스키마 생성
 var wsnSchema = mongoose.Schema({
 	wsnData: String,
 	date:{type:Date,default:Date.now}
 });
-
+// 정의된 스키마를 객체처럼 사용할 수 있도록 모델 함수로 컴파일
 var wsnDB1 = mongoose.model('wsnDB1',wsnSchema);
 
 var arryEndDevice = [2,25,36,2,25,36,18,18];
@@ -60,7 +62,7 @@ for ( var i = 0 ; i < 8 ; i ++ ){
 }
 
 //var fs = require('fs');
-
+// 프로그램 종료시 실행
 var now = new Date();
 var preExit = [];
 process.stdin.resume();
@@ -74,9 +76,10 @@ process.on('exit',function(code) {
 });
 
 // Catch CTRL+C
+// 프로세스를 정상적으로 종료하기 위해 sigint 사용, 동기,비동기
 process.on ('SIGINT', function () {
 	console.log ('\nCTRL+C...');
-
+ 
 	var test = JSON.stringify(WSNT);
 	fs.writeFileSync(logfile_name,test, 'utf8');
 	fs.writeFileSync(logFile,test, 'utf8');
@@ -84,7 +87,7 @@ process.on ('SIGINT', function () {
 	process.exit (0);
 });
 
-// Catch uncaught exception
+// Catch uncaught exception, uncaughtexception의 올바른 사용은 프로세서를 종료하기 전에 할당된 자원의 동기정리를 수행하는것. 
 process.on ('uncaughtException', function (err) {
   console.dir (err, { depth: null });
   process.exit (1);
@@ -98,13 +101,14 @@ preExit.push (function (code) {
   // i.e. close database
 });
 
-// serve
+// 웹서버 생성
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 server.listen(7532);
 
+// monitor.html, app.css, 연결
 app.get('/',function ( req,res){
 	res.sendFile(__dirname +'/monitor.html');
 });
@@ -162,6 +166,7 @@ function sensProc(msg,x,y){
 //--- sens stalled for 2 days 
 					WSNT[x][y].sens[si].moving == false;
 					WSNT[x][y].endDevice.status == 2;
+//특정 클라이언트에게만  메시지를 전송한다.					
 					io.to('sensornet').emit('stalled',{x: y, y:x});
 				}
 			}else{
@@ -179,6 +184,7 @@ function sensProc(msg,x,y){
 					WSNT[x][y].endDevice.status = 1;
 					break;
 				}
+//특정 클라이언트에게만  메시지를 전송한다.					
 				 io.to('sensornet').emit('endDevice',WSNT[x][y]);
 				// io.to('sensornet').emit('received',{x: y, y:x});
 			}	
@@ -358,12 +364,17 @@ function checkValidSensorData(tmp){
 	return true;
 }
 
+
+//웹소켓 연결
 io.on('connection',function(socket){
 
 	socket.join('sensornet');
 
+//최초 연결시 동작
 	console.log('Cooool now connected socket.io');
 
+
+//붐
 	socket.on('CH0',function(from,msg){	// from back
 		io.to('sensornet').emit('rxdmsg',msg);
 
@@ -377,6 +388,7 @@ io.on('connection',function(socket){
 			}
 		});
 
+
 		var tmp1 = msg.split(",");
 		if(( tmp1[0] === 'M' )&&(tmp1[16][0]==='G')){
 			var x = Number(tmp1[16][1]);
@@ -384,6 +396,8 @@ io.on('connection',function(socket){
 			//console.log("sensornumber=" + tmp1[16] );
 			//console.log("battery volt=" + tmp1[12] );
 			//console.log("number of sensors =" + tmp1[18] );
+
+//배터리3.3v 이하일때 신호
 			if(tmp1[12]< 3.3) {
 				io.to('sensornet').emit('lowbattery',{x: y, y:x});
 			}
@@ -401,6 +415,7 @@ io.on('connection',function(socket){
 	});
 
 
+//백스테이
 	socket.on('CH1',function(from,msg){	// from boom
 		io.to('sensornet').emit('rxdmsg',msg);
 
@@ -421,6 +436,7 @@ io.on('connection',function(socket){
 			//console.log("sensornumber=" + tmp1[16] );
 			//console.log("battery volt=" + tmp1[12] );
 			//console.log("number of sensors =" + tmp1[18] );
+//배터리3.3v 이하일때 신호
 			if(tmp1[12]< 3.3) {
 				io.to('sensornet').emit('lowbattery',{x: y, y:x});
 			}
@@ -455,6 +471,7 @@ io.on('connection',function(socket){
 			console.log ('data.k = ',data.k);
 			graphDay = (( data.k ) ? 7 : 30 );
 
+//비동기 처리 실행
 			var promise = asyncfunc1(masterName);
 
 			promise
@@ -633,6 +650,7 @@ function setSensorDataTb(docs){
 
 var asyncSetSensorTb = function ( param ){
 
+//작업을 수행하는 경우 모든 것이 순조롭게 작동하면 resolve가 호출되고 그렇지 않으면 reject가 호출
 	return new Promise(function(resolve, reject){		
 	
 	//console.log('param : '); console.log(param);
